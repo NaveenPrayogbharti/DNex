@@ -10,7 +10,6 @@ const services = [
     title: 'Free Zone Company Setup',
     description:
       "A free zone company is a business entity incorporated within a designated free zone in UAE that allows 100% foreign ownership with simplified setup and modern infrastructure. It offers a flexible and cost-effective way to start a business in UAE.",
-    href: '/free-zone',
     highlight: false,
     badge: 'Most Popular',
   },
@@ -19,7 +18,6 @@ const services = [
     title: 'Mainland Company Formation',
     description:
       'A main land company in UAE is an onshore business entity registered with Department of Economic Development (D.E.D) of the respective emirate, allowed to operate anywhere within in UAE and internationally without geo-graphical resistance.',
-    href: '/mainland',
     highlight: false,
   },
   {
@@ -27,15 +25,13 @@ const services = [
     title: 'Offshore Company Formation',
     description:
       'An offshore company in UAE is a legal business entity incorporated for the purpose of conducting business activities outside UAE, mainly used for international business, asset holding or investment outside the country.',
-    href: '/investor-visa',
     highlight: false,
   },
   {
     icon: Receipt,
     title: 'NRO ACCOUNT ASSISTANCE',
     description:
-      'NRO account assistance refers to professional’s support services provided to Non-resident Indian (NRIs) for opening, managing and complying with requirements related to a Non-Resident ordinary NRO bank account These services include guidance on documentation, account opening procedures, fund transfers, tax-related compliance, repatriation rules, and handling income earned in India such as rent, dividends, pensions, or investments. NRO account assistance helps NRIs manage their finances.',
-    href: '/vat-registration',
+      'NRO account assistance refers to professional support services provided to Non-resident Indian (NRIs) for opening, managing and complying with requirements related to a Non-Resident ordinary NRO bank account. These services include guidance on documentation, account opening procedures, fund transfers, tax-related compliance, repatriation rules, and handling income earned in India such as rent, dividends, pensions, or investments. NRO account assistance helps NRIs manage their finances.',
     highlight: false,
   },
   {
@@ -43,7 +39,6 @@ const services = [
     title: 'OVERSEAS DIRECT INVESTMENT (ODI) ASSISTANCE',
     description:
       'We provide comprehensive assistance for Overseas Direct Investment (ODI) to individuals and companies intending to expand their business internationally. Our services include guidance on RBI regulations, preparation of required documentation, coordination with the authorized dealer banks, filing of forms related to ODI and compliance with applicable regulatory requirements for setting up or investing in foreign entities.',
-    href: '/corporate-tax',
     highlight: false,
   },
   {
@@ -51,7 +46,6 @@ const services = [
     title: 'Corporate Banking Assistance',
     description:
       'Banking setup services assist businesses in opening corporate bank accounts in the UAE with the required documentation and compliance support. This ensures a smooth banking process for new and existing companies.Corporate banking assistance may also include support for multi-currency accounts, trade finance, payroll services, merchant facilities, online banking setup, foreign exchange transactions, and cash management solutions. These services help businesses maintain seamless operations.',
-    href: '/bank-account',
     highlight: false,
   },
 ];
@@ -79,7 +73,7 @@ export function Services() {
           >
             Everything You Need to Launch &amp; Grow
           </h2>
-          <p className="text-gray-500 max-w-xl mx-auto" style={{ lineHeight: 1.7 }}>
+          <p className="text-gray-500 max-w-xl mx-auto text-justify" style={{ lineHeight: 1.7 }}>
             From company registration to ongoing compliance  our end-to-end services cover every
             aspect of doing business in the UAE.
           </p>
@@ -90,7 +84,7 @@ export function Services() {
           {services.map((s) => (
             <Link
               key={s.title}
-              to={s.href}
+              to="/our-services"
               className="group relative rounded-2xl border p-8 transition-all duration-300 hover:shadow-xl hover:-translate-y-1"
               style={{
                 backgroundColor: s.highlight ? NAVY : '#fff',
@@ -123,7 +117,7 @@ export function Services() {
               </h3>
 
               <p
-                className="text-sm mb-5 leading-relaxed"
+                className="text-sm mb-5 leading-relaxed text-justify"
                 style={{ color: s.highlight ? '#94a3b8' : '#6b7280' }}
               >
                 {s.description}
@@ -147,7 +141,7 @@ export function Services() {
         <div className="mt-14 text-center">
           <p className="text-gray-500 mb-4">Looking for something specific?</p>
           <Link
-            to="/contact"
+            to="/our-services"
             className="inline-flex items-center gap-2 px-8 py-3.5 rounded-xl font-semibold text-white transition-all hover:opacity-90"
             style={{ backgroundColor: NAVY }}
           >

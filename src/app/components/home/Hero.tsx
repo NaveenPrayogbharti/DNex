@@ -69,7 +69,7 @@ export function Hero() {
           </h1>
 
           <p className="text-lg text-slate-300 mb-8 max-w-[520px]" style={{ lineHeight: 1.65 }}>
-            From company formation to setup, Tax compliance, Banking support and PRO services —
+            From company formation to setup, Tax compliance, Banking support and PRO services
             we handle everything so you can focus on building your UAE business.
           </p>
 

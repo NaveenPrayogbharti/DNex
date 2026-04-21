@@ -9,7 +9,18 @@ import { About } from './pages/About';
 import { OurServices } from './pages/OurServices';
 import { IndiaServices } from './pages/IndiaServices';
 
+// Admin imports
+import { AdminLogin } from './admin/pages/AdminLogin';
+import { AdminLayout } from './admin/pages/AdminLayout';
+import { AdminDashboard } from './admin/pages/AdminDashboard';
+import { AdminInquiries } from './admin/pages/AdminInquiries';
+import { AdminServicesPage } from './admin/pages/AdminServicesPage';
+import { AdminUsersPage } from './admin/pages/AdminUsersPage';
+import { AdminSettingsPage } from './admin/pages/AdminSettingsPage';
+import { AdminRedirect } from './admin/pages/AdminRedirect';
+
 export const router = createBrowserRouter([
+  // Public website routes
   {
     path: '/',
     Component: Root,
@@ -22,6 +33,24 @@ export const router = createBrowserRouter([
       { path: 'contact', Component: Contact },
       { path: 'about', Component: About },
       { path: '*', Component: NotFound },
+    ],
+  },
+
+  // Admin portal routes
+  {
+    path: '/admin/login',
+    Component: AdminLogin,
+  },
+  {
+    path: '/admin',
+    Component: AdminLayout,
+    children: [
+      { index: true, Component: AdminRedirect },
+      { path: 'dashboard', Component: AdminDashboard },
+      { path: 'inquiries', Component: AdminInquiries },
+      { path: 'services', Component: AdminServicesPage },
+      { path: 'users', Component: AdminUsersPage },
+      { path: 'settings', Component: AdminSettingsPage },
     ],
   },
 ]);

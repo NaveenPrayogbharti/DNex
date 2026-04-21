@@ -1,4 +1,4 @@
-import { useRef } from 'react';
+import { useRef, useEffect, useState } from 'react';
 import { ChevronLeft, ChevronRight, Linkedin, Mail } from 'lucide-react';
 
 const NAVY = '#0D2137';
@@ -57,12 +57,29 @@ const teamMembers = [
 
 export function TeamCarousel() {
   const scrollRef = useRef<HTMLDivElement>(null);
+  const [isPaused, setIsPaused] = useState(false);
+
+  // Auto-scroll effect
+  useEffect(() => {
+    const container = scrollRef.current;
+    if (!container || isPaused) return;
+
+    const interval = setInterval(() => {
+      const maxScroll = container.scrollWidth - container.clientWidth;
+      if (container.scrollLeft >= maxScroll - 5) {
+        container.scrollTo({ left: 0, behavior: 'smooth' });
+      } else {
+        container.scrollBy({ left: 420, behavior: 'smooth' });
+      }
+    }, 3500);
+
+    return () => clearInterval(interval);
+  }, [isPaused]);
 
   const scroll = (direction: 'left' | 'right') => {
     const container = scrollRef.current;
     if (!container) return;
-    const amount = 340;
-    container.scrollBy({ left: direction === 'right' ? amount : -amount, behavior: 'smooth' });
+    container.scrollBy({ left: direction === 'right' ? 420 : -420, behavior: 'smooth' });
   };
 
   return (
@@ -105,34 +122,36 @@ export function TeamCarousel() {
         </div>
       </div>
 
-      {/* Scrollable Cards */}
+      {/* Scrollable Cards — Larger */}
       <div
         ref={scrollRef}
-        className="flex gap-6 overflow-x-auto pb-4 scroll-smooth"
+        className="flex gap-7 overflow-x-auto pb-4 scroll-smooth"
         style={{
           scrollbarWidth: 'none',
           msOverflowStyle: 'none',
         }}
+        onMouseEnter={() => setIsPaused(true)}
+        onMouseLeave={() => setIsPaused(false)}
       >
         {teamMembers.map((member, i) => (
           <div
             key={i}
-            className="shrink-0 w-72 rounded-3xl overflow-hidden border border-slate-100 hover:shadow-2xl transition-all duration-300 group"
+            className="shrink-0 w-[340px] rounded-3xl overflow-hidden border border-slate-100 hover:shadow-2xl transition-all duration-300 group"
             style={{ background: '#fff' }}
           >
             {/* Card Header */}
             <div
-              className="flex flex-col items-center justify-center pt-10 pb-8 px-6 text-center"
+              className="flex flex-col items-center justify-center pt-12 pb-10 px-8 text-center"
               style={{ backgroundColor: member.color }}
             >
               {/* Avatar */}
               <div
-                className="w-20 h-20 rounded-full flex items-center justify-center text-2xl font-extrabold text-white mb-4 border-4 border-white/20"
+                className="w-24 h-24 rounded-full flex items-center justify-center text-3xl font-extrabold text-white mb-5 border-4 border-white/20 shadow-lg"
                 style={{ backgroundColor: GOLD }}
               >
                 {member.initials}
               </div>
-              <h3 className="text-lg font-bold text-white mb-1 leading-tight">
+              <h3 className="text-xl font-bold text-white mb-1.5 leading-tight">
                 {member.name}
               </h3>
               <p
@@ -144,13 +163,13 @@ export function TeamCarousel() {
             </div>
 
             {/* Card Body */}
-            <div className="p-6">
+            <div className="p-7">
               {/* Expertise Tags */}
-              <div className="flex flex-wrap gap-1.5 mb-4">
+              <div className="flex flex-wrap gap-1.5 mb-5">
                 {member.expertise.split(' · ').map((tag, j) => (
                   <span
                     key={j}
-                    className="text-[10px] font-semibold px-2.5 py-1 rounded-full"
+                    className="text-[11px] font-semibold px-3 py-1.5 rounded-full"
                     style={{
                       backgroundColor: 'rgba(201,150,60,0.1)',
                       color: GOLD,
@@ -163,26 +182,26 @@ export function TeamCarousel() {
 
               {/* Bio */}
               <p
-                className="text-xs text-gray-500 leading-relaxed"
+                className="text-sm text-gray-500 leading-relaxed"
                 style={{ textAlign: 'justify' }}
               >
                 {member.bio}
               </p>
 
               {/* Social Links */}
-              <div className="flex items-center gap-3 mt-5 pt-4 border-t border-slate-100">
+              <div className="flex items-center gap-4 mt-6 pt-5 border-t border-slate-100">
                 <a
                   href="mailto:info@dnex.ae"
                   className="flex items-center gap-1.5 text-xs font-medium text-gray-400 hover:text-[#C9963C] transition-colors"
                 >
-                  <Mail size={13} />
+                  <Mail size={14} />
                   Contact
                 </a>
                 <a
                   href="#"
                   className="flex items-center gap-1.5 text-xs font-medium text-gray-400 hover:text-[#0A66C2] transition-colors"
                 >
-                  <Linkedin size={13} />
+                  <Linkedin size={14} />
                   LinkedIn
                 </a>
               </div>

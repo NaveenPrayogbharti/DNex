@@ -3,7 +3,7 @@ import { Services } from '../components/home/Services';
 import { WhyChooseUs } from '../components/home/WhyChooseUs';
 import { Process } from '../components/home/Process';
 // import { Pricing } from '../components/home/Pricing';
-//import { Testimonials } from '../components/home/Testimonials';
+import { Testimonials } from '../components/home/Testimonials';
 import { LeadForm } from '../components/home/LeadForm';
 
 export function Home() {
@@ -14,7 +14,7 @@ export function Home() {
       <WhyChooseUs />
       <Process />
       {/* <Pricing /> */}
-      {/* <Testimonials /> */}
+      <Testimonials />
       <LeadForm />
     </>
   );

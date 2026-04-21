@@ -23,7 +23,7 @@ const steps = [
     icon: FileText,
     title: 'Document Collection',
     description:
-      'Provide the required documents digitally. We prepare and review everything — passport copies, business plan, and application forms.',
+      'Provide the required documents digitally. We prepare and review everything from passport copies, business plan, and application forms.',
     duration: 'Day 1-2',
   },
   {
@@ -75,7 +75,7 @@ export function Process() {
             From Idea to Company in 7 Days
           </h2>
           <p className="text-slate-400 max-w-xl mx-auto" style={{ lineHeight: 1.7 }}>
-            Our streamlined process eliminates bureaucratic complexity. We do the heavy lifting —
+            Our streamlined process eliminates bureaucratic complexity. We do the heavy lifting
             you focus on your business.
           </p>
         </div>
@@ -135,7 +135,7 @@ export function Process() {
                 </div>
 
                 <h3 className="text-white font-bold text-base mb-2">{s.title}</h3>
-                <p className="text-slate-400 text-sm leading-relaxed">{s.description}</p>
+                <p className="text-slate-400 text-sm leading-relaxed text-justify">{s.description}</p>
               </div>
             ))}
           </div>

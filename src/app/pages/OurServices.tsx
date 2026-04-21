@@ -31,7 +31,7 @@ const serviceCategories = [
       { icon: UserCog, title: 'Real Estate Business', desc: 'Engaged in activities related to the buying, selling, leasing, management, or development of real properties.', href: '/businessmen-services' },
       { icon: UserCog, title: 'Office Setup Services', desc: 'Professional services to assist in establishing a functional office space, including infrastructure and compliance.', href: '/businessmen-services' },
     ],
-    featured: { title: 'Start in a Free Zone', desc: '100% ownership and fast registration in Dubai\'s premier free zones.', cta: 'Explore Free Zones', href: '/free-zone' },
+    featured: { title: 'Start in a Free Zone', desc: '100% ownership and fast registration in Dubai\'s premier free zones.', cta: 'Start Today', href: '/leadform' },
   },
   {
     id: 'banking',
@@ -113,8 +113,7 @@ const serviceCategories = [
 ];
 
 const stats = [
-  { value: '10,000+', label: 'Companies Formed' },
-  { value: '50+', label: 'Free Zones Covered' },
+  { value: '52', label: 'Free Zones Covered' },
   { value: '15+', label: 'Years Experience' },
   { value: '4.9/5', label: 'Client Rating' },
 ];
@@ -142,7 +141,7 @@ const indiaServiceCategories = [
   {
     id: 'india-taxation',
     title: 'Taxation Services',
-    desc: 'India-specific tax filings, registrations, and compliance services for NRIs and India-based entities.',
+    desc: 'India-specific tax filings, registrations, and compliance services for NRIs and India based entities.',
     items: [
       { icon: Receipt, label: 'ITR Filing', desc: 'Income Tax Return filing for individuals, HUFs, and companies in India.', href: '/leadform' },
       { icon: FileText, label: 'GST Registration', desc: 'Complete support for GST registration and compliance within India.', href: '/leadform' },
@@ -163,12 +162,12 @@ const indiaServiceCategories = [
   {
     id: 'india-compliance',
     title: 'Compliance & Regulatory',
-    desc: "Navigate India's complex regulatory landscape — FEMA, RBI, SEBI, and more handled by experts.",
+    desc: "Navigate India's complex regulatory landscape from FEMA, RBI, SEBI, and more handled by experts.",
     items: [
       { icon: Building, label: 'FEMA Compliance', desc: 'Foreign Exchange Management Act advisory and compliance support for NRIs and businesses.', href: '/leadform' },
       { icon: ClipboardCheck, label: 'RBI Filings', desc: 'Reserve Bank of India mandatory filings, FCTRS, and reporting requirements.', href: '/leadform' },
       { icon: BookOpen, label: 'ODI Compliance', desc: 'Overseas Direct Investment compliance for Indian entities investing abroad.', href: '/leadform' },
-      { icon: ShieldCheck, label: 'NRI Services', desc: 'Comprehensive NRI advisory — NRO/NRE accounts, repatriation, and tax planning.', href: '/leadform' },
+      { icon: ShieldCheck, label: 'NRI Services', desc: 'Comprehensive NRI advisory NRO/NRE accounts, repatriation, and tax planning.', href: '/leadform' },
     ],
   },
   {
@@ -187,7 +186,7 @@ const indiaServiceCategories = [
 const indiaBenefits = [
   { icon: Globe, title: 'Dual Jurisdiction Experts', desc: 'Our team is fully conversant with both UAE and India regulatory frameworks.' },
   { icon: Users, title: 'Dedicated NRI Team', desc: 'Specialists who understand the unique challenges faced by Non-Resident Indians.' },
-  { icon: TrendingUp, title: 'End-to-End Support', desc: 'From company setup to ongoing compliance — we handle everything.' },
+  { icon: TrendingUp, title: 'End-to-End Support', desc: 'From company setup to ongoing compliance we handle everything.' },
   { icon: ShieldCheck, title: 'Confidential & Secure', desc: 'Your financial and personal data is handled with utmost confidentiality.' },
   { icon: Clock, title: 'Fast Turnaround', desc: 'Efficient processing with timely updates at every step of the process.' },
   { icon: Award, title: 'Trusted by 5,000+ NRIs', desc: 'A proven track record with thousands of satisfied Indian-origin clients.' },
@@ -206,7 +205,7 @@ function ConsultationSidebar() {
           <div className="w-2 h-2 rounded-full bg-green-400 animate-pulse" />
           <span className="text-xs font-medium text-green-400">Consultants Online</span>
         </div>
-        <h3 className="text-white font-bold text-lg">Get Free Consultation</h3>
+        <h3 className="text-white font-bold text-lg">Get Consultation</h3>
         <p className="text-slate-400 text-xs mt-1">Response within 1 business hour</p>
       </div>
       <div className="p-6 bg-white">
@@ -259,7 +258,7 @@ function ConsultationSidebar() {
               style={{ backgroundColor: GOLD }}
             >
               <Send size={15} />
-              Start Now — It's Free
+              Start Now
             </button>
           </form>
         )}
@@ -353,11 +352,10 @@ function IndiaServicesTabs() {
             key={cat.id}
             onMouseEnter={() => setActiveTab(cat.id)}
             onClick={() => setActiveTab(cat.id)}
-            className={`text-left px-4 py-2.5 rounded-xl font-semibold text-sm transition-all ${
-              activeTab === cat.id
-                ? 'bg-slate-50 text-[#0D2137]'
-                : 'text-gray-500 hover:text-gray-800 hover:bg-slate-50/50'
-            }`}
+            className={`text-left px-4 py-2.5 rounded-xl font-semibold text-sm transition-all ${activeTab === cat.id
+              ? 'bg-slate-50 text-[#0D2137]'
+              : 'text-gray-500 hover:text-gray-800 hover:bg-slate-50/50'
+              }`}
           >
             {cat.title}
           </button>
@@ -408,8 +406,22 @@ export function OurServices() {
       {/* ── Hero Banner ──────────────────────────────────────── */}
       <section
         className="relative pt-36 pb-20 overflow-hidden"
-        style={{ background: `linear-gradient(135deg, ${NAVY} 0%, #1a3354 100%)` }}
       >
+        {/* Background image */}
+        <div className="absolute inset-0">
+          <img
+            src="https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxtb2Rlcm4lMjBjb3Jwb3JhdGUlMjBidWlsZGluZyUyMHNreXNjcmFwZXIlMjBEdWJhaXxlbnwxfHx8fDE3NzIxNzc1MjB8MA&ixlib=rb-4.1.0&q=80&w=1920"
+            alt="Corporate Services"
+            className="w-full h-full object-cover"
+          />
+          <div
+            className="absolute inset-0"
+            style={{
+              background: `linear-gradient(135deg, rgba(13,33,55,0.95) 0%, rgba(13,33,55,0.85) 50%, rgba(26,51,84,0.8) 100%)`,
+            }}
+          />
+        </div>
+
         {/* Subtle grid overlay */}
         <div
           className="absolute inset-0 opacity-5"
@@ -442,7 +454,7 @@ export function OurServices() {
           </h1>
 
           <p className="text-slate-300 text-lg max-w-2xl mb-10 text-justify" style={{ lineHeight: 1.65 }}>
-            From company formation to tax compliance, PRO services to banking support — we are your one-stop
+            From company formation to tax compliance, PRO services to banking support we are your one stop
             solution for every business need in the UAE.
           </p>
 
@@ -521,7 +533,7 @@ export function OurServices() {
                 Expert Services for NRIs &amp; India-Based Businesses
               </h2>
               <p className="text-gray-500 mb-10 text-justify" style={{ lineHeight: 1.7 }}>
-                Specialized services bridging UAE and India — from FEMA compliance and NRI banking to
+                Specialized services bridging UAE and India from FEMA compliance and NRI banking to
                 Indian company incorporation, tax filings, and PRO support.
               </p>
 
@@ -585,9 +597,9 @@ export function OurServices() {
 
               {/* India-Specific Tabbed Services */}
               <div className="mb-10">
-                <h3 className="text-lg font-bold mb-2" style={{ color: NAVY }}>India-Specific Expertise</h3>
+                <h3 className="text-lg font-bold mb-2" style={{ color: NAVY }}>India Specific Expertise</h3>
                 <p className="text-gray-500 mb-6 text-justify" style={{ lineHeight: 1.7 }}>
-                  Comprehensive services tailored for Indian regulations, NRI requirements, and cross-border business needs.
+                  Comprehensive services tailored for Indian regulations, NRI requirements, and cross border business needs.
                 </p>
                 <IndiaServicesTabs />
               </div>
@@ -615,7 +627,7 @@ export function OurServices() {
               >
                 <div>
                   <div className="text-sm font-bold mb-0.5" style={{ color: NAVY }}>🇮🇳 Your India-UAE Business Partner</div>
-                  <p className="text-xs text-gray-500 text-justify">Whether you're an NRI managing investments, an Indian company expanding to UAE, or seeking cross-border compliance — we are your trusted partner.</p>
+                  <p className="text-xs text-gray-500 text-justify">Whether you're an NRI managing investments, an Indian company expanding to UAE, or seeking cross-border compliance we are your trusted partner.</p>
                 </div>
                 <Link
                   to="/contact"
@@ -647,7 +659,7 @@ export function OurServices() {
                   </div>
                 </div>
                 <p className="text-2xl font-bold" style={{ color: NAVY }}>4.9/5</p>
-                <p className="text-xs text-gray-500 mt-0.5">Based on 1,200+ client reviews</p>
+                <p className="text-xs text-gray-500 mt-0.5">Based on 100+ client reviews</p>
 
                 <div className="mt-4 space-y-2">
                   {[['Service Quality', 99], ['Communication', 97], ['Value for Money', 95], ['Expertise', 98]].map(([label, pct]) => (
@@ -708,7 +720,7 @@ export function OurServices() {
             Let's Build Your Business Together
           </h2>
           <p className="text-slate-400 max-w-2xl mx-auto mb-10 text-justify" style={{ lineHeight: 1.7 }}>
-            Join 10,000+ entrepreneurs who trusted DNex to launch and grow their UAE business.
+            Join 100+ entrepreneurs who trusted DNex to launch and grow their UAE business.
             Get expert guidance, transparent pricing, and end-to-end support.
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">

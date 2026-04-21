@@ -1,11 +1,9 @@
-import { Shield, Clock, DollarSign, Users, Award, CheckCircle, ArrowRight } from 'lucide-react';
+import { Shield, Clock, DollarSign, Users, CheckCircle, ArrowRight } from 'lucide-react';
 import { Link } from 'react-router';
+import businessImage from '../../../assets/images/business_meeting.png';
 
 const GOLD = '#C9963C';
 const NAVY = '#0D2137';
-
-const TEAM_IMAGE =
-  'https://images.unsplash.com/photo-1642522029693-20b2ab875b19?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxwcm9mZXNzaW9uYWwlMjBidXNpbmVzcyUyMG1lZXRpbmclMjBjb3Jwb3JhdGUlMjBvZmZpY2V8ZW58MXx8fHwxNzcyMTc3NTE4fDA&ixlib=rb-4.1.0&q=80&w=1080';
 
 const reasons = [
   {
@@ -30,11 +28,9 @@ const reasons = [
     icon: Shield,
     title: 'Government-Approved Partner',
     description:
-      'Officially registered with DED, DIFC, DMCC, and other UAE free zone authorities.',
+      'Officially registered with ISO and other UAE free zone authorities.',
   },
 ];
-
-const certifications = ['DED Registered', 'DMCC Certified', 'DIFC Approved', 'ISO 9001', 'FTA Registered'];
 
 export function WhyChooseUs() {
   return (
@@ -45,7 +41,7 @@ export function WhyChooseUs() {
           <div className="relative order-2 lg:order-1">
             <div className="relative rounded-2xl overflow-hidden" style={{ paddingBottom: '68%' }}>
               <img
-                src={TEAM_IMAGE}
+                src={businessImage}
                 alt="Expert Business Consultants"
                 className="absolute inset-0 w-full h-full object-cover"
               />
@@ -60,8 +56,16 @@ export function WhyChooseUs() {
               className="absolute -bottom-6 -right-4 bg-white rounded-2xl shadow-xl p-5 flex items-center gap-4"
               style={{ border: `1px solid #e8edf2` }}
             >
-              
-             
+              <div
+                className="w-12 h-12 rounded-xl flex items-center justify-center"
+                style={{ backgroundColor: 'rgba(201,150,60,0.12)' }}
+              >
+                <Shield size={22} style={{ color: GOLD }} />
+              </div>
+              <div>
+                <div className="text-xl font-bold" style={{ color: NAVY }}>ISO 9001</div>
+                <div className="text-xs text-gray-500">Certified Partner</div>
+              </div>
             </div>
 
             {/* Floating trust card */}
@@ -95,7 +99,7 @@ export function WhyChooseUs() {
               Dubai's One of the  Trusted<br />Business Setup Partner
             </h2>
 
-            <p className="text-gray-500 mb-10" style={{ lineHeight: 1.7 }}>
+            <p className="text-gray-500 mb-10 text-justify" style={{ lineHeight: 1.7 }}>
               With over a 15 of experience and a team of specialists, we've helped multiple organisations
               ,entrepreneurs, startups, and multinationals establish their presence in the UAE.
             </p>
@@ -114,7 +118,7 @@ export function WhyChooseUs() {
                     <h4 className="font-semibold text-sm mb-1" style={{ color: NAVY }}>
                       {r.title}
                     </h4>
-                    <p className="text-sm text-gray-500" style={{ lineHeight: 1.65 }}>
+                    <p className="text-sm text-gray-500 text-justify" style={{ lineHeight: 1.65 }}>
                       {r.description}
                     </p>
                   </div>
@@ -122,21 +126,18 @@ export function WhyChooseUs() {
               ))}
             </div>
 
-            {/* Certifications */}
+            {/* Certifications - ISO only */}
             <div className="mt-8 pt-8 border-t border-gray-200">
               <p className="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-3">
                 Certifications &amp; Approvals
               </p>
               <div className="flex flex-wrap gap-2">
-                {certifications.map((cert) => (
-                  <div
-                    key={cert}
-                    className="px-3 py-1.5 rounded-lg border text-xs font-medium"
-                    style={{ borderColor: '#dde3ea', color: '#374151', backgroundColor: '#fff' }}
-                  >
-                    {cert}
-                  </div>
-                ))}
+                <div
+                  className="px-3 py-1.5 rounded-lg border text-xs font-medium"
+                  style={{ borderColor: '#dde3ea', color: '#374151', backgroundColor: '#fff' }}
+                >
+                  ISO 9001
+                </div>
               </div>
             </div>
 
