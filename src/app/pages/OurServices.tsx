@@ -40,10 +40,10 @@ const serviceCategories = [
     description: 'Comprehensive banking and financial support services for businesses and individuals operating in the UAE.',
     icon: Briefcase,
     services: [
-      { icon: Briefcase, title: 'Corporate Banking Assistance', desc: 'Assist businesses in opening corporate bank accounts in the UAE with the required documentation and compliance support.', href: '/investor-visa' },
-      { icon: Users, title: 'Mortgage Banking', desc: 'Guidance and support for securing property financing in the UAE, helping obtain suitable mortgage solutions.', href: '/partner-visa' },
-      { icon: UserCheck, title: 'NRO Account Assistance', desc: 'Professional support services provided to Non-resident Indians (NRIs) for opening and managing an NRO bank account.', href: '/employment-visa' },
-      { icon: Laptop, title: 'Overseas Direct Investment (ODI)', desc: 'Comprehensive assistance for ODI including RBI regulations guidance, documentation, and authorized dealer coordination.', href: '/freelance-visa' },
+      { icon: Briefcase, title: 'Corporate Banking Assistance', desc: 'Assist businesses in opening corporate bank accounts in the UAE with the required documentation and compliance support.', href: '/investor-visa', sectionId: 'corporate-banking' },
+      { icon: Users,     title: 'Mortgage Banking',            desc: 'Guidance and support for securing property financing in the UAE, helping obtain suitable mortgage solutions.',             href: '/partner-visa',    sectionId: 'mortgage' },
+      { icon: UserCheck, title: 'NRO Account Assistance',       desc: 'Professional support services provided to Non-resident Indians (NRIs) for opening and managing an NRO bank account.',   href: '/employment-visa', sectionId: 'nro' },
+      { icon: Laptop,    title: 'Overseas Direct Investment (ODI)', desc: 'Comprehensive assistance for ODI including RBI regulations guidance, documentation, and authorized dealer coordination.', href: '/freelance-visa', sectionId: 'odi' },
     ],
     featured: { title: 'Banking Setup', desc: 'Banking Services for investors, professionals, and entrepreneurs.', cta: 'Apply Now', href: '/leadform' },
   },
@@ -278,9 +278,227 @@ function ConsultationSidebar() {
   );
 }
 
+// ─── Banking Detail Data ───────────────────────────────────────────────
+const bankingDetails = [
+  {
+    id: 'corporate-banking',
+    icon: Briefcase,
+    title: 'Corporate Banking Assistance',
+    badge: 'Business Banking',
+    summary: 'We assist businesses in opening corporate bank accounts with leading UAE banks — from document preparation to direct bank liaison.',
+    points: [
+      'End-to-end support for corporate account opening',
+      'Liaison with ADCB, Emirates NBD, FAB, RAKBANK & more',
+      'Compliance and KYC documentation preparation',
+      'Multi-currency account setup for international businesses',
+      'Dedicated account manager throughout the process',
+    ],
+    cta: 'Apply for Corporate Account',
+  },
+  {
+    id: 'mortgage',
+    icon: Users,
+    title: 'Mortgage Banking',
+    badge: 'Property Finance',
+    summary: 'Comprehensive guidance to secure the best property financing deals in the UAE — residential and commercial mortgages handled by experts.',
+    points: [
+      'Eligibility assessment for UAE mortgage products',
+      'Comparison across 15+ leading UAE banks',
+      'Documentation preparation and submission',
+      'NRI & expat mortgage advisory',
+      'Pre-approval assistance for faster processing',
+    ],
+    cta: 'Explore Mortgage Options',
+  },
+  {
+    id: 'nro',
+    icon: UserCheck,
+    title: 'NRO Account Assistance',
+    badge: 'NRI Banking',
+    summary: 'Helping Non-Resident Indians open and manage NRO accounts in India — our specialists handle all documentation and RBI compliance requirements.',
+    points: [
+      'NRO account opening for salaried and self-employed NRIs',
+      'FEMA compliant documentation preparation',
+      'Repatriation of funds advisory',
+      'Tax implications and DTAA benefit guidance',
+      'Online and offline account management support',
+    ],
+    cta: 'Open NRO Account',
+  },
+  {
+    id: 'odi',
+    icon: Laptop,
+    title: 'Overseas Direct Investment (ODI)',
+    badge: 'Cross-Border Investment',
+    summary: 'End-to-end ODI assistance for Indian entities investing abroad — from RBI approval to authorized dealer coordination and ongoing compliance.',
+    points: [
+      'ODI regulatory framework advisory (RBI / FEMA)',
+      'Filing of Form ODI with authorised dealer banks',
+      'Annual Performance Report (APR) preparation',
+      'Valuation reports and due-diligence support',
+      'Step-down subsidiary structure planning',
+    ],
+    cta: 'Start ODI Process',
+  },
+];
+
+// ─── Banking Section (with in-page scroll cards) ─────────────────────
+function BankingSection() {
+  const scrollToDetail = (id: string) => {
+    const el = document.getElementById(id);
+    if (!el) return;
+    const offset = 150;
+    const y = el.getBoundingClientRect().top + window.scrollY - offset;
+    window.scrollTo({ top: y, behavior: 'smooth' });
+  };
+
+  const banking = serviceCategories.find(c => c.id === 'banking')!;
+
+  return (
+    <section id="banking" className="scroll-mt-40">
+      {/* Section header */}
+      <div
+        className="inline-block text-xs font-bold uppercase tracking-widest mb-3 px-4 py-1.5 rounded-full"
+        style={{ color: GOLD, backgroundColor: 'rgba(201,150,60,0.1)' }}
+      >
+        {banking.badge}
+      </div>
+      <h2 className="mb-2" style={{ fontSize: '1.75rem', fontWeight: 700, color: NAVY }}>
+        {banking.label}
+      </h2>
+      <p className="text-gray-500 mb-8 text-justify" style={{ lineHeight: 1.7 }}>
+        {banking.description}
+      </p>
+
+      {/* Clickable overview cards — scroll to detail */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-10">
+        {(banking.services as Array<typeof banking.services[0] & { sectionId?: string }>).map((service) => (
+          <button
+            key={service.title}
+            onClick={() => service.sectionId && scrollToDetail(service.sectionId)}
+            className="flex gap-4 p-5 rounded-xl border text-left transition-all duration-200 group cursor-pointer"
+            style={{ borderColor: '#e8edf2' }}
+            onMouseEnter={e => {
+              (e.currentTarget as HTMLElement).style.borderColor = 'rgba(201,150,60,0.5)';
+              (e.currentTarget as HTMLElement).style.boxShadow = '0 6px 24px rgba(201,150,60,0.12)';
+              (e.currentTarget as HTMLElement).style.transform = 'translateY(-2px)';
+            }}
+            onMouseLeave={e => {
+              (e.currentTarget as HTMLElement).style.borderColor = '#e8edf2';
+              (e.currentTarget as HTMLElement).style.boxShadow = 'none';
+              (e.currentTarget as HTMLElement).style.transform = 'translateY(0)';
+            }}
+          >
+            <div
+              className="w-10 h-10 rounded-lg flex items-center justify-center shrink-0 transition-colors group-hover:bg-[#C9963C]/20"
+              style={{ backgroundColor: 'rgba(201,150,60,0.1)' }}
+            >
+              <service.icon size={18} style={{ color: GOLD }} />
+            </div>
+            <div className="flex-1">
+              <h4 className="font-semibold text-sm mb-1 group-hover:text-[#C9963C] transition-colors" style={{ color: NAVY }}>
+                {service.title}
+              </h4>
+              <p className="text-xs text-gray-500 text-justify" style={{ lineHeight: 1.6 }}>{service.desc}</p>
+            </div>
+            <div className="shrink-0 mt-1 self-start">
+              <div
+                className="w-6 h-6 rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all duration-200"
+                style={{ backgroundColor: 'rgba(201,150,60,0.15)' }}
+              >
+                <ArrowRight size={12} style={{ color: GOLD }} />
+              </div>
+            </div>
+          </button>
+        ))}
+      </div>
+
+      {/* Detailed sub-sections */}
+      <div className="space-y-10">
+        {bankingDetails.map((detail, i) => (
+          <section
+            key={detail.id}
+            id={detail.id}
+            className="scroll-mt-40 rounded-2xl overflow-hidden border"
+            style={{ borderColor: '#e8edf2' }}
+          >
+            {/* Coloured header stripe */}
+            <div
+              className="px-6 py-5 flex items-center gap-4"
+              style={{
+                background: i % 2 === 0
+                  ? `linear-gradient(135deg, ${NAVY} 0%, #1a3354 100%)`
+                  : `linear-gradient(135deg, #1a2e48 0%, ${NAVY} 100%)`,
+              }}
+            >
+              <div
+                className="w-11 h-11 rounded-xl flex items-center justify-center shrink-0"
+                style={{ backgroundColor: 'rgba(201,150,60,0.2)' }}
+              >
+                <detail.icon size={20} style={{ color: GOLD }} />
+              </div>
+              <div>
+                <div
+                  className="text-[10px] font-bold uppercase tracking-widest mb-0.5"
+                  style={{ color: GOLD }}
+                >
+                  {detail.badge}
+                </div>
+                <h3 className="text-white font-bold text-base">{detail.title}</h3>
+              </div>
+            </div>
+
+            {/* Body */}
+            <div className="px-6 py-6 bg-white">
+              <p className="text-gray-600 text-sm mb-5 text-justify" style={{ lineHeight: 1.75 }}>
+                {detail.summary}
+              </p>
+              <ul className="space-y-2.5 mb-6">
+                {detail.points.map(pt => (
+                  <li key={pt} className="flex items-start gap-3">
+                    <CheckCircle size={15} className="shrink-0 mt-0.5" style={{ color: GOLD }} />
+                    <span className="text-sm text-gray-700">{pt}</span>
+                  </li>
+                ))}
+              </ul>
+              <Link
+                to="/leadform"
+                className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl text-sm font-semibold text-white transition-all hover:opacity-90"
+                style={{ backgroundColor: GOLD }}
+              >
+                {detail.cta}
+                <ArrowRight size={14} />
+              </Link>
+            </div>
+          </section>
+        ))}
+      </div>
+
+      {/* Featured CTA strip */}
+      <div
+        className="mt-10 rounded-xl p-5 flex items-center justify-between gap-4"
+        style={{ backgroundColor: 'rgba(13,33,55,0.04)', border: `1px dashed ${GOLD}40` }}
+      >
+        <div>
+          <div className="text-sm font-bold mb-0.5" style={{ color: NAVY }}>{banking.featured.title}</div>
+          <p className="text-xs text-gray-500">{banking.featured.desc}</p>
+        </div>
+        <Link
+          to={banking.featured.href}
+          className="shrink-0 inline-flex items-center gap-2 px-5 py-2.5 rounded-lg text-sm font-semibold text-white transition-all hover:opacity-90"
+          style={{ backgroundColor: GOLD }}
+        >
+          {banking.featured.cta}
+          <ArrowRight size={14} />
+        </Link>
+      </div>
+    </section>
+  );
+}
+
 function ServiceSection({ category }: { category: typeof serviceCategories[0] }) {
   return (
-    <section id={category.id} className="scroll-mt-32">
+    <section id={category.id} className="scroll-mt-40">
       <div
         className="inline-block text-xs font-bold uppercase tracking-widest mb-3 px-4 py-1.5 rounded-full"
         style={{ color: GOLD, backgroundColor: 'rgba(201,150,60,0.1)' }}
@@ -470,45 +688,6 @@ export function OurServices() {
         </div>
       </section>
 
-      {/* ── Category Quick-Nav ───────────────────────────────── */}
-      <div className="bg-white border-b border-gray-100 sticky top-[110px] z-30 shadow-sm">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6">
-          <div className="flex items-center gap-1 overflow-x-auto py-3 scrollbar-hide">
-            {serviceCategories.map((cat) => (
-              <button
-                key={cat.id}
-                onClick={() => {
-                  setActiveCategory(cat.id);
-                  document.getElementById(cat.id)?.scrollIntoView({ behavior: 'smooth', block: 'start' });
-                }}
-                className="shrink-0 px-4 py-2 rounded-full text-xs font-semibold transition-all"
-                style={{
-                  backgroundColor: activeCategory === cat.id ? NAVY : 'transparent',
-                  color: activeCategory === cat.id ? '#fff' : '#6b7280',
-                  border: activeCategory === cat.id ? 'none' : '1px solid #e5e7eb',
-                }}
-              >
-                {cat.label}
-              </button>
-            ))}
-            {/* India Services Nav Button */}
-            <button
-              onClick={() => {
-                setActiveCategory('india-services');
-                document.getElementById('india-services')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
-              }}
-              className="shrink-0 px-4 py-2 rounded-full text-xs font-semibold transition-all"
-              style={{
-                backgroundColor: activeCategory === 'india-services' ? NAVY : 'transparent',
-                color: activeCategory === 'india-services' ? '#fff' : '#6b7280',
-                border: activeCategory === 'india-services' ? 'none' : '1px solid #e5e7eb',
-              }}
-            >
-              🇮🇳 India Services
-            </button>
-          </div>
-        </div>
-      </div>
 
       {/* ── Main Content + Sidebar ──────────────────────────── */}
       <div className="max-w-7xl mx-auto px-4 sm:px-6 py-16">
@@ -516,12 +695,14 @@ export function OurServices() {
 
           {/* ── Left: service sections ── */}
           <div className="space-y-20">
-            {serviceCategories.map((cat) => (
-              <ServiceSection key={cat.id} category={cat} />
-            ))}
+            {serviceCategories.map((cat) =>
+              cat.id === 'banking'
+                ? <BankingSection key="banking" />
+                : <ServiceSection key={cat.id} category={cat} />
+            )}
 
             {/* ── India Services Section ── */}
-            <section id="india-services" className="scroll-mt-32">
+            <section id="india-services" className="scroll-mt-40">
               {/* Section Header */}
               <div
                 className="inline-block text-xs font-bold uppercase tracking-widest mb-3 px-4 py-1.5 rounded-full"

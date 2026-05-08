@@ -2,6 +2,7 @@ import { defineConfig } from 'vite'
 import path from 'path'
 import tailwindcss from '@tailwindcss/vite'
 import react from '@vitejs/plugin-react'
+import { docGenPlugin } from './vite-plugin-doc-gen.js'
 
 export default defineConfig({
   plugins: [
@@ -9,6 +10,7 @@ export default defineConfig({
     // Tailwind is not being actively used – do not remove them
     react(),
     tailwindcss(),
+    docGenPlugin(),  // Auto-regenerates PROJECT_DOCUMENT.md on every save
   ],
   resolve: {
     alias: {

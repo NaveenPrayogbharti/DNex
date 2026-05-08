@@ -1,25 +1,11 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Send, CheckCircle, Phone, Mail, MessageCircle } from 'lucide-react';
 import { supabase } from "@/lib/supabase";
 
 const GOLD = '#C9963C';
 const NAVY = '#0D2137';
 
-const services = [
-  'Free Zone Company Setup',
-  'Mainland Company Formation',
-  'Offshore Company Formation',
-  'Business Incubation ',
-  'Tax Consultancy',
-  'Employment Visa',
-  'Family Visa',
-  'VAT Registration',
-  'Corporate Tax',
-  'Accounting & Bookkeeping',
-  'Document Attestation',
-  'Bank Account Assistance',
-  'Other',
-];
+
 
 const countries = [
   'India', 'Pakistan', 'United Kingdom', 'USA', 'Germany', 'France',
@@ -29,8 +15,11 @@ const countries = [
 
 
 
+import { getStoredServices } from '../../../lib/servicesStore';
+
 export function LeadForm() {
   const [submitted, setSubmitted] = useState(false);
+  const [activeServices, setActiveServices] = useState<string[]>([]);
   const [formData, setFormData] = useState({
     fullName: "",
     email: "",
@@ -39,6 +28,11 @@ export function LeadForm() {
     service: "",
     message: "",
   });
+
+  useEffect(() => {
+    const services = getStoredServices().filter(s => s.active).map(s => s.title);
+    setActiveServices(services);
+  }, []);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -245,7 +239,7 @@ export function LeadForm() {
                       className="w-full px-3.5 py-2.5 rounded-lg text-sm border border-gray-200 focus:outline-none focus:border-[#C9963C] transition-colors bg-white text-gray-700"
                     >
                       <option value="">Select a service</option>
-                      {services.map((s) => (
+                      {activeServices.map((s) => (
                         <option key={s} value={s}>{s}</option>
                       ))}
                     </select>

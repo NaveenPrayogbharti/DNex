@@ -8,21 +8,7 @@ import { Search, Filter, X, Download } from 'lucide-react';
 
 const GOLD = '#C9963C';
 
-const SERVICES = [
-  'Free Zone Company Setup',
-  'Mainland Company Formation',
-  'Offshore Company Formation',
-  'Business Incubation',
-  'Tax Consultancy',
-  'Employment Visa',
-  'Family Visa',
-  'VAT Registration',
-  'Corporate Tax',
-  'Accounting & Bookkeeping',
-  'Document Attestation',
-  'Bank Account Assistance',
-  'Other',
-];
+import { getStoredServices } from '../../../lib/servicesStore';
 
 const STATUSES: InquiryStatus[] = ['New', 'Contacted', 'In Progress', 'Closed'];
 
@@ -32,6 +18,8 @@ export function AdminInquiries() {
   const [loading, setLoading] = useState(true);
   const [showFilters, setShowFilters] = useState(false);
 
+  const [activeServices, setActiveServices] = useState<string[]>([]);
+
   const [filters, setFilters] = useState<InquiryFilters>({
     search: '',
     status: '',
@@ -39,6 +27,11 @@ export function AdminInquiries() {
     dateFrom: '',
     dateTo: '',
   });
+
+  useEffect(() => {
+    const s = getStoredServices().map(s => s.title);
+    setActiveServices(s);
+  }, []);
 
   const loadInquiries = useCallback(async () => {
     setLoading(true);
@@ -159,7 +152,7 @@ export function AdminInquiries() {
                 onChange={(e) => setFilters((f) => ({ ...f, service: e.target.value }))}
               >
                 <option value="">All Services</option>
-                {SERVICES.map((s) => (
+                {activeServices.map((s) => (
                   <option key={s} value={s}>
                     {s}
                   </option>

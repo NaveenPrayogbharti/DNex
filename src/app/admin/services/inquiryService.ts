@@ -70,30 +70,36 @@ export async function updateInquiryStatus(id: string, status: InquiryStatus): Pr
     updates.contacted_at = new Date().toISOString();
   }
 
-  const { error } = await supabase
+  const { data, error } = await supabase
     .from('leads')
     .update(updates)
-    .eq('id', id);
+    .eq('id', id)
+    .select();
 
   if (error) throw error;
+  if (!data || data.length === 0) throw new Error("Update failed: Row not found or rejected by database permissions (RLS).");
 }
 
 export async function updateInquiryNotes(id: string, admin_notes: string): Promise<void> {
-  const { error } = await supabase
+  const { data, error } = await supabase
     .from('leads')
     .update({ admin_notes })
-    .eq('id', id);
+    .eq('id', id)
+    .select();
 
   if (error) throw error;
+  if (!data || data.length === 0) throw new Error("Update failed: Row not found or rejected by database permissions (RLS).");
 }
 
 export async function updateInquiryAssignment(id: string, assigned_to: string): Promise<void> {
-  const { error } = await supabase
+  const { data, error } = await supabase
     .from('leads')
     .update({ assigned_to })
-    .eq('id', id);
+    .eq('id', id)
+    .select();
 
   if (error) throw error;
+  if (!data || data.length === 0) throw new Error("Update failed: Row not found or rejected by database permissions (RLS).");
 }
 
 export async function getInquiryStats() {

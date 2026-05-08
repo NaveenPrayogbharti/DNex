@@ -8,6 +8,8 @@ import {
   LogOut,
   ChevronLeft,
   ChevronRight,
+  BarChart3,
+  ExternalLink,
 } from 'lucide-react';
 import { signOutAdmin } from '../services/authService';
 
@@ -111,6 +113,29 @@ export function Sidebar({ collapsed, onToggle }: SidebarProps) {
           ))}
         </div>
       </nav>
+
+      {/* CRM Portal Link */}
+      <div style={{ padding: '0 8px 8px' }}>
+        {!collapsed && (
+          <div style={{ fontSize: '10px', fontWeight: 700, letterSpacing: '1px', color: 'rgba(255,255,255,0.25)', padding: '8px 8px 4px' }}>CRM SUITE</div>
+        )}
+        <NavLink
+          to="/crm/dashboard"
+          className={({ isActive }) =>
+            `admin-sidebar__link ${isActive ? 'admin-sidebar__link--active' : ''}`
+          }
+          title={collapsed ? 'CRM Portal' : undefined}
+          style={{ background: 'rgba(201,150,60,0.08)', border: '1px solid rgba(201,150,60,0.2)', borderRadius: '8px' }}
+        >
+          <BarChart3 size={20} style={{ color: GOLD }} />
+          {!collapsed && (
+            <span style={{ display: 'flex', alignItems: 'center', gap: '4px', flex: 1 }}>
+              CRM Portal
+              <ExternalLink size={12} style={{ color: 'rgba(201,150,60,0.6)', marginLeft: 'auto' }} />
+            </span>
+          )}
+        </NavLink>
+      </div>
 
       {/* Logout */}
       <div className="admin-sidebar__footer">

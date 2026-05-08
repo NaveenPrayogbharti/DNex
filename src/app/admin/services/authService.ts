@@ -3,6 +3,7 @@ import { supabase } from './supabaseClient';
 export interface AdminUser {
   id: string;
   email: string;
+  role?: string;
 }
 
 // Mock auth configuration

@@ -75,8 +75,7 @@ export function Process() {
             From Idea to Company in 7 Days
           </h2>
           <p className="text-slate-400 max-w-xl mx-auto" style={{ lineHeight: 1.7 }}>
-            Our streamlined process eliminates bureaucratic complexity. We do the heavy lifting
-            you focus on your business.
+            Our streamlined process eliminates bureaucratic complexity. We do the heavy lifting, you focus on your business.
           </p>
         </div>
 

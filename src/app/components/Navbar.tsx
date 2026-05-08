@@ -1,5 +1,5 @@
-import { useState, useRef } from "react";
-import { Link, useNavigate } from "react-router";
+import { useState, useRef, useEffect } from "react";
+import { Link, useLocation } from "react-router";
 import logo from "@/assets/images/logo.png";
 import {
   Menu,
@@ -68,118 +68,58 @@ interface MegaMenuConfig {
 const megaMenuConfig: Record<string, MegaMenuConfig> = {
   "Business Setup": {
     items: [
-      {
-        icon: Building2,
-        label: "Mainland Company Formation",
-        desc: "A main land company in UAE is an onshore business entity registered with D.E.D, allowed to operate anywhere within in UAE and internationally.",
-        href: "/our-services",
-      },
-      {
-        icon: Anchor,
-        label: "Offshore Company Formation",
-        desc: "An offshore company in UAE is incorporated to conduct business outside UAE, mainly used for international business or asset holding.",
-        href: "/our-services",
-      },
-      {
-        icon: Lightbulb,
-        label: "Holding Company Formation",
-        desc: "A holding company owns sufficient voting stock in other companies to exercise control over their management and policies.",
-        href: "/our-services",
-      },
-      {
-        icon: Globe,
-        label: "Free Zone Company Setup",
-        desc: "Allows 100% foreign ownership with simplified setup and modern infrastructure. A flexible, cost-effective way to start.",
-        href: "/our-services",
-      },
-      {
-        icon: GitBranch,
-        label: "Branch Office Setup",
-        desc: "Allows international companies to expand their presence and operate under their parent company's brand with direct market access.",
-        href: "/our-services",
-      },
-      {
-        icon: UserCog,
-        label: "Civil Companies",
-        desc: "A professional partnership formed by individuals to provide professional and intellectual services.",
-        href: "/our-services",
-      },
-      {
-        icon: UserCog,
-        label: "Real Estate Business",
-        desc: "Engaged in activities related to the buying, selling, leasing, management, or development of real properties.",
-        href: "/our-services",
-      },
-      {
-        icon: UserCog,
-        label: "Office Setup Services",
-        desc: "Professional services to assist in establishing a functional office space, including infrastructure and compliance.",
-        href: "/our-services",
-      },
+      { icon: Building2, label: "Mainland Company Formation",  desc: "A main land company in UAE is an onshore business entity registered with D.E.D, allowed to operate anywhere within in UAE and internationally.", href: "/our-services#business-setup" },
+      { icon: Anchor,    label: "Offshore Company Formation",   desc: "An offshore company in UAE is incorporated to conduct business outside UAE, mainly used for international business or asset holding.",        href: "/our-services#business-setup" },
+      { icon: Lightbulb, label: "Holding Company Formation",    desc: "A holding company owns sufficient voting stock in other companies to exercise control over their management and policies.",                   href: "/our-services#business-setup" },
+      { icon: Globe,     label: "Free Zone Company Setup",      desc: "Allows 100% foreign ownership with simplified setup and modern infrastructure. A flexible, cost-effective way to start.",                    href: "/our-services#business-setup" },
+      { icon: GitBranch, label: "Branch Office Setup",          desc: "Allows international companies to expand their presence and operate under their parent company's brand with direct market access.",           href: "/our-services#business-setup" },
+      { icon: UserCog,   label: "Civil Companies",              desc: "A professional partnership formed by individuals to provide professional and intellectual services.",                                          href: "/our-services#business-setup" },
+      { icon: UserCog,   label: "Real Estate Business",         desc: "Engaged in activities related to the buying, selling, leasing, management, or development of real properties.",                             href: "/our-services#business-setup" },
+      { icon: UserCog,   label: "Office Setup Services",        desc: "Professional services to assist in establishing a functional office space, including infrastructure and compliance.",                        href: "/our-services#business-setup" },
     ],
     featured: {
       title: "Start in a Free Zone",
       desc: "100% ownership and fast registration in Dubai's premier free zones. Free zone company formation offers entrepreneurs and businesses simplified setup procedures, tax advantages, full repatriation of profits, and access to world-class infrastructure. It is an ideal option for startups, SMEs, and international businesses looking to establish a strong presence in the UAE with minimal restrictions and faster business licensing processes.Free zones also provide flexible office solutions, visa support, and industry-specific business environments tailored to different sectors. Businesses benefit from streamlined regulations, lower setup costs, and easier access to global markets.",
       cta: "Explore Free Zones",
-      href: "/our-services",
+      href: "/our-services#business-setup",
     },
   },
   "Banking Support": {
     items: [
-      {
-        icon: Briefcase,
-        label: "Corporate Banking Assistance",
-        desc: "Assist businesses in opening corporate bank accounts in the UAE with the required documentation and compliance support.",
-        href: "/our-services",
-      },
-      {
-        icon: Users,
-        label: "Mortgage Banking",
-        desc: "Guidance and support for securing property financing in the UAE, helping obtain suitable mortgage solutions.",
-        href: "/our-services",
-      },
-      {
-        icon: UserCheck,
-        label: "NRO Account Assistance",
-        desc: "Professional support services provided to Non-resident Indian (NRIs) for opening and managing an NRO bank account.",
-        href: "/our-services",
-      },
-      {
-        icon: Laptop,
-        label: "Overseas Direct Investment (ODI)",
-        desc: "Comprehensive assistance for ODI including RBI regulations guidance, documentation, and authorized dealer coordination.",
-        href: "/our-services",
-      },
+      { icon: Briefcase,  label: "Corporate Banking Assistance",        desc: "Assist businesses in opening corporate bank accounts in the UAE with the required documentation and compliance support.", href: "/our-services#corporate-banking" },
+      { icon: Users,      label: "Mortgage Banking",                     desc: "Guidance and support for securing property financing in the UAE, helping obtain suitable mortgage solutions.",         href: "/our-services#mortgage" },
+      { icon: UserCheck,  label: "NRO Account Assistance",               desc: "Professional support services provided to Non-resident Indian (NRIs) for opening and managing an NRO bank account.",    href: "/our-services#nro" },
+      { icon: Laptop,     label: "Overseas Direct Investment (ODI)",      desc: "Comprehensive assistance for ODI including RBI regulations guidance, documentation, and authorized dealer coordination.",href: "/our-services#odi" },
     ],
     featured: {
       title: "Banking Support",
       desc: "Banking Services for investors, professionals, and entrepreneurs. Seamless account opening, compliance support, and tailored banking solutions to help businesses manage finances efficiently.",
       cta: "Apply Now",
-      href: "/leadform",
+      href: "/our-services#banking",
     },
   },
   "PRO Services": {
     items: [
-      { icon: FileCheck, label: "Visa Processing", desc: "Expert handling of all visa processing requirements.", href: "/our-services" },
-      { icon: Briefcase, label: "Employment Visa", desc: "Seamless employment visa issuance for your staff.", href: "/our-services" },
-      { icon: Landmark, label: "Investor Visa", desc: "Secure your UAE residency through investments.", href: "/our-services" },
-      { icon: Handshake, label: "Partner Visa", desc: "Business partner and shareholder visa services.", href: "/our-services" },
-      { icon: Users, label: "Family Visa", desc: "Sponsor your family members with ease.", href: "/our-services" },
-      { icon: Globe, label: "Labour & Immigration", desc: "Full support for labour and immigration quotas.", href: "/our-services" },
-      { icon: ClipboardCheck, label: "Work permits", desc: "Fast-track work permit processing.", href: "/our-services" },
-      { icon: IdCard, label: "Labour cards", desc: "Issuance and renewal of corporate labour cards.", href: "/our-services" },
-      { icon: Stamp, label: "Immigration approvals", desc: "Clearing complex immigration hurdles quickly.", href: "/our-services" },
-      { icon: Building2, label: "Trade License Services", desc: "New issuance and amendments to trade licenses.", href: "/our-services" },
-      { icon: RefreshCw, label: "License renewal", desc: "Timely reminders and processing for renewals.", href: "/our-services" },
-      { icon: Edit3, label: "Company Amendments", desc: "Updating MOAs, shares, and partnerships.", href: "/our-services" },
-      { icon: FolderOpen, label: "Document Clearing", desc: "Dedicated PROs for fast document clearing.", href: "/our-services" },
-      { icon: ShieldCheck, label: "Govt. Approvals", desc: "End-to-end representation at government bodies.", href: "/our-services" },
+      { icon: FileCheck,   label: "Visa Processing",        desc: "Expert handling of all visa processing requirements.",           href: "/our-services#pro-services" },
+      { icon: Briefcase,   label: "Employment Visa",        desc: "Seamless employment visa issuance for your staff.",              href: "/our-services#pro-services" },
+      { icon: Landmark,    label: "Investor Visa",          desc: "Secure your UAE residency through investments.",                 href: "/our-services#pro-services" },
+      { icon: Handshake,   label: "Partner Visa",           desc: "Business partner and shareholder visa services.",               href: "/our-services#pro-services" },
+      { icon: Users,       label: "Family Visa",            desc: "Sponsor your family members with ease.",                        href: "/our-services#pro-services" },
+      { icon: Globe,       label: "Labour & Immigration",   desc: "Full support for labour and immigration quotas.",               href: "/our-services#pro-services" },
+      { icon: ClipboardCheck, label: "Work permits",        desc: "Fast-track work permit processing.",                           href: "/our-services#pro-services" },
+      { icon: IdCard,      label: "Labour cards",           desc: "Issuance and renewal of corporate labour cards.",               href: "/our-services#pro-services" },
+      { icon: Stamp,       label: "Immigration approvals",  desc: "Clearing complex immigration hurdles quickly.",                 href: "/our-services#pro-services" },
+      { icon: Building2,   label: "Trade License Services", desc: "New issuance and amendments to trade licenses.",               href: "/our-services#pro-services" },
+      { icon: RefreshCw,   label: "License renewal",        desc: "Timely reminders and processing for renewals.",                href: "/our-services#pro-services" },
+      { icon: Edit3,       label: "Company Amendments",     desc: "Updating MOAs, shares, and partnerships.",                    href: "/our-services#pro-services" },
+      { icon: FolderOpen,  label: "Document Clearing",      desc: "Dedicated PROs for fast document clearing.",                  href: "/our-services#pro-services" },
+      { icon: ShieldCheck, label: "Govt. Approvals",        desc: "End-to-end representation at government bodies.",              href: "/our-services#pro-services" },
     ],
     featured: {
       title: "Full PRO Support",
       desc: "Our dedicated PRO team handles all government paperwork, approvals, and administrative procedures so you don't have to. From visa processing and trade license renewals to document attestation and immigration services, we ensure every step is completed smoothly and on time. Our team works closely with government departments to minimize delays and simplify complex procedures. This allows businesses to focus on growth while we manage the legal and administrative requirements.Our proactive support helps businesses stay compliant with changing government regulations and deadlines. With end-to-end PRO services, clients benefit from a hassle-free and efficient business setup experience.",
       cta: "Learn More",
-      href: "/our-services",
+      href: "/our-services#pro-services",
     },
   },
   "Our Services": {
@@ -188,25 +128,25 @@ const megaMenuConfig: Record<string, MegaMenuConfig> = {
       {
         title: "Taxation Services",
         items: [
-          { icon: Receipt, label: "Corporate Tax Registration", desc: "Expert registration services for UAE Corporate Tax compliance.", href: "/our-services" },
-          { icon: FileText, label: "VAT Registration", desc: "Complete support for standard VAT registration and compliance.", href: "/our-services" },
-          { icon: ClipboardCheck, label: "CT Filing", desc: "Timely and accurate Corporate Tax return filing.", href: "/our-services" },
-          { icon: BookOpen, label: "VAT Filing", desc: "Quarterly and monthly VAT return preparation and filings.", href: "/our-services" },
+          { icon: Receipt,        label: "Corporate Tax Registration", desc: "Expert registration services for UAE Corporate Tax compliance.",   href: "/our-services#taxation" },
+          { icon: FileText,       label: "VAT Registration",            desc: "Complete support for standard VAT registration and compliance.",   href: "/our-services#taxation" },
+          { icon: ClipboardCheck, label: "CT Filing",                   desc: "Timely and accurate Corporate Tax return filing.",                  href: "/our-services#taxation" },
+          { icon: BookOpen,       label: "VAT Filing",                  desc: "Quarterly and monthly VAT return preparation and filings.",         href: "/our-services#taxation" },
         ],
       },
       {
         title: "Accounting & Audit",
         items: [
-          { icon: BookOpen, label: "Accounting & Bookkeeping", desc: "Comprehensive financial tracking, reporting, and book management.", href: "/our-services" },
-          { icon: ClipboardCheck, label: "Audit Services", desc: "Independent auditing to ensure complete financial accuracy.", href: "/our-services" },
+          { icon: BookOpen,       label: "Accounting & Bookkeeping",    desc: "Comprehensive financial tracking, reporting, and book management.", href: "/our-services#accounting" },
+          { icon: ClipboardCheck, label: "Audit Services",              desc: "Independent auditing to ensure complete financial accuracy.",       href: "/our-services#accounting" },
         ],
       },
       {
         title: "Compliance & Regulatory",
         items: [
-          { icon: Building, label: "GoAML Registration", desc: "Anti-Money Laundering compliance setup and registration.", href: "/our-services" },
-          { icon: ClipboardCheck, label: "APR Filling", desc: "Annual Percentage Rate regulatory filings and compliance.", href: "/our-services" },
-          { icon: BookOpen, label: "FEMA Compliances", desc: "Foreign Exchange Management Act advisory and legal support.", href: "/our-services" },
+          { icon: Building,       label: "GoAML Registration",          desc: "Anti-Money Laundering compliance setup and registration.",          href: "/our-services#compliance" },
+          { icon: ClipboardCheck, label: "APR Filling",                 desc: "Annual Percentage Rate regulatory filings and compliance.",          href: "/our-services#compliance" },
+          { icon: BookOpen,       label: "FEMA Compliances",            desc: "Foreign Exchange Management Act advisory and legal support.",        href: "/our-services#compliance" },
         ],
       },
     ],
@@ -218,31 +158,31 @@ const megaMenuConfig: Record<string, MegaMenuConfig> = {
     },
   },
   "India Services": {
-    href: "/our-services",
+    href: "/our-services#india-services",
     categories: [
       {
         title: "Taxation Services",
         items: [
-          { icon: Receipt, label: "ITR Filing", desc: "Income Tax Return filing for individuals, HUFs, and companies in India.", href: "/our-services" },
-          { icon: FileText, label: "GST Registration", desc: "Complete support for GST registration and compliance within India.", href: "/our-services" },
-          { icon: ClipboardCheck, label: "GST Filing", desc: "Monthly, quarterly, and annual GST return preparation and filing.", href: "/our-services" },
-          { icon: BookOpen, label: "TDS Compliance", desc: "TDS deduction, filing, and compliance management services.", href: "/our-services" },
+          { icon: Receipt,        label: "ITR Filing",              desc: "Income Tax Return filing for individuals, HUFs, and companies in India.",             href: "/our-services#india-services" },
+          { icon: FileText,       label: "GST Registration",        desc: "Complete support for GST registration and compliance within India.",                   href: "/our-services#india-services" },
+          { icon: ClipboardCheck, label: "GST Filing",              desc: "Monthly, quarterly, and annual GST return preparation and filing.",                    href: "/our-services#india-services" },
+          { icon: BookOpen,       label: "TDS Compliance",          desc: "TDS deduction, filing, and compliance management services.",                          href: "/our-services#india-services" },
         ],
       },
       {
         title: "Accounting & Audit",
         items: [
-          { icon: BookOpen, label: "Accounting & Bookkeeping", desc: "Comprehensive financial tracking and book management for Indian entities.", href: "/our-services" },
-          { icon: ClipboardCheck, label: "Audit Services", desc: "Statutory and internal auditing for Indian companies.", href: "/our-services" },
-          { icon: FileText, label: "ROC Filings", desc: "Annual and event-based filings with the Registrar of Companies.", href: "/our-services" },
+          { icon: BookOpen,       label: "Accounting & Bookkeeping", desc: "Comprehensive financial tracking and book management for Indian entities.",           href: "/our-services#india-services" },
+          { icon: ClipboardCheck, label: "Audit Services",           desc: "Statutory and internal auditing for Indian companies.",                               href: "/our-services#india-services" },
+          { icon: FileText,       label: "ROC Filings",              desc: "Annual and event-based filings with the Registrar of Companies.",                     href: "/our-services#india-services" },
         ],
       },
       {
         title: "Compliance & Regulatory",
         items: [
-          { icon: Building, label: "FEMA Compliance", desc: "Foreign Exchange Management Act advisory for NRIs and businesses.", href: "/our-services" },
-          { icon: ClipboardCheck, label: "RBI Filings", desc: "Reserve Bank of India mandatory filings and FCTRS reporting.", href: "/our-services" },
-          { icon: BookOpen, label: "NRI Services", desc: "Comprehensive NRI advisory — NRO/NRE accounts, repatriation, tax planning.", href: "/our-services" },
+          { icon: Building,       label: "FEMA Compliance",         desc: "Foreign Exchange Management Act advisory for NRIs and businesses.",                    href: "/our-services#india-services" },
+          { icon: ClipboardCheck, label: "RBI Filings",             desc: "Reserve Bank of India mandatory filings and FCTRS reporting.",                         href: "/our-services#india-services" },
+          { icon: BookOpen,       label: "NRI Services",            desc: "Comprehensive NRI advisory — NRO/NRE accounts, repatriation, tax planning.",           href: "/our-services#india-services" },
         ],
       },
     ],
@@ -250,23 +190,88 @@ const megaMenuConfig: Record<string, MegaMenuConfig> = {
       title: "🇮🇳 India Services",
       desc: "Expert services for NRIs and India-based businesses operating across UAE and India. We assist with NRO accounts, business expansion, documentation, compliance, taxation, and cross-border financial support. Our services are designed to simplify operations and help clients manage their business interests seamlessly in both countries.",
       cta: "Explore India Services",
-      href: "/our-services",
+      href: "/our-services#india-services",
     },
   },
 };
+
+// ─── Scroll-Spy Tabs (Our Services page only) ──────────────────────────────
+const SCROLL_TABS = [
+  { id: 'business-setup', label: 'Business Setup' },
+  { id: 'banking',        label: 'Banking Support' },
+  { id: 'pro-services',  label: 'PRO Services' },
+  { id: 'taxation',      label: 'Taxation Services' },
+  { id: 'accounting',    label: 'Accounting & Audit' },
+  { id: 'compliance',    label: 'Compliance & Regulatory' },
+  { id: 'india-services',label: '🇮🇳 India Services' },
+];
 
 export function Navbar() {
   const [activeMenu, setActiveMenu] = useState<string | null>(null);
   const [mobileOpen, setMobileOpen] = useState(false);
   const [mobileExpanded, setMobileExpanded] = useState<string | null>(null);
   const [activeCategoryIndex, setActiveCategoryIndex] = useState(0);
+  const [activeTab, setActiveTab] = useState<string>(SCROLL_TABS[0].id);
+  const location = useLocation();
+  const isServicesPage = location.pathname === '/our-services';
 
   const closeTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const tabBarRef  = useRef<HTMLDivElement>(null);
+  const tabRefs    = useRef<Record<string, HTMLButtonElement | null>>({});
+
+  // Close mobile menu on route change
+  useEffect(() => {
+    setMobileOpen(false);
+    setActiveMenu(null);
+  }, [location.pathname]);
+
+  // Prevent body scroll when mobile menu is open
+  useEffect(() => {
+    document.body.style.overflow = mobileOpen ? 'hidden' : '';
+    return () => { document.body.style.overflow = ''; };
+  }, [mobileOpen]);
+
+  // Scroll-spy: IntersectionObserver watches each section
+  useEffect(() => {
+    if (!isServicesPage) return;
+    const els = SCROLL_TABS
+      .map(t => document.getElementById(t.id))
+      .filter(Boolean) as HTMLElement[];
+
+    const obs = new IntersectionObserver(
+      (entries) => {
+        entries.forEach(e => {
+          if (e.isIntersecting) setActiveTab(e.target.id);
+        });
+      },
+      { rootMargin: '-35% 0px -55% 0px', threshold: 0 }
+    );
+
+    els.forEach(el => obs.observe(el));
+    return () => els.forEach(el => obs.unobserve(el));
+  }, [isServicesPage]);
+
+  // Auto-scroll tab bar so active tab stays centered
+  useEffect(() => {
+    const btn = tabRefs.current[activeTab];
+    if (btn && tabBarRef.current) {
+      btn.scrollIntoView({ behavior: 'smooth', inline: 'center', block: 'nearest' });
+    }
+  }, [activeTab]);
+
+  const scrollToTab = (id: string) => {
+    setActiveTab(id);
+    const el = document.getElementById(id);
+    if (!el) return;
+    const offset = 150; // header (110px) + tab bar (40px)
+    const y = el.getBoundingClientRect().top + window.scrollY - offset;
+    window.scrollTo({ top: y, behavior: 'smooth' });
+  };
 
   const handleEnter = (menu: string) => {
     if (closeTimer.current) clearTimeout(closeTimer.current);
     setActiveMenu(menu);
-    setActiveCategoryIndex(0); // Reset side-tabs when opening menu
+    setActiveCategoryIndex(0);
   };
 
   const handleLeave = () => {
@@ -292,6 +297,23 @@ export function Navbar() {
           .animate-ticker:hover {
             animation-play-state: paused;
           }
+          /* Custom scrollbar for mega menu */
+          .mega-scroll::-webkit-scrollbar {
+            width: 6px;
+          }
+          .mega-scroll::-webkit-scrollbar-track {
+            background: transparent;
+          }
+          .mega-scroll::-webkit-scrollbar-thumb {
+            background: #cbd5e1;
+            border-radius: 4px;
+          }
+          .mega-scroll::-webkit-scrollbar-thumb:hover {
+            background: #94a3b8;
+          }
+          /* Hide scrollbar for tab bar */
+          .tab-scroll::-webkit-scrollbar { display: none; }
+          .tab-scroll { -ms-overflow-style: none; scrollbar-width: none; }
         `}
       </style>
       <header
@@ -461,6 +483,38 @@ export function Navbar() {
           </div>
         </div>
 
+        {/* ── Scroll-Spy Tab Bar (Our Services page only) ── */}
+        {isServicesPage && (
+          <div
+            className="bg-white border-b border-gray-100"
+            style={{ boxShadow: '0 2px 8px rgba(0,0,0,0.06)' }}
+          >
+            <div className="max-w-7xl mx-auto px-4 sm:px-6">
+              <div
+                ref={tabBarRef}
+                className="flex items-center gap-1 overflow-x-auto py-2.5 tab-scroll"
+              >
+                {SCROLL_TABS.map(tab => (
+                  <button
+                    key={tab.id}
+                    ref={el => { tabRefs.current[tab.id] = el; }}
+                    onClick={() => scrollToTab(tab.id)}
+                    className="shrink-0 px-4 py-1.5 rounded-full text-xs font-semibold transition-all duration-200 whitespace-nowrap"
+                    style={{
+                      backgroundColor: activeTab === tab.id ? NAVY : 'transparent',
+                      color:           activeTab === tab.id ? '#fff' : '#6b7280',
+                      border:          activeTab === tab.id ? 'none' : '1px solid #e5e7eb',
+                      transform:       activeTab === tab.id ? 'scale(1.04)' : 'scale(1)',
+                    }}
+                  >
+                    {tab.label}
+                  </button>
+                ))}
+              </div>
+            </div>
+          </div>
+        )}
+
         {/* Mega Menu Dropdown */}
         {activeMenu && megaMenuConfig[activeMenu] && (
           <div
@@ -469,12 +523,13 @@ export function Navbar() {
             className="absolute left-0 right-0 bg-white"
             style={{
               top: "100%",
+              maxHeight: "calc(100vh - 110px)",
+              overflowY: "auto",
               boxShadow: "0 20px 60px rgba(0,0,0,0.12)",
               borderTop: `3px solid ${GOLD}`,
               zIndex: 100,
             }}
           >
-            {/* REDUCED PADDING HERE: py-5 instead of py-8 */}
             <div className="max-w-7xl mx-auto px-4 sm:px-6 py-5">
               <div className="grid grid-cols-3 gap-8">
 
@@ -487,49 +542,51 @@ export function Navbar() {
                     {activeMenu} Services
                   </p>
 
-                  {/* Check if this menu uses Categories (Our Services) */}
+                  {/* Check if this menu uses Categories (Our Services / India Services) */}
                   {megaMenuConfig[activeMenu].categories ? (
-                    <div className="flex gap-8">
-                      {/* Side-Tabs */}
-                      <div className="w-1/3 flex flex-col gap-1 border-r border-gray-100 pr-4">
-                        {megaMenuConfig[activeMenu].categories.map((category, idx) => (
+                    <div className="flex gap-6">
+                      {/* Side-Tabs — fixed height, scrollable */}
+                      <div
+                        className="w-1/3 flex flex-col gap-1 border-r border-gray-100 pr-4 mega-scroll"
+                        style={{ maxHeight: '52vh', overflowY: 'auto' }}
+                      >
+                        {megaMenuConfig[activeMenu].categories!.map((category, idx) => (
                           <button
                             key={category.title}
                             onMouseEnter={() => setActiveCategoryIndex(idx)}
-                            className={`text-left px-4 py-2.5 rounded-xl font-semibold text-sm transition-all ${activeCategoryIndex === idx
-                              ? "bg-slate-50 text-[#0D2137]"
-                              : "text-gray-500 hover:text-gray-800 hover:bg-slate-50/50"
-                              }`}
+                            onClick={() => setActiveCategoryIndex(idx)}
+                            className={`text-left px-4 py-3 rounded-xl font-semibold text-sm transition-all ${
+                              activeCategoryIndex === idx
+                                ? 'bg-slate-50 text-[#0D2137]'
+                                : 'text-gray-500 hover:text-gray-800 hover:bg-slate-50/50'
+                            }`}
                           >
                             {category.title}
                           </button>
                         ))}
                       </div>
 
-                      {/* Items for hovered category */}
-                      <div className="w-2/3 pl-2">
-                        {/* REDUCED GAP: gap-y-1 */}
-                        <div className="grid grid-cols-1 gap-y-1">
-                          {megaMenuConfig[activeMenu].categories[activeCategoryIndex].items.map((item) => (
+                      {/* Items panel — scrollable */}
+                      <div
+                        className="w-2/3 pl-2 mega-scroll"
+                        style={{ maxHeight: '52vh', overflowY: 'auto' }}
+                      >
+                        <div className="grid grid-cols-1 gap-y-1 pr-2">
+                          {megaMenuConfig[activeMenu].categories![activeCategoryIndex].items.map((item) => (
                             <Link
                               key={item.label}
                               to={item.href}
                               onClick={() => setActiveMenu(null)}
-                              // REDUCED PADDING: p-2.5
                               className="flex items-start gap-3 p-2.5 rounded-xl hover:bg-slate-50 transition-all group border border-transparent hover:border-slate-100"
                             >
-                              {/* SMALLER ICON BOX: w-8 h-8 */}
                               <div
                                 className="w-8 h-8 rounded-lg flex items-center justify-center shrink-0 mt-0.5"
-                                style={{ backgroundColor: "rgba(201,150,60,0.12)" }}
+                                style={{ backgroundColor: 'rgba(201,150,60,0.12)' }}
                               >
                                 <item.icon size={15} style={{ color: GOLD }} />
                               </div>
                               <div>
-                                <div
-                                  className="text-sm font-bold group-hover:text-[#0D2137] transition-colors mb-0.5"
-                                  style={{ color: "#1a2a3a" }}
-                                >
+                                <div className="text-sm font-bold group-hover:text-[#0D2137] transition-colors mb-0.5" style={{ color: '#1a2a3a' }}>
                                   {item.label}
                                 </div>
                                 <div className="text-xs text-gray-500 leading-relaxed text-justify pr-2">
@@ -542,29 +599,26 @@ export function Navbar() {
                       </div>
                     </div>
                   ) : (
-                    /* Original Flat Layout */
-                    /* REDUCED GAPS: gap-x-8 gap-y-2 */
-                    <div className="grid grid-cols-2 gap-x-8 gap-y-2">
+                    /* Flat grid layout — scrollable */
+                    <div
+                      className="grid grid-cols-2 gap-x-6 gap-y-1 mega-scroll pr-2"
+                      style={{ maxHeight: '52vh', overflowY: 'auto' }}
+                    >
                       {megaMenuConfig[activeMenu].items?.map((item) => (
                         <Link
                           key={item.label}
                           to={item.href}
                           onClick={() => setActiveMenu(null)}
-                          // REDUCED PADDING: p-2.5
                           className="flex items-start gap-3 p-2.5 rounded-xl hover:bg-slate-50 transition-all group border border-transparent hover:border-slate-100"
                         >
-                          {/* SMALLER ICON BOX: w-8 h-8 */}
                           <div
                             className="w-8 h-8 rounded-lg flex items-center justify-center shrink-0 mt-0.5"
-                            style={{ backgroundColor: "rgba(201,150,60,0.12)" }}
+                            style={{ backgroundColor: 'rgba(201,150,60,0.12)' }}
                           >
                             <item.icon size={15} style={{ color: GOLD }} />
                           </div>
                           <div>
-                            <div
-                              className="text-sm font-bold group-hover:text-[#0D2137] transition-colors mb-0.5"
-                              style={{ color: "#1a2a3a" }}
-                            >
+                            <div className="text-sm font-bold group-hover:text-[#0D2137] transition-colors mb-0.5" style={{ color: '#1a2a3a' }}>
                               {item.label}
                             </div>
                             <div className="text-xs text-gray-500 leading-relaxed text-justify pr-2">
@@ -578,17 +632,13 @@ export function Navbar() {
                 </div>
 
                 {/* --- Featured Panel --- */}
-                <div>
+                <div className="self-start">
                   <div
-                    // REDUCED PADDING: p-5
-                    className="rounded-xl p-5 h-full flex flex-col justify-between"
-                    style={{ backgroundColor: NAVY }}
+                    className="rounded-xl p-5 flex flex-col justify-between mega-scroll"
+                    style={{ backgroundColor: NAVY, maxHeight: '52vh', overflowY: 'auto' }}
                   >
                     <div>
-                      <div
-                        className="text-xs font-semibold uppercase tracking-widest mb-3"
-                        style={{ color: GOLD }}
-                      >
+                      <div className="text-xs font-semibold uppercase tracking-widest mb-3" style={{ color: GOLD }}>
                         Featured
                       </div>
                       <h4 className="text-lg font-bold text-white mb-2">
@@ -601,9 +651,8 @@ export function Navbar() {
                     <Link
                       to={megaMenuConfig[activeMenu].featured.href}
                       onClick={() => setActiveMenu(null)}
-                      // REDUCED MARGIN: mt-4
-                      className="mt-4 inline-flex items-center gap-2 px-4 py-2.5 rounded-lg text-sm font-semibold transition-all hover:opacity-90"
-                      style={{ backgroundColor: GOLD, color: "white" }}
+                      className="mt-4 inline-flex items-center gap-2 px-4 py-2.5 rounded-lg text-sm font-semibold transition-all hover:opacity-90 shrink-0"
+                      style={{ backgroundColor: GOLD, color: 'white' }}
                     >
                       {megaMenuConfig[activeMenu].featured.cta}
                       <ArrowRight size={15} />
@@ -637,16 +686,16 @@ export function Navbar() {
           </div>
         )}
 
-        {/* --- Mobile Menu (Unchanged) --- */}
+        {/* --- Mobile Menu --- */}
         {mobileOpen && (
           <div
-            className="lg:hidden bg-white border-t border-gray-100 overflow-y-auto"
-            style={{ maxHeight: "calc(100vh - 110px)" }}
+            className="lg:hidden bg-white border-t border-gray-100 fixed left-0 right-0 bottom-0 z-50 mega-scroll"
+            style={{ top: '110px', overflowY: 'auto', WebkitOverflowScrolling: 'touch' }}
           >
-            <div className="px-4 py-4 space-y-1">
+            <div className="px-4 py-4 space-y-1 pb-24">
               <Link
                 to="/"
-                className="block px-3 py-2.5 text-sm font-medium text-gray-800 rounded-lg hover:bg-slate-50"
+                className="flex items-center gap-3 px-4 py-3.5 text-sm font-semibold text-gray-800 rounded-xl hover:bg-slate-50 active:bg-slate-100 transition-colors"
                 onClick={() => setMobileOpen(false)}
               >
                 Home
@@ -654,68 +703,89 @@ export function Navbar() {
 
               {Object.keys(megaMenuConfig).map((menuName) => {
                 const config = megaMenuConfig[menuName];
+                const isExpanded = mobileExpanded === menuName;
                 return (
-                  <div key={menuName}>
-                    <div className="flex items-center">
+                  <div key={menuName} className="rounded-xl overflow-hidden">
+                    {/* Row: Link + Toggle */}
+                    <div className="flex items-stretch">
                       {config.href && (
                         <Link
                           to={config.href}
-                          className="flex-1 px-3 py-2.5 text-sm font-medium text-gray-800 rounded-lg hover:bg-slate-50"
+                          className="flex-1 flex items-center gap-3 px-4 py-3.5 text-sm font-semibold text-gray-800 hover:bg-slate-50 active:bg-slate-100 transition-colors"
                           onClick={() => setMobileOpen(false)}
                         >
                           {menuName}
                         </Link>
                       )}
                       <button
-                        className={`flex items-center justify-between px-3 py-2.5 text-sm font-medium text-gray-800 rounded-lg hover:bg-slate-50 ${config.href ? 'w-auto' : 'w-full'}`}
-                        onClick={() =>
-                          setMobileExpanded(
-                            mobileExpanded === menuName ? null : menuName
-                          )
-                        }
+                        className={`flex items-center gap-2 px-4 py-3.5 text-sm font-semibold text-gray-800 hover:bg-slate-50 active:bg-slate-100 transition-colors ${
+                          config.href ? 'border-l border-gray-100' : 'w-full justify-between'
+                        }`}
+                        onClick={() => setMobileExpanded(isExpanded ? null : menuName)}
+                        aria-expanded={isExpanded}
                       >
                         {!config.href && <span>{menuName}</span>}
                         <ChevronDown
                           size={16}
-                          className={`transition-transform ${mobileExpanded === menuName ? "rotate-180" : ""}`}
+                          className={`transition-transform duration-200 shrink-0 ${
+                            isExpanded ? 'rotate-180' : ''
+                          }`}
+                          style={{ color: isExpanded ? GOLD : '#6b7280' }}
                         />
                       </button>
                     </div>
-                    {mobileExpanded === menuName && (
-                      <div className="pl-3 mt-1 space-y-2 mb-2">
+
+                    {/* Expandable content */}
+                    {isExpanded && (
+                      <div className="bg-slate-50/60 border-t border-gray-100 px-3 py-3 space-y-1">
                         {config.categories ? (
                           config.categories.map((category) => (
-                            <div key={category.title} className="mb-3">
-                              <div className="px-3 py-1 text-[11px] font-bold text-gray-400 uppercase tracking-widest">
+                            <div key={category.title} className="mb-4">
+                              <div
+                                className="px-3 py-1.5 text-[10px] font-bold uppercase tracking-widest rounded-md mb-1"
+                                style={{ color: GOLD, backgroundColor: 'rgba(201,150,60,0.08)' }}
+                              >
                                 {category.title}
                               </div>
-                              <div className="space-y-0.5 mt-1">
+                              <div className="space-y-0.5">
                                 {category.items.map((item) => (
                                   <Link
                                     key={item.label}
                                     to={item.href}
-                                    className="flex items-center gap-2.5 px-3 py-2 text-sm text-gray-600 rounded-lg hover:bg-slate-50 hover:text-[#0D2137] transition-colors"
+                                    className="flex items-center gap-3 px-3 py-3 text-sm text-gray-700 rounded-xl hover:bg-white active:bg-white transition-colors"
                                     onClick={() => setMobileOpen(false)}
                                   >
-                                    <item.icon size={14} style={{ color: GOLD }} />
-                                    {item.label}
+                                    <div
+                                      className="w-7 h-7 rounded-lg flex items-center justify-center shrink-0"
+                                      style={{ backgroundColor: 'rgba(201,150,60,0.12)' }}
+                                    >
+                                      <item.icon size={13} style={{ color: GOLD }} />
+                                    </div>
+                                    <span className="font-medium">{item.label}</span>
                                   </Link>
                                 ))}
                               </div>
                             </div>
                           ))
                         ) : (
-                          config.items?.map((item) => (
-                            <Link
-                              key={item.label}
-                              to={item.href}
-                              className="flex items-center gap-2.5 px-3 py-2 text-sm text-gray-600 rounded-lg hover:bg-slate-50 hover:text-[#0D2137] transition-colors"
-                              onClick={() => setMobileOpen(false)}
-                            >
-                              <item.icon size={14} style={{ color: GOLD }} />
-                              {item.label}
-                            </Link>
-                          ))
+                          <div className="space-y-0.5">
+                            {config.items?.map((item) => (
+                              <Link
+                                key={item.label}
+                                to={item.href}
+                                className="flex items-center gap-3 px-3 py-3 text-sm text-gray-700 rounded-xl hover:bg-white active:bg-white transition-colors"
+                                onClick={() => setMobileOpen(false)}
+                              >
+                                <div
+                                  className="w-7 h-7 rounded-lg flex items-center justify-center shrink-0"
+                                  style={{ backgroundColor: 'rgba(201,150,60,0.12)' }}
+                                >
+                                  <item.icon size={13} style={{ color: GOLD }} />
+                                </div>
+                                <span className="font-medium">{item.label}</span>
+                              </Link>
+                            ))}
+                          </div>
                         )}
                       </div>
                     )}
@@ -723,23 +793,23 @@ export function Navbar() {
                 );
               })}
 
-
               <Link
                 to="/about"
-                className="block px-3 py-2.5 text-sm font-medium text-gray-800 rounded-lg hover:bg-slate-50"
+                className="flex items-center gap-3 px-4 py-3.5 text-sm font-semibold text-gray-800 rounded-xl hover:bg-slate-50 active:bg-slate-100 transition-colors"
                 onClick={() => setMobileOpen(false)}
               >
                 About
               </Link>
 
-              <div className="pt-3 pb-2">
+              <div className="pt-4 pb-2">
                 <Link
                   to="/contact"
-                  className="block text-center px-5 py-3 rounded-xl text-sm font-semibold text-white"
+                  className="flex items-center justify-center gap-2 w-full px-5 py-4 rounded-xl text-sm font-semibold text-white active:opacity-80 transition-opacity"
                   style={{ backgroundColor: GOLD }}
                   onClick={() => setMobileOpen(false)}
                 >
                   Contact Us
+                  <ArrowRight size={15} />
                 </Link>
               </div>
             </div>

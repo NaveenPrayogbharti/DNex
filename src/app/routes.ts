@@ -19,6 +19,16 @@ import { AdminUsersPage } from './admin/pages/AdminUsersPage';
 import { AdminSettingsPage } from './admin/pages/AdminSettingsPage';
 import { AdminRedirect } from './admin/pages/AdminRedirect';
 
+// CRM imports
+import { CRMLayout } from './crm/pages/CRMLayout';
+import { CRMDashboard } from './crm/pages/CRMDashboard';
+import { CasesPage } from './crm/pages/CasesPage';
+import { CaseDetailPage } from './crm/pages/CaseDetailPage';
+import { TasksPage } from './crm/pages/TasksPage';
+import { AnalyticsPage } from './crm/pages/AnalyticsPage';
+import { CRMSettingsPage } from './crm/pages/CRMSettingsPage';
+import { NotificationsPage } from './crm/pages/NotificationsPage';
+
 export const router = createBrowserRouter([
   // Public website routes
   {
@@ -36,7 +46,7 @@ export const router = createBrowserRouter([
     ],
   },
 
-  // Admin portal routes
+  // Admin portal routes (unchanged)
   {
     path: '/admin/login',
     Component: AdminLogin,
@@ -51,6 +61,22 @@ export const router = createBrowserRouter([
       { path: 'services', Component: AdminServicesPage },
       { path: 'users', Component: AdminUsersPage },
       { path: 'settings', Component: AdminSettingsPage },
+    ],
+  },
+
+  // CRM routes — separate from admin
+  {
+    path: '/crm',
+    Component: CRMLayout,
+    children: [
+      { index: true, Component: CRMDashboard },
+      { path: 'dashboard', Component: CRMDashboard },
+      { path: 'cases', Component: CasesPage },
+      { path: 'cases/:id', Component: CaseDetailPage },
+      { path: 'tasks', Component: TasksPage },
+      { path: 'analytics', Component: AnalyticsPage },
+      { path: 'settings', Component: CRMSettingsPage },
+      { path: 'notifications', Component: NotificationsPage },
     ],
   },
 ]);

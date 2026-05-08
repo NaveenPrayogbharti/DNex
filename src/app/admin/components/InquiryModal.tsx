@@ -56,9 +56,11 @@ export function InquiryModal({ inquiry, onClose, onUpdate }: InquiryModalProps) 
     try {
       await updateInquiryStatus(inquiry.id, newStatus);
       setCurrentStatus(newStatus);
+      alert('Status updated successfully!');
       onUpdate();
-    } catch (err) {
+    } catch (err: any) {
       console.error('Failed to update status:', err);
+      alert('Failed to update status: ' + (err.message || 'Unknown error'));
     } finally {
       setSaving(false);
     }
@@ -68,9 +70,11 @@ export function InquiryModal({ inquiry, onClose, onUpdate }: InquiryModalProps) 
     setSavingNotes(true);
     try {
       await updateInquiryNotes(inquiry.id, notes);
+      alert('Notes saved successfully!');
       onUpdate();
-    } catch (err) {
+    } catch (err: any) {
       console.error('Failed to save notes:', err);
+      alert('Failed to save notes: ' + (err.message || 'Unknown error'));
     } finally {
       setSavingNotes(false);
     }

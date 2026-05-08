@@ -40,9 +40,12 @@ export function InquiryTable({ inquiries, onViewDetail, onStatusChange, loading 
     setUpdatingId(id);
     try {
       await updateInquiryStatus(id, newStatus);
+      alert('Status updated successfully!');
       onStatusChange();
-    } catch (err) {
+    } catch (err: any) {
       console.error('Failed to update status:', err);
+      alert('Failed to update status: ' + (err.message || 'Unknown error'));
+      onStatusChange(); // Revert local UI state
     } finally {
       setUpdatingId(null);
     }

@@ -6,6 +6,7 @@ import {
   ChevronDown, Phone, MessageCircle, Mail, Star,
   MapPin, Briefcase, Award,
 } from 'lucide-react';
+import { ScrollNav } from '../components/ScrollNav';
 
 const GOLD = '#C9963C';
 const NAVY = '#0D2137';
@@ -58,7 +59,7 @@ const steps = [
   { step: 6, title: 'Visa & Bank Setup', desc: 'We process investor visas, Emirates ID, and open your UAE corporate bank account.' },
 ];
 
-{/* const plans = [
+const plans = [
   {
     name: 'Starter',
     price: 'AED 5,499',
@@ -83,7 +84,7 @@ const steps = [
     cta: 'Contact Sales',
     featured: false,
   },
-]; */}
+];
 
 const faqs = [
   {
@@ -145,6 +146,22 @@ const testimonials = [
     text: 'Set up a consulting firm in DIFC within a week. They even helped me open a bank account. Highly recommended!',
     stars: 5,
   },
+];
+
+const sections = [
+  { id: "overview", label: "Overview" },
+  { id: "eligibility", label: "Eligibility" },
+  { id: "documents", label: "Documents Required" },
+  { id: "process", label: "Process" },
+  { id: "pricing", label: "Pricing" },
+  { id: "faqs", label: "FAQs" },
+];
+
+const eligibilityCriteria = [
+  { title: 'Minimum Age', desc: 'Shareholders and directors must be at least 18 years old (some zones require 21).' },
+  { title: 'Valid Passport', desc: 'A valid passport with at least 6 months validity is required for all shareholders.' },
+  { title: 'Business Plan', desc: 'Certain activities and premium free zones (like DIFC) require a comprehensive business plan.' },
+  { title: 'Initial Capital', desc: 'Varies by free zone; some require no upfront capital, while others require proof of funds.' },
 ];
 
 // ─── Sub-components ────────────────────────────────────────────────────────
@@ -387,6 +404,9 @@ export function FreeZone() {
         </div>
       </section>
 
+      {/* ── Section Quick-Nav ───────────────────────────────── */}
+      <ScrollNav sections={sections} />
+
       {/* ── Main Content + Sidebar ──────────────────────────── */}
       <div className="max-w-7xl mx-auto px-4 sm:px-6 py-16">
         <div className="grid grid-cols-1 lg:grid-cols-[1fr_360px] gap-12">
@@ -394,7 +414,7 @@ export function FreeZone() {
           <div className="space-y-20">
 
             {/* Key Benefits */}
-            <section>
+            <section id="overview" className="scroll-mt-32">
               <div
                 className="inline-block text-xs font-bold uppercase tracking-widest mb-3 px-4 py-1.5 rounded-full"
                 style={{ color: GOLD, backgroundColor: 'rgba(201,150,60,0.1)' }}
@@ -476,8 +496,45 @@ export function FreeZone() {
               </div>
             </section>
 
+            {/* Eligibility */}
+            <section id="eligibility" className="scroll-mt-32">
+              <div
+                className="inline-block text-xs font-bold uppercase tracking-widest mb-3 px-4 py-1.5 rounded-full"
+                style={{ color: GOLD, backgroundColor: 'rgba(201,150,60,0.1)' }}
+              >
+                Eligibility
+              </div>
+              <h2 className="mb-2" style={{ fontSize: '1.75rem', fontWeight: 700, color: NAVY }}>
+                Setup Requirements
+              </h2>
+              <p className="text-gray-500 mb-8" style={{ lineHeight: 1.7 }}>
+                Before proceeding with your free zone company setup, ensure you meet these standard requirements.
+              </p>
+
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                {eligibilityCriteria.map((crit) => (
+                  <div
+                    key={crit.title}
+                    className="flex gap-4 p-5 rounded-xl border transition-all hover:border-[#C9963C]/40 hover:shadow-md"
+                    style={{ borderColor: '#e8edf2' }}
+                  >
+                    <div
+                      className="w-10 h-10 rounded-lg flex items-center justify-center shrink-0"
+                      style={{ backgroundColor: 'rgba(201,150,60,0.1)' }}
+                    >
+                      <CheckCircle size={18} style={{ color: GOLD }} />
+                    </div>
+                    <div>
+                      <h4 className="font-semibold text-sm mb-1" style={{ color: NAVY }}>{crit.title}</h4>
+                      <p className="text-xs text-gray-500" style={{ lineHeight: 1.6 }}>{crit.desc}</p>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </section>
+
             {/* Required Documents */}
-            <section>
+            <section id="documents" className="scroll-mt-32">
               <div
                 className="inline-block text-xs font-bold uppercase tracking-widest mb-3 px-4 py-1.5 rounded-full"
                 style={{ color: GOLD, backgroundColor: 'rgba(201,150,60,0.1)' }}
@@ -514,7 +571,7 @@ export function FreeZone() {
             </section>
 
             {/* Step-by-Step Process */}
-            <section>
+            <section id="process" className="scroll-mt-32">
               <div
                 className="inline-block text-xs font-bold uppercase tracking-widest mb-3 px-4 py-1.5 rounded-full"
                 style={{ color: GOLD, backgroundColor: 'rgba(201,150,60,0.1)' }}
@@ -627,7 +684,7 @@ export function FreeZone() {
       </div>
 
       {/* ── Pricing Section ─────────────────────────────────── */}
-      {/* <section id="pricing" className="py-20" style={{ backgroundColor: '#F8FAFC' }}>
+      <section id="pricing" className="py-20 scroll-mt-32" style={{ backgroundColor: '#F8FAFC' }}>
         <div className="max-w-7xl mx-auto px-4 sm:px-6">
           <div className="text-center mb-14">
             <div
@@ -695,10 +752,10 @@ export function FreeZone() {
             <Link to="/contact" className="font-semibold ml-1" style={{ color: GOLD }}>Contact us for exact pricing.</Link>
           </p>
         </div>
-      </section> */}
+      </section>
 
       {/* ── FAQ Section ─────────────────────────────────────── */}
-      <section className="py-20 bg-white">
+      <section id="faqs" className="py-20 bg-white scroll-mt-32">
         <div className="max-w-4xl mx-auto px-4 sm:px-6">
           <div className="text-center mb-12">
             <div
@@ -736,7 +793,7 @@ export function FreeZone() {
       </section>
 
       {/* ── Testimonials ────────────────────────────────────── */}
-      <section className="py-20" style={{ backgroundColor: '#F8FAFC' }}>
+      <section id="testimonials" className="py-20 scroll-mt-32" style={{ backgroundColor: '#F8FAFC' }}>
         <div className="max-w-7xl mx-auto px-4 sm:px-6">
           <div className="text-center mb-12">
             <h2 className="mb-3" style={{ fontSize: 'clamp(1.6rem, 3vw, 2.25rem)', fontWeight: 700, color: NAVY }}>
