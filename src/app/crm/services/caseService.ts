@@ -66,6 +66,12 @@ export interface CRMCase {
   assigned_to: string | null;
   notes: string | null;
   sla_deadline: string | null;
+  // Workflow fields
+  requirement_data: Record<string, string> | null;
+  not_interested_reason: string | null;
+  selected_service: string | null;
+  processing_notes: string | null;
+  inquiry_id: string | null;
   created_at: string;
   updated_at: string;
 }
@@ -165,7 +171,29 @@ export async function createCase(input: CreateCaseInput): Promise<CRMCase> {
     .single();
 
   if (error) throw error;
+
+  // Auto-log activity for new case
+  await supabase.from('crm_activities').insert({
+    case_id: (data as CRMCase).id,
+    type: 'status_change',
+    description: 'Case opened — New Lead',
+    performed_by_name: 'System',
+    metadata: { status: 'New Lead' },
+  });
+
   return data as CRMCase;
+}
+
+export async function updateCaseWorkflowField(
+  id: string,
+  field: 'requirement_data' | 'not_interested_reason' | 'selected_service' | 'processing_notes',
+  value: unknown
+): Promise<void> {
+  const { error } = await supabase
+    .from('crm_cases')
+    .update({ [field]: value })
+    .eq('id', id);
+  if (error) throw error;
 }
 
 export async function updateCaseStatus(

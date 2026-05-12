@@ -17,6 +17,7 @@ import { AdminInquiries } from './admin/pages/AdminInquiries';
 import { AdminServicesPage } from './admin/pages/AdminServicesPage';
 import { AdminUsersPage } from './admin/pages/AdminUsersPage';
 import { AdminSettingsPage } from './admin/pages/AdminSettingsPage';
+import { AdminContentPage } from './admin/pages/AdminContentPage';
 import { AdminRedirect } from './admin/pages/AdminRedirect';
 
 // CRM imports
@@ -59,6 +60,7 @@ export const router = createBrowserRouter([
       { path: 'dashboard', Component: AdminDashboard },
       { path: 'inquiries', Component: AdminInquiries },
       { path: 'services', Component: AdminServicesPage },
+      { path: 'content', Component: AdminContentPage },
       { path: 'users', Component: AdminUsersPage },
       { path: 'settings', Component: AdminSettingsPage },
     ],

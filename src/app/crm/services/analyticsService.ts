@@ -62,12 +62,34 @@ export async function fetchAnalytics() {
   const [casesRes, paymentsRes, tasksRes] = await Promise.all([
     supabase.from('crm_cases').select('status, priority, service_type, assigned_to, created_at, updated_at'),
     supabase.from('crm_payments').select('amount, status, created_at'),
-    supabase.from('crm_tasks').select('status, priority, due_date'),
+    // crm_tasks is optional — don't crash if it doesn't exist
+    supabase.from('crm_tasks').select('status, priority, due_date')
   ]);
 
-  const cases = casesRes.data ?? [];
-  const payments = paymentsRes.data ?? [];
-  const tasks = tasksRes.data ?? [];
+  interface CaseRecord {
+    status: string;
+    priority: string;
+    service_type: string;
+    assigned_to: string | null;
+    created_at: string;
+    updated_at: string;
+  }
+
+  interface PaymentRecord {
+    amount: number | string;
+    status: string;
+    created_at: string;
+  }
+
+  interface TaskRecord {
+    status: string;
+    priority: string;
+    due_date: string;
+  }
+
+  const cases = (casesRes.data ?? []) as CaseRecord[];
+  const payments = (paymentsRes.data ?? []) as PaymentRecord[];
+  const tasks = (tasksRes.data ?? []) as TaskRecord[];
 
   // Conversion funnel
   const funnel = CASE_STATUSES.map(stage => ({
@@ -99,11 +121,11 @@ export async function fetchAnalytics() {
   // Total revenue
   const totalRevenue = payments
     .filter(p => p.status === 'paid')
-    .reduce((s, p) => s + Number(p.amount), 0);
+    .reduce((s: number, p) => s + Number(p.amount), 0);
 
   const pendingRevenue = payments
     .filter(p => p.status === 'pending')
-    .reduce((s, p) => s + Number(p.amount), 0);
+    .reduce((s: number, p) => s + Number(p.amount), 0);
 
   // Conversion rate
   const paymentCompleted = cases.filter(c =>

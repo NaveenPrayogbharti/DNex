@@ -32,7 +32,9 @@ import {
   RefreshCw,
   Edit3,
   FolderOpen,
-  ShieldCheck
+  ShieldCheck,
+  Scale,
+  Gavel,
 } from "lucide-react";
 
 const NAVY = "#0D2137";
@@ -161,35 +163,40 @@ const megaMenuConfig: Record<string, MegaMenuConfig> = {
     href: "/our-services#india-services",
     categories: [
       {
-        title: "Taxation Services",
+        title: "Company & ROC",
         items: [
-          { icon: Receipt,        label: "ITR Filing",              desc: "Income Tax Return filing for individuals, HUFs, and companies in India.",             href: "/our-services#india-services" },
-          { icon: FileText,       label: "GST Registration",        desc: "Complete support for GST registration and compliance within India.",                   href: "/our-services#india-services" },
-          { icon: ClipboardCheck, label: "GST Filing",              desc: "Monthly, quarterly, and annual GST return preparation and filing.",                    href: "/our-services#india-services" },
-          { icon: BookOpen,       label: "TDS Compliance",          desc: "TDS deduction, filing, and compliance management services.",                          href: "/our-services#india-services" },
+          { icon: Building2,      label: "Company Incorporation",   desc: "End-to-end company incorporation services in India — Pvt Ltd, LLP, OPC, and more.", href: "/our-services#india-services" },
+          { icon: FileText,       label: "ROC Filings",              desc: "Annual and event-based filings with the Registrar of Companies.",                   href: "/our-services#india-services" },
         ],
       },
       {
-        title: "Accounting & Audit",
+        title: "Tax Compliances",
         items: [
-          { icon: BookOpen,       label: "Accounting & Bookkeeping", desc: "Comprehensive financial tracking and book management for Indian entities.",           href: "/our-services#india-services" },
-          { icon: ClipboardCheck, label: "Audit Services",           desc: "Statutory and internal auditing for Indian companies.",                               href: "/our-services#india-services" },
-          { icon: FileText,       label: "ROC Filings",              desc: "Annual and event-based filings with the Registrar of Companies.",                     href: "/our-services#india-services" },
+          { icon: Receipt,        label: "GST Compliances",         desc: "GST registration, monthly/quarterly filing, reconciliation, and audit support.",     href: "/our-services#india-services" },
+          { icon: ClipboardCheck, label: "Income Tax Compliances",   desc: "ITR filing, advance tax planning, TDS compliance, and tax notice handling.",        href: "/our-services#india-services" },
         ],
       },
       {
-        title: "Compliance & Regulatory",
+        title: "Advisory & Cross-Border",
         items: [
-          { icon: Building,       label: "FEMA Compliance",         desc: "Foreign Exchange Management Act advisory for NRIs and businesses.",                    href: "/our-services#india-services" },
-          { icon: ClipboardCheck, label: "RBI Filings",             desc: "Reserve Bank of India mandatory filings and FCTRS reporting.",                         href: "/our-services#india-services" },
-          { icon: BookOpen,       label: "NRI Services",            desc: "Comprehensive NRI advisory — NRO/NRE accounts, repatriation, tax planning.",           href: "/our-services#india-services" },
+          { icon: Briefcase,      label: "Business Advisory",        desc: "Strategic business advisory for startups and established enterprises in India.",      href: "/our-services#india-services" },
+          { icon: Globe,          label: "Cross-Border Services",    desc: "UAE–India business structuring, FEMA/ODI compliance, and investment advisory.",      href: "/our-services#india-services" },
+        ],
+      },
+      {
+        title: "Legal Services",
+        items: [
+          { icon: Scale,     label: "Litigation & Dispute Resolution", desc: "Expert representation and strategic counsel for corporate disputes, regulatory proceedings, and commercial litigation.",       href: "/our-services#india-services" },
+          { icon: FileText,  label: "Contract Drafting & Vetting",     desc: "Drafting, reviewing, and negotiating commercial contracts, MOUs, and partnership agreements.",                              href: "/our-services#india-services" },
+          { icon: ShieldCheck, label: "Regulatory Compliance",         desc: "Proactive compliance management across UAE and India regulatory frameworks to minimize legal risk.",                        href: "/our-services#india-services" },
+          { icon: Gavel,     label: "Legal Advisory",                   desc: "Strategic legal guidance on corporate structuring, mergers, and cross-border transactions.",                               href: "/our-services#india-services" },
         ],
       },
     ],
     featured: {
-      title: "🇮🇳 India Services",
-      desc: "Expert services for NRIs and India-based businesses operating across UAE and India. We assist with NRO accounts, business expansion, documentation, compliance, taxation, and cross-border financial support. Our services are designed to simplify operations and help clients manage their business interests seamlessly in both countries.",
-      cta: "Explore India Services",
+      title: "India Services",
+      desc: "Expert services for NRIs, India-based businesses, and legal support. From company incorporation and tax compliances to litigation, contract drafting, and regulatory compliance.",
+      cta: "Explore Services",
       href: "/our-services#india-services",
     },
   },

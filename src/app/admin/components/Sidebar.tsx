@@ -10,6 +10,7 @@ import {
   ChevronRight,
   BarChart3,
   ExternalLink,
+  FileText,
 } from 'lucide-react';
 import { signOutAdmin } from '../services/authService';
 
@@ -22,11 +23,12 @@ interface SidebarProps {
 }
 
 const navItems = [
-  { label: 'Dashboard', icon: LayoutDashboard, path: '/admin/dashboard' },
-  { label: 'Inquiries', icon: Inbox, path: '/admin/inquiries' },
-  { label: 'Services', icon: Briefcase, path: '/admin/services' },
-  { label: 'Admin Users', icon: Users, path: '/admin/users' },
-  { label: 'Settings', icon: Settings, path: '/admin/settings' },
+  { label: 'Dashboard',    icon: LayoutDashboard, path: '/admin/dashboard' },
+  { label: 'Inquiries',   icon: Inbox,            path: '/admin/inquiries' },
+  { label: 'Services',    icon: Briefcase,        path: '/admin/services' },
+  { label: 'Content',     icon: FileText,         path: '/admin/content' },
+  { label: 'Admin Users', icon: Users,            path: '/admin/users' },
+  { label: 'Settings',    icon: Settings,         path: '/admin/settings' },
 ];
 
 export function Sidebar({ collapsed, onToggle }: SidebarProps) {

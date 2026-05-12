@@ -39,7 +39,8 @@ export function LeadForm() {
 
     console.log("FORM DATA:", formData);
 
-    const { data, error } = await supabase.from("leads").insert([
+    // 1. Insert lead into leads table
+    const { data: leadData, error } = await supabase.from("leads").insert([
       {
         full_name: formData.fullName,
         email: formData.email,
@@ -48,17 +49,59 @@ export function LeadForm() {
         service_needed: formData.service,
         message: formData.message,
       },
-    ]);
+    ]).select().single();
 
-    console.log("DATA:", data);
+    console.log("LEAD DATA:", leadData);
     console.log("ERROR:", error);
 
     if (error) {
-      alert(error.message); // 👈 IMPORTANT (shows real error)
-    } else {
-      setSubmitted(true); // 👈 use your UI instead of alert
+      alert(error.message);
+      return;
     }
+
+    // 2. Auto-create CRM case from this inquiry
+    const year = new Date().getFullYear();
+    const caseId = `DNX-${year}-${Math.floor(1000 + Math.random() * 9000)}`;
+
+    const { error: crmError } = await supabase.from("crm_cases").insert({
+      case_id: caseId,
+      full_name: formData.fullName,
+      email: formData.email,
+      phone: formData.phone,
+      country: formData.country,
+      service_type: formData.service,
+      status: "New Lead",
+      priority: "medium",
+      source: "website",
+      notes: formData.message || null,
+      inquiry_id: leadData?.id ?? null,
+    });
+
+    if (crmError) {
+      // Case creation failed silently — lead is still saved
+      console.error("[CRM] Auto-case creation failed:", crmError.message);
+    } else {
+      // Log opening activity
+      const { data: caseRow } = await supabase
+        .from("crm_cases")
+        .select("id")
+        .eq("case_id", caseId)
+        .single();
+
+      if (caseRow?.id) {
+        await supabase.from("crm_activities").insert({
+          case_id: caseRow.id,
+          type: "status_change",
+          description: "Case automatically opened from website inquiry",
+          performed_by_name: "System",
+          metadata: { status: "New Lead", source: "website", inquiry_id: leadData?.id },
+        });
+      }
+    }
+
+    setSubmitted(true);
   };
+
 
 
 

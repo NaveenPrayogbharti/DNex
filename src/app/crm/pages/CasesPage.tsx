@@ -165,8 +165,8 @@ export function CasesPage() {
                     <tr key={c.id} onClick={() => navigate(`/crm/cases/${c.id}`)}>
                       <td style={{ fontFamily: 'monospace', color: GOLD, fontWeight: 700 }}>{c.case_id}</td>
                       <td>
-                        <div style={{ fontWeight: 600, color: '#fff' }}>{c.full_name}</div>
-                        <div style={{ fontSize: '12px', color: '#94a3b8' }}>{c.email}</div>
+                        <div style={{ fontWeight: 600, color: '#0A1628' }}>{c.full_name}</div>
+                        <div style={{ fontSize: '12px', color: '#64748b' }}>{c.email}</div>
                       </td>
                       <td>{c.service_type}</td>
                       <td>

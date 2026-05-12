@@ -175,8 +175,8 @@ export function CRMSettingsPage() {
                         <span>🔔 <strong>When:</strong> {trigger?.label ?? rule.trigger}</span>
                         <span>→</span>
                         <span>⚡ <strong>Do:</strong> {action?.label ?? rule.action}</span>
-                        {rule.action_data?.status && <span style={{ color: GOLD }}>({rule.action_data.status as string})</span>}
-                        {rule.action_data?.message && <span style={{ color: '#94a3b8' }}>"{rule.action_data.message as string}"</span>}
+                        {!!rule.action_data?.status && <span style={{ color: GOLD }}>({rule.action_data.status as string})</span>}
+                        {!!rule.action_data?.message && <span style={{ color: '#94a3b8' }}>"{rule.action_data.message as string}"</span>}
                       </div>
                     </div>
                     <button

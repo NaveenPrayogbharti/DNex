@@ -1,6 +1,6 @@
 import { NavLink, useNavigate } from 'react-router';
 import {
-  LayoutDashboard, FolderOpen, CheckSquare, BarChart3,
+  LayoutDashboard, FolderOpen, BarChart3,
   LogOut, ChevronLeft, ChevronRight, Zap, Bell, ArrowLeft,
 } from 'lucide-react';
 import { signOutAdmin } from '../../admin/services/authService';
@@ -17,7 +17,6 @@ interface SidebarProps {
 const navItems = [
   { label: 'Dashboard',  icon: LayoutDashboard, path: '/crm/dashboard' },
   { label: 'Cases',      icon: FolderOpen,      path: '/crm/cases' },
-  { label: 'Tasks',      icon: CheckSquare,     path: '/crm/tasks' },
   { label: 'Analytics',  icon: BarChart3,       path: '/crm/analytics' },
   { label: 'Automation', icon: Zap,             path: '/crm/settings' },
 ];

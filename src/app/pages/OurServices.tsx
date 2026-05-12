@@ -6,7 +6,7 @@ import {
   FileCheck, Landmark, Handshake, IdCard, RefreshCw, Edit3,
   FolderOpen, ShieldCheck, Building2, Globe, Anchor, GitBranch,
   Lightbulb, UserCog, Briefcase, Users, UserCheck, Laptop,
-  Clock, Star, TrendingUp, Award, AlertCircle,
+  Clock, Star, TrendingUp, Award, AlertCircle, Scale, Gavel,
 } from 'lucide-react';
 
 const GOLD = '#C9963C';
@@ -139,46 +139,67 @@ const indiaProServices = [
 
 const indiaServiceCategories = [
   {
-    id: 'india-taxation',
-    title: 'Taxation Services',
-    desc: 'India-specific tax filings, registrations, and compliance services for NRIs and India based entities.',
+    id: 'india-incorporation',
+    title: 'Company Incorporation',
+    desc: 'End-to-end company incorporation services in India — Pvt Ltd, LLP, OPC, and Branch Office setup.',
     items: [
-      { icon: Receipt, label: 'ITR Filing', desc: 'Income Tax Return filing for individuals, HUFs, and companies in India.', href: '/leadform' },
-      { icon: FileText, label: 'GST Registration', desc: 'Complete support for GST registration and compliance within India.', href: '/leadform' },
-      { icon: ClipboardCheck, label: 'GST Filing', desc: 'Monthly, quarterly, and annual GST return preparation and filing.', href: '/leadform' },
-      { icon: BookOpen, label: 'TDS Compliance', desc: 'TDS deduction, filing, and compliance management services.', href: '/leadform' },
-    ],
-  },
-  {
-    id: 'india-accounting',
-    title: 'Accounting & Audit',
-    desc: 'Maintain accurate books and stay fully compliant with Indian accounting standards.',
-    items: [
-      { icon: BookOpen, label: 'Accounting & Bookkeeping', desc: 'Comprehensive financial tracking, reporting, and book management for Indian entities.', href: '/leadform' },
-      { icon: ClipboardCheck, label: 'Audit Services', desc: 'Statutory and internal auditing to ensure complete financial accuracy.', href: '/leadform' },
-      { icon: FileText, label: 'ROC Filings', desc: 'Annual and event-based filings with the Registrar of Companies.', href: '/leadform' },
-    ],
-  },
-  {
-    id: 'india-compliance',
-    title: 'Compliance & Regulatory',
-    desc: "Navigate India's complex regulatory landscape from FEMA, RBI, SEBI, and more handled by experts.",
-    items: [
-      { icon: Building, label: 'FEMA Compliance', desc: 'Foreign Exchange Management Act advisory and compliance support for NRIs and businesses.', href: '/leadform' },
-      { icon: ClipboardCheck, label: 'RBI Filings', desc: 'Reserve Bank of India mandatory filings, FCTRS, and reporting requirements.', href: '/leadform' },
-      { icon: BookOpen, label: 'ODI Compliance', desc: 'Overseas Direct Investment compliance for Indian entities investing abroad.', href: '/leadform' },
-      { icon: ShieldCheck, label: 'NRI Services', desc: 'Comprehensive NRI advisory NRO/NRE accounts, repatriation, and tax planning.', href: '/leadform' },
-    ],
-  },
-  {
-    id: 'india-company-setup',
-    title: 'Company Setup in India',
-    desc: 'Incorporate your business in India with full legal compliance and expert guidance.',
-    items: [
-      { icon: Building2, label: 'Private Limited Company', desc: 'Incorporate a Pvt Ltd company in India with complete registration and compliance support.', href: '/leadform' },
+      { icon: Building2, label: 'Private Limited Company', desc: 'Incorporate a Pvt Ltd company in India with complete registration, MOA/AOA drafting, and compliance support.', href: '/leadform' },
       { icon: Landmark, label: 'LLP Formation', desc: 'Form a Limited Liability Partnership with end-to-end documentation and ROC filing.', href: '/leadform' },
-      { icon: FileCheck, label: 'OPC Registration', desc: 'One Person Company registration for solo entrepreneurs in India.', href: '/leadform' },
+      { icon: FileCheck, label: 'OPC Registration', desc: 'One Person Company registration for solo entrepreneurs looking to operate in India.', href: '/leadform' },
       { icon: Globe, label: 'Branch Office in India', desc: 'Set up a branch or liaison office in India for foreign companies.', href: '/leadform' },
+    ],
+  },
+  {
+    id: 'india-gst',
+    title: 'GST Compliances',
+    desc: 'Complete GST lifecycle support — registration, filing, reconciliation, and audit.',
+    items: [
+      { icon: FileText, label: 'GST Registration', desc: 'New GST registration for businesses with complete documentation support.', href: '/leadform' },
+      { icon: ClipboardCheck, label: 'GSTR Filing', desc: 'Monthly, quarterly, and annual GST return (GSTR-1, GSTR-3B, GSTR-9) preparation and filing.', href: '/leadform' },
+      { icon: BookOpen, label: 'GST Reconciliation', desc: 'GSTR-2A/2B matching, ITC reconciliation, and mismatch resolution.', href: '/leadform' },
+      { icon: Receipt, label: 'GST Audit', desc: 'GST audit support and GSTR-9C preparation for businesses exceeding threshold limits.', href: '/leadform' },
+    ],
+  },
+  {
+    id: 'india-incometax',
+    title: 'Income Tax Compliances',
+    desc: 'Comprehensive income tax services — ITR filing, TDS, advance tax planning, and tax notice handling.',
+    items: [
+      { icon: Receipt, label: 'ITR Filing', desc: 'Income Tax Return filing for individuals, HUFs, firms, and companies in India.', href: '/leadform' },
+      { icon: ClipboardCheck, label: 'TDS Compliance', desc: 'TDS deduction, challan payment, quarterly TDS return filing, and compliance management.', href: '/leadform' },
+      { icon: BookOpen, label: 'Advance Tax Planning', desc: 'Strategic advance tax computation and timely payment advisory to avoid interest and penalties.', href: '/leadform' },
+      { icon: ShieldCheck, label: 'Tax Notice Handling', desc: 'Expert response and representation for income tax notices, scrutiny assessments, and appeals.', href: '/leadform' },
+    ],
+  },
+  {
+    id: 'india-roc',
+    title: 'ROC Filings',
+    desc: 'Registrar of Companies filings — annual returns, event-based filings, and compliance management.',
+    items: [
+      { icon: FileText, label: 'Annual ROC Returns', desc: 'Timely filing of AOC-4, MGT-7/7A, and other mandatory annual returns with MCA.', href: '/leadform' },
+      { icon: ClipboardCheck, label: 'Event-Based Filings', desc: 'Director changes, share transfers, increase in authorized capital, and other event-based forms.', href: '/leadform' },
+      { icon: BookOpen, label: 'Compliance Calendar', desc: 'Proactive compliance tracking and reminders for all ROC due dates and deadlines.', href: '/leadform' },
+    ],
+  },
+  {
+    id: 'india-advisory',
+    title: 'Business Advisory',
+    desc: 'Strategic business advisory services for startups, MSMEs, and growing enterprises in India.',
+    items: [
+      { icon: TrendingUp, label: 'Business Strategy', desc: 'Strategic planning, market entry advisory, and business model optimization for Indian market.', href: '/leadform' },
+      { icon: Briefcase, label: 'Startup Advisory', desc: 'DPIIT registration, startup compliance, funding advisory, and growth roadmap consulting.', href: '/leadform' },
+      { icon: Award, label: 'MSME Registration', desc: 'Udyam registration and MSME benefit advisory for small and medium enterprises.', href: '/leadform' },
+    ],
+  },
+  {
+    id: 'india-crossborder',
+    title: 'Cross-Border Services (UAE–India)',
+    desc: 'Specialized cross-border structuring, FEMA/ODI compliance, and NRI advisory for UAE–India business operations.',
+    items: [
+      { icon: Globe, label: 'UAE–India Structuring', desc: 'Optimal business structuring for entities operating across both UAE and India jurisdictions.', href: '/leadform' },
+      { icon: Building, label: 'FEMA & ODI Compliance', desc: 'Foreign Exchange Management Act advisory, ODI filings, and FCTRS reporting for outbound investments.', href: '/leadform' },
+      { icon: ShieldCheck, label: 'NRI Advisory', desc: 'Comprehensive NRI tax planning, NRO/NRE account advisory, repatriation, and DTAA benefits.', href: '/leadform' },
+      { icon: Laptop, label: 'Transfer Pricing', desc: 'Transfer pricing documentation, benchmarking, and compliance for related-party cross-border transactions.', href: '/leadform' },
     ],
   },
 ];
@@ -711,113 +732,181 @@ export function OurServices() {
                 🇮🇳 India Services
               </div>
               <h2 className="mb-2" style={{ fontSize: '1.75rem', fontWeight: 700, color: NAVY }}>
-                Expert Services for NRIs &amp; India-Based Businesses
+                Expert Services for NRIs, Businesses &amp; Legal Support
               </h2>
               <p className="text-gray-500 mb-10 text-justify" style={{ lineHeight: 1.7 }}>
                 Specialized services bridging UAE and India from FEMA compliance and NRI banking to
-                Indian company incorporation, tax filings, and PRO support.
+                Indian company incorporation, tax filings, and comprehensive legal support across both jurisdictions.
               </p>
 
-              {/* Why Choose Us */}
-              <div className="mb-10">
-                <h3 className="text-lg font-bold mb-6" style={{ color: NAVY }}>Why Choose Us for India Services</h3>
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                  {indiaBenefits.map((b) => (
+              {/* Sub-section: Legal Services */}
+              <div className="mb-12">
+                <h3 className="text-xl font-bold mb-4" style={{ color: NAVY }}>⚖️ Legal Services &amp; Dispute Resolution</h3>
+                
+                {/* Featured Legal Banner */}
+                <div
+                  className="rounded-2xl overflow-hidden mb-6"
+                  style={{ border: `2px solid ${GOLD}20` }}
+                >
+                  <div
+                    className="px-6 py-6"
+                    style={{ background: `linear-gradient(135deg, ${NAVY} 0%, #1a3354 100%)` }}
+                  >
                     <div
-                      key={b.title}
-                      className="flex gap-4 p-5 rounded-xl border transition-all hover:border-[#C9963C]/40 hover:shadow-md"
-                      style={{ borderColor: '#e8edf2' }}
+                      className="inline-block text-[10px] font-bold uppercase tracking-widest mb-2 px-3 py-1 rounded-full"
+                      style={{ backgroundColor: 'rgba(201,150,60,0.2)', color: GOLD }}
                     >
-                      <div
-                        className="w-10 h-10 rounded-lg flex items-center justify-center shrink-0"
-                        style={{ backgroundColor: 'rgba(201,150,60,0.1)' }}
-                      >
-                        <b.icon size={18} style={{ color: GOLD }} />
-                      </div>
-                      <div>
-                        <h4 className="font-semibold text-sm mb-1" style={{ color: NAVY }}>{b.title}</h4>
-                        <p className="text-xs text-gray-500 text-justify" style={{ lineHeight: 1.6 }}>{b.desc}</p>
-                      </div>
+                      Featured
                     </div>
-                  ))}
-                </div>
-              </div>
-
-              {/* PRO Services */}
-              <div className="mb-10">
-                <h3 className="text-lg font-bold mb-2" style={{ color: NAVY }}>India PRO &amp; Government Services</h3>
-                <p className="text-gray-500 mb-6 text-justify" style={{ lineHeight: 1.7 }}>
-                  Our dedicated PRO team handles all government paperwork, approvals, and administrative
-                  procedures for Indian nationals and India-based businesses.
-                </p>
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                  {indiaProServices.map((service) => (
+                    <h3 className="text-lg font-bold text-white mb-2">
+                      Protect Your Interests with the Right Legal Strategy
+                    </h3>
+                    <p className="text-slate-300 text-sm mb-4 max-w-2xl" style={{ lineHeight: 1.7 }}>
+                      Whether you are facing a dispute or require proactive legal support, DNEX is here to assist you.
+                      Our legal team combines deep regulatory knowledge with practical strategy to safeguard your interests
+                      at every stage — from advisory to representation.
+                    </p>
                     <Link
-                      key={service.label}
-                      to={service.href}
-                      className="flex gap-4 p-5 rounded-xl border transition-all hover:border-[#C9963C]/40 hover:shadow-md group"
+                      to="/leadform"
+                      className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl text-sm font-semibold text-white transition-all hover:opacity-90"
+                      style={{ backgroundColor: GOLD }}
+                    >
+                      Schedule a Legal Consultation
+                      <ArrowRight size={14} />
+                    </Link>
+                  </div>
+                </div>
+
+                {/* Legal Cards */}
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  {[
+                    { icon: Scale, title: 'Litigation & Dispute Resolution', desc: 'Expert representation and strategic counsel for corporate disputes, regulatory proceedings, commercial litigation, and arbitration.' },
+                    { icon: FileText, title: 'Contract Drafting & Vetting', desc: 'Drafting, reviewing, and negotiating commercial contracts, MOUs, NDAs, and partnership agreements.' },
+                    { icon: ShieldCheck, title: 'Regulatory Compliance', desc: 'Proactive compliance management across UAE and India regulatory frameworks to minimize legal exposure.' },
+                    { icon: Gavel, title: 'Legal Advisory', desc: 'Strategic legal guidance on corporate structuring, mergers, acquisitions, and cross-border transactions.' },
+                    { icon: BookOpen, title: 'Legal Documentation', desc: 'Preparation and management of all legal documents including board resolutions, shareholder agreements, and powers of attorney.' },
+                    { icon: ShieldCheck, title: 'Tax Notice & Legal Response', desc: 'Expert handling of tax notices, show-cause notices, and regulatory queries.' },
+                  ].map((service) => (
+                    <Link
+                      key={service.title}
+                      to="/leadform"
+                      className="flex gap-4 p-4 rounded-xl border transition-all hover:border-[#C9963C]/40 hover:shadow-md group"
                       style={{ borderColor: '#e8edf2' }}
                     >
                       <div
-                        className="w-10 h-10 rounded-lg flex items-center justify-center shrink-0"
-                        style={{ backgroundColor: 'rgba(201,150,60,0.1)' }}
+                        className="w-9 h-9 rounded-lg flex items-center justify-center shrink-0 mt-0.5"
+                        style={{ backgroundColor: 'rgba(13,33,55,0.08)' }}
                       >
-                        <service.icon size={18} style={{ color: GOLD }} />
+                        <service.icon size={16} style={{ color: NAVY }} />
                       </div>
                       <div className="flex-1">
                         <h4 className="font-semibold text-sm mb-1 group-hover:text-[#C9963C] transition-colors" style={{ color: NAVY }}>
-                          {service.label}
+                          {service.title}
                         </h4>
-                        <p className="text-xs text-gray-500 text-justify" style={{ lineHeight: 1.6 }}>{service.desc}</p>
+                        <p className="text-xs text-gray-500 text-justify" style={{ lineHeight: 1.5 }}>{service.desc}</p>
                       </div>
-                      <ArrowRight size={14} className="shrink-0 mt-1 opacity-0 group-hover:opacity-100 transition-opacity" style={{ color: GOLD }} />
+                      <ArrowRight size={12} className="shrink-0 mt-1 opacity-0 group-hover:opacity-100 transition-opacity" style={{ color: GOLD }} />
                     </Link>
                   ))}
                 </div>
               </div>
 
-              {/* India-Specific Tabbed Services */}
-              <div className="mb-10">
-                <h3 className="text-lg font-bold mb-2" style={{ color: NAVY }}>India Specific Expertise</h3>
-                <p className="text-gray-500 mb-6 text-justify" style={{ lineHeight: 1.7 }}>
-                  Comprehensive services tailored for Indian regulations, NRI requirements, and cross border business needs.
-                </p>
-                <IndiaServicesTabs />
-              </div>
-
-              {/* NRI Advisory Note */}
-              <div
-                className="rounded-xl p-6 flex gap-4"
-                style={{ backgroundColor: 'rgba(201,150,60,0.06)', border: '1px solid rgba(201,150,60,0.3)' }}
-              >
-                <AlertCircle size={20} className="shrink-0 mt-0.5" style={{ color: GOLD }} />
-                <div>
-                  <h4 className="font-bold text-sm mb-2" style={{ color: NAVY }}>Important NRI Advisory</h4>
-                  <p className="text-sm text-gray-600 text-justify" style={{ lineHeight: 1.7 }}>
-                    As an NRI, your tax obligations span both India and your country of residence. Our experts
-                    ensure you remain compliant with FEMA regulations, DTAA treaty benefits, and RBI guidelines
-                    while optimizing your cross-border financial structure. Contact us for a personalized assessment.
-                  </p>
+              {/* Sub-section: India Services */}
+              <div>
+                <h3 className="text-xl font-bold mb-4" style={{ color: NAVY }}>🇮🇳 India Specific Services</h3>
+                
+                {/* Why Choose Us */}
+                <div className="mb-8">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    {indiaBenefits.map((b) => (
+                      <div
+                        key={b.title}
+                        className="flex gap-4 p-4 rounded-xl border transition-all hover:border-[#C9963C]/40 hover:shadow-md"
+                        style={{ borderColor: '#e8edf2' }}
+                      >
+                        <div
+                          className="w-9 h-9 rounded-lg flex items-center justify-center shrink-0"
+                          style={{ backgroundColor: 'rgba(201,150,60,0.1)' }}
+                        >
+                          <b.icon size={16} style={{ color: GOLD }} />
+                        </div>
+                        <div>
+                          <h4 className="font-semibold text-sm mb-1" style={{ color: NAVY }}>{b.title}</h4>
+                          <p className="text-xs text-gray-500 text-justify" style={{ lineHeight: 1.5 }}>{b.desc}</p>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
                 </div>
-              </div>
 
-              {/* India CTA strip */}
-              <div
-                className="mt-8 rounded-xl p-5 flex items-center justify-between gap-4"
-                style={{ backgroundColor: 'rgba(13,33,55,0.04)', border: `1px dashed ${GOLD}40` }}
-              >
-                <div>
-                  <div className="text-sm font-bold mb-0.5" style={{ color: NAVY }}>🇮🇳 Your India-UAE Business Partner</div>
-                  <p className="text-xs text-gray-500 text-justify">Whether you're an NRI managing investments, an Indian company expanding to UAE, or seeking cross-border compliance we are your trusted partner.</p>
+                {/* India PRO Services */}
+                <div className="mb-8">
+                  <h3 className="text-lg font-bold mb-2" style={{ color: NAVY }}>India PRO &amp; Government Services</h3>
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    {indiaProServices.map((service) => (
+                      <Link
+                        key={service.label}
+                        to={service.href}
+                        className="flex gap-4 p-4 rounded-xl border transition-all hover:border-[#C9963C]/40 hover:shadow-md group"
+                        style={{ borderColor: '#e8edf2' }}
+                      >
+                        <div
+                          className="w-9 h-9 rounded-lg flex items-center justify-center shrink-0"
+                          style={{ backgroundColor: 'rgba(201,150,60,0.1)' }}
+                        >
+                          <service.icon size={16} style={{ color: GOLD }} />
+                        </div>
+                        <div className="flex-1">
+                          <h4 className="font-semibold text-sm mb-1 group-hover:text-[#C9963C] transition-colors" style={{ color: NAVY }}>
+                            {service.label}
+                          </h4>
+                          <p className="text-xs text-gray-500 text-justify" style={{ lineHeight: 1.5 }}>{service.desc}</p>
+                        </div>
+                        <ArrowRight size={12} className="shrink-0 mt-1 opacity-0 group-hover:opacity-100 transition-opacity" style={{ color: GOLD }} />
+                      </Link>
+                    ))}
+                  </div>
                 </div>
-                <Link
-                  to="/contact"
-                  className="shrink-0 inline-flex items-center gap-2 px-5 py-2.5 rounded-lg text-sm font-semibold text-white transition-all hover:opacity-90"
-                  style={{ backgroundColor: GOLD }}
+
+                {/* India Tabbed Services */}
+                <div className="mb-8">
+                  <IndiaServicesTabs />
+                </div>
+
+                {/* NRI Advisory Note */}
+                <div
+                  className="rounded-xl p-5 flex gap-4 mb-8"
+                  style={{ backgroundColor: 'rgba(201,150,60,0.06)', border: '1px solid rgba(201,150,60,0.3)' }}
                 >
-                  Contact Us
-                  <ArrowRight size={14} />
-                </Link>
+                  <AlertCircle size={18} className="shrink-0 mt-0.5" style={{ color: GOLD }} />
+                  <div>
+                    <h4 className="font-bold text-sm mb-1" style={{ color: NAVY }}>Important NRI Advisory</h4>
+                    <p className="text-xs text-gray-600 text-justify" style={{ lineHeight: 1.6 }}>
+                      As an NRI, your tax obligations span both India and your country of residence. Our experts
+                      ensure you remain compliant with FEMA regulations, DTAA treaty benefits, and RBI guidelines
+                      while optimizing your cross-border financial structure.
+                    </p>
+                  </div>
+                </div>
+
+                {/* Combined CTA strip */}
+                <div
+                  className="rounded-xl p-5 flex items-center justify-between gap-4"
+                  style={{ backgroundColor: 'rgba(13,33,55,0.04)', border: `1px dashed ${GOLD}40` }}
+                >
+                  <div>
+                    <div className="text-sm font-bold mb-0.5" style={{ color: NAVY }}>Need Assistance?</div>
+                    <p className="text-xs text-gray-500 text-justify">Our experts are ready to assist with legal matters and India-UAE cross-border services.</p>
+                  </div>
+                  <Link
+                    to="/contact"
+                    className="shrink-0 inline-flex items-center gap-2 px-5 py-2.5 rounded-lg text-sm font-semibold text-white transition-all hover:opacity-90"
+                    style={{ backgroundColor: GOLD }}
+                  >
+                    Contact Us
+                    <ArrowRight size={14} />
+                  </Link>
+                </div>
               </div>
             </section>
           </div>

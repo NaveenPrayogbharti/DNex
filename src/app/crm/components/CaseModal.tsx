@@ -3,6 +3,7 @@ import { X } from 'lucide-react';
 import { createCase } from '../services/caseService';
 import type { CreateCaseInput, CasePriority } from '../services/caseService';
 import { processAutomations } from '../services/automationService';
+import { useNavigate } from 'react-router';
 
 const SERVICES = [
   'Company Formation', 'Freezone Setup', 'PRO Services', 'Visa Processing',
@@ -19,6 +20,7 @@ interface Props {
 }
 
 export function CaseModal({ onClose, onCreated }: Props) {
+  const navigate = useNavigate();
   const [form, setForm] = useState<CreateCaseInput>({
     full_name: '',
     email: '',
@@ -47,6 +49,7 @@ export function CaseModal({ onClose, onCreated }: Props) {
       await processAutomations('case_created', { caseId: newCase.id });
       onCreated();
       onClose();
+      navigate(`/crm/cases/${newCase.id}`);
     } catch (e: any) {
       setError(e.message ?? 'Failed to create case');
     } finally {

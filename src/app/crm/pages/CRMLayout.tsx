@@ -13,7 +13,7 @@ export function CRMLayout() {
     return (
       <div style={{
         display: 'flex', alignItems: 'center', justifyContent: 'center',
-        minHeight: '100vh', background: '#0f172a',
+        minHeight: '100vh', background: '#f1f5f9',
       }}>
         <div className="crm-spinner" />
       </div>

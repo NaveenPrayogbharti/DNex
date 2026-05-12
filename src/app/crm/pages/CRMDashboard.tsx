@@ -22,10 +22,21 @@ export function CRMDashboard() {
   const navigate = useNavigate();
 
   useEffect(() => {
-    Promise.all([fetchAnalytics(), getCaseStats()])
-      .then(([a, s]) => { setAnalytics(a); setStats(s); })
-      .catch(console.error)
-      .finally(() => setLoading(false));
+    const load = async () => {
+      try {
+        const [a, s] = await Promise.all([fetchAnalytics(), getCaseStats()]);
+        setAnalytics(a);
+        setStats(s);
+      } catch (err) {
+        console.error('[CRMDashboard] Error loading data:', err);
+        // Try loading each independently so partial data still shows
+        fetchAnalytics().then(setAnalytics).catch(e => console.error('analytics:', e));
+        getCaseStats().then(setStats).catch(e => console.error('stats:', e));
+      } finally {
+        setLoading(false);
+      }
+    };
+    load();
   }, []);
 
   const topCards = [
@@ -104,7 +115,9 @@ export function CRMDashboard() {
     return (
       <div className="crm-page">
         <CRMNavbar title="Dashboard" subtitle="Loading..." />
-        <div className="crm-spinner" />
+        <div style={{ display:'flex', alignItems:'center', justifyContent:'center', minHeight:'60vh' }}>
+          <div className="crm-spinner" />
+        </div>
       </div>
     );
   }
@@ -141,12 +154,12 @@ export function CRMDashboard() {
             ) : (
               <ResponsiveContainer width="100%" height={220}>
                 <BarChart data={revenueData}>
-                  <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.05)" />
-                  <XAxis dataKey="month" tick={{ fill: '#94a3b8', fontSize: 11 }} />
-                  <YAxis tick={{ fill: '#94a3b8', fontSize: 11 }} />
+                  <CartesianGrid strokeDasharray="3 3" stroke="rgba(0,0,0,0.08)" />
+                  <XAxis dataKey="month" tick={{ fill: '#64748b', fontSize: 11 }} />
+                  <YAxis tick={{ fill: '#64748b', fontSize: 11 }} />
                   <Tooltip
-                    contentStyle={{ background: '#1e293b', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '8px' }}
-                    labelStyle={{ color: '#fff' }}
+                    contentStyle={{ background: '#fff', border: '1px solid rgba(0,0,0,0.1)', borderRadius: '8px', boxShadow: '0 4px 12px rgba(0,0,0,0.1)' }}
+                    labelStyle={{ color: '#1e293b', fontWeight: 600 }}
                     itemStyle={{ color: GOLD }}
                   />
                   <Bar dataKey="revenue" fill={GOLD} radius={[4, 4, 0, 0]} />
@@ -168,7 +181,7 @@ export function CRMDashboard() {
                       <Cell key={idx} fill={COLORS[idx % COLORS.length]} />
                     ))}
                   </Pie>
-                  <Tooltip contentStyle={{ background: '#1e293b', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '8px' }} />
+                  <Tooltip contentStyle={{ background: '#fff', border: '1px solid rgba(0,0,0,0.1)', borderRadius: '8px', boxShadow: '0 4px 12px rgba(0,0,0,0.1)' }} />
                 </PieChart>
               </ResponsiveContainer>
             )}
@@ -211,14 +224,14 @@ export function CRMDashboard() {
                   <div
                     key={status}
                     style={{
-                      background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)',
+                      background: '#f8fafc', border: '1px solid rgba(0,0,0,0.08)',
                       borderRadius: '8px', padding: '12px 16px', minWidth: '140px',
                       cursor: 'pointer',
                     }}
                     onClick={() => navigate(`/crm/cases?status=${encodeURIComponent(status)}`)}
                   >
-                    <div style={{ fontSize: '22px', fontWeight: 800, color: '#fff' }}>{count as number}</div>
-                    <div style={{ fontSize: '12px', color: '#94a3b8', marginTop: '2px' }}>{status}</div>
+                    <div style={{ fontSize: '22px', fontWeight: 800, color: '#1e293b' }}>{count as number}</div>
+                    <div style={{ fontSize: '12px', color: '#64748b', marginTop: '2px' }}>{status}</div>
                   </div>
                 ))}
             </div>

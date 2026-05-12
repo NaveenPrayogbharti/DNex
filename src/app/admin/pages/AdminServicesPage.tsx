@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { AdminNavbar } from '../components/AdminNavbar';
 import { Briefcase, Plus, Edit, Trash2, CheckCircle, XCircle } from 'lucide-react';
-import { getStoredServices, saveStoredServices, ServiceItem } from '../../../lib/servicesStore';
+import { getStoredServices, saveServicesToSupabase, ServiceItem } from '../../../lib/servicesStore';
 
 const GOLD = '#C9963C';
 const NAVY = '#0A1628';
@@ -11,9 +11,9 @@ export function AdminServicesPage() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingService, setEditingService] = useState<ServiceItem | null>(null);
   
-  // Form fields
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
+  const [requiredDocs, setRequiredDocs] = useState('');
   const [active, setActive] = useState(true);
 
   useEffect(() => {
@@ -25,47 +25,48 @@ export function AdminServicesPage() {
       setEditingService(service);
       setTitle(service.title);
       setDescription(service.description);
+      setRequiredDocs((service.required_docs ?? []).join(', '));
       setActive(service.active);
     } else {
       setEditingService(null);
       setTitle('');
       setDescription('');
+      setRequiredDocs('');
       setActive(true);
     }
     setIsModalOpen(true);
   };
 
-  const handleSave = () => {
+  const handleSave = async () => {
+    const docs = requiredDocs.split(',').map(d => d.trim()).filter(Boolean);
     let updated: ServiceItem[];
     if (editingService) {
-      updated = services.map(s => s.id === editingService.id ? { ...s, title, description, active } : s);
+      updated = services.map(s => s.id === editingService.id
+        ? { ...s, title, description, active, required_docs: docs } : s);
     } else {
       const newService: ServiceItem = {
         id: Date.now().toString(),
-        title,
-        description,
-        active
+        title, description, active, required_docs: docs,
       };
       updated = [...services, newService];
     }
     setServices(updated);
-    saveStoredServices(updated);
+    await saveServicesToSupabase(updated);
     setIsModalOpen(false);
-    alert('Service saved successfully!');
   };
 
-  const handleDelete = (id: string) => {
+  const handleDelete = async (id: string) => {
     if (confirm('Are you sure you want to remove this service?')) {
       const updated = services.filter(s => s.id !== id);
       setServices(updated);
-      saveStoredServices(updated);
+      await saveServicesToSupabase(updated);
     }
   };
 
-  const toggleStatus = (id: string) => {
+  const toggleStatus = async (id: string) => {
     const updated = services.map(s => s.id === id ? { ...s, active: !s.active } : s);
     setServices(updated);
-    saveStoredServices(updated);
+    await saveServicesToSupabase(updated);
   };
 
   return (
@@ -170,6 +171,17 @@ export function AdminServicesPage() {
                   rows={3}
                   style={{ width: '100%', padding: '10px', borderRadius: '4px', border: '1px solid #ccc', resize: 'none' }} 
                 />
+              </div>
+              <div style={{ marginBottom: '15px' }}>
+                <label style={{ display: 'block', marginBottom: '5px', fontWeight: 500 }}>Required Documents <span style={{ color: '#888', fontWeight: 400 }}>(for CRM workflow)</span></label>
+                <textarea
+                  value={requiredDocs}
+                  onChange={(e) => setRequiredDocs(e.target.value)}
+                  rows={2}
+                  style={{ width: '100%', padding: '10px', borderRadius: '4px', border: '1px solid #ccc', resize: 'none', fontSize: '13px' }}
+                  placeholder="Passport Copy, Trade License, Application Form (comma-separated)"
+                />
+                <span style={{ fontSize: '12px', color: '#888' }}>Separate with commas. These appear in the CRM when this service is selected.</span>
               </div>
               <div style={{ marginBottom: '20px', display: 'flex', alignItems: 'center', gap: '8px' }}>
                 <input 

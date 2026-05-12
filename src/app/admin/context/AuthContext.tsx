@@ -25,13 +25,32 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       return () => subscription.unsubscribe();
     }
 
+    let settled = false;
+
+    // Safety timeout — never leave users stuck on loading screen
+    const timeout = setTimeout(() => {
+      if (!settled) {
+        settled = true;
+        setLoading(false);
+      }
+    }, 3000);
+
     // Real Supabase auth: verify session on mount first
     supabase.auth.getSession().then(({ data: { session } }) => {
+      if (!settled) {
+        settled = true;
+        clearTimeout(timeout);
+      }
       if (session?.user) {
         setUser({ id: session.user.id, email: session.user.email ?? '' });
       } else {
         setUser(null);
       }
+      setLoading(false);
+    }).catch(() => {
+      settled = true;
+      clearTimeout(timeout);
+      setUser(null);
       setLoading(false);
     });
 
@@ -44,7 +63,10 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       }
     });
 
-    return () => subscription.unsubscribe();
+    return () => {
+      clearTimeout(timeout);
+      subscription.unsubscribe();
+    };
   }, []);
 
   return (

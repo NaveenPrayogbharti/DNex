@@ -1,6 +1,6 @@
 # DNex Project — Living Feature Document
 > **Auto-generated** — Do not edit manually. Regenerated on every `npm run dev` save and `npm run build`.
-> Last updated: **Thursday 7 May, 2026 at 5:50 pm**
+> Last updated: **Tuesday 12 May, 2026 at 3:44 pm**
 
 ---
 
@@ -8,11 +8,11 @@
 
 | Metric | Count |
 |--------|-------|
-| TypeScript/TSX files | 114 |
+| TypeScript/TSX files | 118 |
 | CSS stylesheets | 6 |
-| SQL schema files | 1 |
-| Registered routes | 23 |
-| Supabase tables used | 10 |
+| SQL schema files | 2 |
+| Registered routes | 24 |
+| Supabase tables used | 13 |
 | npm dependencies | 55 |
 
 ---
@@ -29,7 +29,7 @@
 | **Home** | `src/app/pages/Home.tsx` | 21 |
 | **IndiaServices** | `src/app/pages/IndiaServices.tsx` | 553 |
 | **NotFound** | `src/app/pages/NotFound.tsx` | 106 |
-| **OurServices** | `src/app/pages/OurServices.tsx` | 929 |
+| **OurServices** | `src/app/pages/OurServices.tsx` | 1018 |
 | **Root** | `src/app/pages/Root.tsx` | 48 |
 
 ### Home Section Components (7)
@@ -68,6 +68,7 @@ GET /admin
 GET dashboard
 GET inquiries
 GET services
+GET content
 GET users
 GET settings
 GET /crm
@@ -86,16 +87,17 @@ GET notifications
 
 > Secured with Supabase Authentication. Session validated on every mount.
 
-### Pages (8)
+### Pages (9)
 
 | Page | File | Lines |
 |------|------|-------|
+| **AdminContentPage** | `src/app/admin/pages/AdminContentPage.tsx` | 346 |
 | **AdminDashboard** | `src/app/admin/pages/AdminDashboard.tsx` | 81 |
 | **AdminInquiries** | `src/app/admin/pages/AdminInquiries.tsx` | 207 |
 | **AdminLayout** | `src/app/admin/pages/AdminLayout.tsx` | 41 |
 | **AdminLogin** | `src/app/admin/pages/AdminLogin.tsx` | 144 |
 | **AdminRedirect** | `src/app/admin/pages/AdminRedirect.tsx` | 6 |
-| **AdminServicesPage** | `src/app/admin/pages/AdminServicesPage.tsx` | 206 |
+| **AdminServicesPage** | `src/app/admin/pages/AdminServicesPage.tsx` | 218 |
 | **AdminSettingsPage** | `src/app/admin/pages/AdminSettingsPage.tsx` | 170 |
 | **AdminUsersPage** | `src/app/admin/pages/AdminUsersPage.tsx` | 210 |
 
@@ -154,9 +156,9 @@ New → Contacted → In Progress → Closed
 | Page | File | Lines |
 |------|------|-------|
 | **AnalyticsPage** | `src/app/crm/pages/AnalyticsPage.tsx` | 138 |
-| **CaseDetailPage** | `src/app/crm/pages/CaseDetailPage.tsx` | 463 |
+| **CaseDetailPage** | `src/app/crm/pages/CaseDetailPage.tsx` | 454 |
 | **CasesPage** | `src/app/crm/pages/CasesPage.tsx` | 211 |
-| **CRMDashboard** | `src/app/crm/pages/CRMDashboard.tsx` | 231 |
+| **CRMDashboard** | `src/app/crm/pages/CRMDashboard.tsx` | 244 |
 | **CRMLayout** | `src/app/crm/pages/CRMLayout.tsx` | 39 |
 | **CRMSettingsPage** | `src/app/crm/pages/CRMSettingsPage.tsx` | 227 |
 | **NotificationsPage** | `src/app/crm/pages/NotificationsPage.tsx` | 90 |
@@ -174,15 +176,16 @@ New → Contacted → In Progress → Closed
 | **CRMSettingsPage** | Automation rule CRUD, enable/disable toggle, seed defaults, system config display |
 | **NotificationsPage** | Read/unread notifications, mark all read, type icons, timestamp display |
 
-### CRM Components (3)
+### CRM Components (4)
 
 | Component | File | Purpose |
 |-----------|------|---------|
 | **CaseModal** | `src/app/crm/components/CaseModal.tsx` | Create new case modal with validation and automation trigger |
 | **CRMNavbar** | `src/app/crm/components/CRMNavbar.tsx` | Top bar with notification dropdown panel |
 | **CRMSidebar** | `src/app/crm/components/CRMSidebar.tsx` | CRM navigation with Back to Admin link and notification badge |
+| **WorkflowSteps** | `src/app/crm/components/WorkflowSteps.tsx` | — |
 
-### CRM Services / Business Logic (8)
+### CRM Services / Business Logic (10)
 
 | Service | Key Exports | Tables Used |
 |---------|------------|------------|
@@ -192,7 +195,9 @@ New → Contacted → In Progress → Closed
 | **callService** | CRMCall, OUTCOME_LABELS, OUTCOME_COLORS | crm_calls, crm_activities |
 | **caseService** | CaseStatus, CasePriority, CASE_STATUSES, STATUS_COLORS… | crm_cases, crm_activities |
 | **documentService** | CRMDocument | crm_documents, crm_activities |
+| **emailNotificationService** | EmailPayload, NotificationTrigger, CRMNotificationPayload | — |
 | **paymentService** | CRMPayment, CRMInvoice, InvoiceItem | crm_payments, crm_activities, crm_invoices |
+| **quotationService** | QuotationItem, CRMQuotation | crm_quotations, crm_activities |
 | **taskService** | CRMTask | crm_tasks |
 
 ### CRM — Case Lifecycle (14 Stages)
@@ -257,6 +262,8 @@ New Lead → Contacted → Requirement Gathering → Interested → Not Interest
 | `crm_automation_rules` | Automation rule config | trigger, action, action_data, is_active |
 
 **All tables detected in codebase:**
+- `admin_content`
+- `admin_services`
 - `crm_activities`
 - `crm_automation_rules`
 - `crm_calls`
@@ -265,6 +272,7 @@ New Lead → Contacted → Requirement Gathering → Interested → Not Interest
 - `crm_invoices`
 - `crm_notifications`
 - `crm_payments`
+- `crm_quotations`
 - `crm_tasks`
 - `leads`
 
@@ -275,7 +283,7 @@ New Lead → Contacted → Requirement Gathering → Interested → Not Interest
 | File | Lines | Purpose |
 |------|-------|---------|
 | `admin.css` | 1630 | All admin portal styles (.admin-* classes) |
-| `crm.css` | 543 | All CRM portal styles (.crm-* classes) — scoped, no conflicts |
+| `crm.css` | 605 | All CRM portal styles (.crm-* classes) — scoped, no conflicts |
 | `fonts.css` | 8 | Google Fonts imports |
 | `index.css` | 5 | Global reset and base styles |
 | `tailwind.css` | 5 | Tailwind CSS base directives |
@@ -353,24 +361,24 @@ src/
 │   │   └── TeamCarousel.tsx
 │   ├── pages/              # 8 public pages
 │   ├── admin/              # Admin Portal
-│   │   ├── pages/          # 8 admin pages
+│   │   ├── pages/          # 9 admin pages
 │   │   ├── components/     # 5 admin components
 │   │   ├── services/       # 3 service files
 │   │   └── context/        # AuthContext
 │   ├── crm/                # CRM Portal (NEW)
 │   │   ├── pages/          # 8 CRM pages
-│   │   ├── components/     # 3 CRM components
-│   │   ├── services/       # 8 service files
+│   │   ├── components/     # 4 CRM components
+│   │   ├── services/       # 10 service files
 │   │   ├── context/        # CRMNotificationContext
 │   │   └── supabase_crm_schema.sql
 │   ├── App.tsx
-│   └── routes.ts           # 23 registered routes
+│   └── routes.ts           # 24 registered routes
 ├── lib/
 │   ├── supabase.ts         # Shared Supabase client
 │   └── servicesStore.ts    # Local service list store
 └── styles/
     ├── admin.css            # 1630 lines
-    ├── crm.css            # 543 lines
+    ├── crm.css            # 605 lines
     ├── fonts.css            # 8 lines
     ├── index.css            # 5 lines
     ├── tailwind.css            # 5 lines
