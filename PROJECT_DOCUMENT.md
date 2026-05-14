@@ -1,6 +1,6 @@
 # DNex Project — Living Feature Document
 > **Auto-generated** — Do not edit manually. Regenerated on every `npm run dev` save and `npm run build`.
-> Last updated: **Tuesday 12 May, 2026 at 3:44 pm**
+> Last updated: **Thursday 14 May, 2026 at 5:15 pm**
 
 ---
 

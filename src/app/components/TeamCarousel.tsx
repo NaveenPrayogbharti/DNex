@@ -1,6 +1,21 @@
 import { useRef, useEffect, useState } from 'react';
 import { ChevronLeft, ChevronRight, Mail } from 'lucide-react';
 
+// Image imports
+import jitendraImg from '../../assets/images/Jitendra rajput.jpeg';
+import nitinImg from '../../assets/images/Nitin Bhardwaj.jpeg';
+import harishImg from '../../assets/images/harish verma.jpeg';
+import spSinghImg from '../../assets/images/SP Singh.jpeg';
+import keshawImg from '../../assets/images/Keshaw Prasad.jpeg';
+import kartikayImg from '../../assets/images/Kartikay.jpeg';
+import kanishkaImg from '../../assets/images/Kanishka.jpeg';
+import kamaldeepImg from '../../assets/images/CA Kamaldeep Singh.jpeg';
+import sanjeevRajputImg from '../../assets/images/Sanjeev Rajput.jpeg';
+import ishuImg from '../../assets/images/Ishu.jpeg';
+import yashImg from '../../assets/images/Yash.jpeg';
+import srishtiImg from '../../assets/images/Srishti.jpeg';
+import sanjeevKumarImg from '../../assets/images/sanjeev kumar.jpg.jpeg';
+
 const NAVY = '#0D2137';
 const GOLD = '#C9963C';
 
@@ -23,6 +38,7 @@ const teamMembers = [
     expertise: 'Legal Advisory · Taxation · Business Consultancy · Compliance',
     bio: 'With over a decade of experience in legal advisory, taxation, and business consultancy, Mr. Rajput leads DNex with a strong focus on practical solutions and client-centric strategies. He specializes in handling complex compliance matters, litigation support, and cross-border business structuring.',
     initials: 'JR',
+    image: jitendraImg,
   },
   {
     name: 'Nitin Bhardwaj',
@@ -31,6 +47,7 @@ const teamMembers = [
     expertise: 'Global Business · Entrepreneurship · Business Development · Scalable Models',
     bio: 'Mr. Bhardwaj brings valuable international exposure and business expertise. He possesses strong global business understanding and hands-on international working experience. His core expertise lies in mentoring new entrepreneurs, business development strategies, and creating scalable business models designed for long-term growth and success.',
     initials: 'NB',
+    image: nitinImg,
   },
   {
     name: 'Harish Verma',
@@ -39,6 +56,7 @@ const teamMembers = [
     expertise: 'Business Development · Strategic Partnerships · Visa & PRO · RBI Services',
     bio: 'Mr. Verma specializes in delivering reliable business and global mobility solutions with a strong focus on professionalism, trust, and customer satisfaction — backed by two decades of experience and an extensive international network. His leadership and expertise drive sustainable growth and trusted client relationships across global markets.',
     initials: 'HV',
+    image: harishImg,
   },
 
   // ── Legal Team ───────────────────────────────────────────────────────────────
@@ -49,6 +67,7 @@ const teamMembers = [
     expertise: 'Corporate Law · Contract Management · Litigation · Dispute Resolution',
     bio: 'S.P. Singh brings over three decades of extensive legal experience in corporate law, contract management, and dispute resolution. His expertise includes handling complex litigation, drafting and vetting high-value commercial agreements, and providing strategic legal guidance to businesses with a strong understanding of evolving regulatory frameworks.',
     initials: 'SS',
+    image: spSinghImg,
   },
   {
     name: 'Srishti Verma',
@@ -57,6 +76,16 @@ const teamMembers = [
     expertise: 'Litigation · Compliance · Legal Research · Case Management',
     bio: 'Supports litigation and compliance matters, guiding clients through legal procedures and regulatory requirements with diligence and precision. She assists in case preparation, legal research, drafting of pleadings, and coordination with various authorities — ensuring timely compliance and effective case management.',
     initials: 'SV',
+    image: srishtiImg,
+  },
+  {
+    name: 'Ishu Kumar',
+    role: 'Legal & Compliance Manager',
+    category: 'Legal Team',
+    expertise: 'Financial Reporting · Compliance · Legal Documentation · Internal Coordination',
+    bio: 'Handles financial reporting and compliance matters with a high level of accuracy and efficiency. He coordinates with various authorities and supports legal and documentation requirements, ensuring transparency and timely compliance across all engagements. He also possesses strong administrative skills, contributing effectively to internal coordination and smooth operational functioning.',
+    initials: 'IK',
+    image: ishuImg,
   },
 
   // ── Tax & Financial Experts ──────────────────────────────────────────────────
@@ -67,6 +96,7 @@ const teamMembers = [
     expertise: 'GST · VAT · International Taxation · Cross-Border Tax',
     bio: 'Expert in GST, VAT, and international taxation with a strong focus on optimized and compliant tax strategies. He advises clients on cross-border tax implications, ensuring efficient structuring aligned with both Indian and UAE regulations — assisting in tax planning, return filings, and handling departmental queries.',
     initials: 'SK',
+    image: sanjeevKumarImg,
   },
   {
     name: 'Keshaw Prasad',
@@ -75,6 +105,7 @@ const teamMembers = [
     expertise: 'Corporate Law · Entity Structuring · Regulatory Approvals · Compliance',
     bio: 'Advises clients on corporate and legal aspects of business setup in India, including entity structuring, regulatory approvals, and compliance requirements. He provides strategic guidance on corporate structuring, legal documentation, and ongoing compliance — helping startups and established enterprises manage risks effectively.',
     initials: 'KP',
+    image: keshawImg,
   },
 
   // ── Business Advisory ────────────────────────────────────────────────────────
@@ -85,14 +116,16 @@ const teamMembers = [
     expertise: 'Company Incorporation · UAE Free Zones · Licensing · Marketing Strategy',
     bio: 'A professionally qualified consultant with expertise in company incorporation, licensing, and business expansion strategies across UAE mainland and free zone jurisdictions. He ensures a smooth setup process by guiding clients through regulatory requirements, documentation, and effective marketing strategies for sustainable UAE market entry.',
     initials: 'KA',
+    image: kartikayImg,
   },
   {
-    name: 'Disha',
+    name: 'CA Kamaldeep Singh',
     role: 'Tax & Audit Compliance',
     category: 'Business Advisory',
     expertise: 'CT/VAT Filings · Audit Documentation · Reconciliations · Regulatory Compliance',
-    bio: 'Manages tax and audit compliance functions with a strong focus on accuracy, transparency, and regulatory adherence. She handles CT/VAT filings, audit documentation, and ensures timely completion of statutory requirements. She also assists in audit coordination, reconciliations, and responding to regulatory queries.',
-    initials: 'DI',
+    bio: 'Manages tax and audit compliance functions with a strong focus on accuracy, transparency, and regulatory adherence. He handles CT/VAT filings, audit documentation, and ensures timely completion of statutory requirements. He also assists in audit coordination, reconciliations, and responding to regulatory queries, helping clients maintain seamless compliance and minimize financial and legal risks.',
+    initials: 'KS',
+    image: kamaldeepImg,
   },
   {
     name: 'Arpita',
@@ -102,15 +135,25 @@ const teamMembers = [
     bio: 'Handles financial reporting and compliance matters with a high level of accuracy and efficiency. She coordinates with various authorities and supports legal and documentation requirements, helping maintain transparency and timely compliance across all engagements.',
     initials: 'AR',
   },
+  {
+    name: 'Sanjeev Rajput',
+    role: 'Sales & Business Development Manager',
+    category: 'Business Advisory',
+    expertise: 'Business Development · Client Management · Strategic Thinking · Customized Solutions',
+    bio: 'Sanjeev is a qualified professional specializing in business development and client management. He contributes to the growth of clients’ businesses through strategic thinking and innovative approaches, while identifying new opportunities, strengthening client relationships, and delivering customized solutions.',
+    initials: 'SR',
+    image: sanjeevRajputImg,
+  },
 
   // ── Client Support ───────────────────────────────────────────────────────────
   {
-    name: 'Priya',
+    name: 'Kanishka',
     role: 'Client Relationship Manager',
     category: 'Client Support',
     expertise: 'Client Communication · Service Coordination · Client Satisfaction',
     bio: 'Ensures seamless communication and high levels of client satisfaction across all engagements. She understands client requirements and coordinates with internal teams for timely delivery of services — serving as the primary bridge between clients and the DNex team.',
-    initials: 'PR',
+    initials: 'KA',
+    image: kanishkaImg,
   },
   {
     name: 'Yash',
@@ -119,6 +162,7 @@ const teamMembers = [
     expertise: 'Documentation · Backend Operations · Admin Coordination · Task Management',
     bio: 'Handles documentation and backend operations with a focus on accuracy and efficiency. He supports day-to-day administrative functions, ensuring smooth coordination across teams and timely execution of tasks.',
     initials: 'YA',
+    image: yashImg,
   },
 ];
 
@@ -245,10 +289,14 @@ export function TeamCarousel() {
 
                 {/* Avatar */}
                 <div
-                  className="w-20 h-20 rounded-full flex items-center justify-center text-2xl font-extrabold text-white mb-4 border-4 border-white/20 shadow-lg"
+                  className="w-20 h-20 rounded-full flex items-center justify-center text-2xl font-extrabold text-white mb-4 border-4 border-white/20 shadow-lg overflow-hidden"
                   style={{ backgroundColor: GOLD }}
                 >
-                  {member.initials}
+                  {member.image ? (
+                    <img src={member.image} alt={member.name} className="w-full h-full object-cover" />
+                  ) : (
+                    member.initials
+                  )}
                 </div>
                 <h3 className="text-lg font-bold text-white mb-1 leading-tight">
                   {member.name}
