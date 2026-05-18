@@ -1,5 +1,5 @@
-import { createContext, useContext, useEffect, useState, type ReactNode } from 'react';
-import { onAuthStateChange, getCurrentUser, type AdminUser } from '../services/authService';
+import { createContext, useContext, useEffect, useState, useRef, type ReactNode } from 'react';
+import { onAuthStateChange, type AdminUser } from '../services/authService';
 import { supabase } from '../services/supabaseClient';
 
 const MOCK_AUTH_ENABLED = import.meta.env.VITE_MOCK_AUTH === 'true';
@@ -14,10 +14,11 @@ const AuthContext = createContext<AuthContextType>({ user: null, loading: true }
 export function AuthProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<AdminUser | null>(null);
   const [loading, setLoading] = useState(true);
+  // Track whether the initial session check has completed
+  const initializedRef = useRef(false);
 
   useEffect(() => {
     if (MOCK_AUTH_ENABLED) {
-      // Mock mode: use listeners
       const { data: { subscription } } = onAuthStateChange((u) => {
         setUser(u);
         setLoading(false);
@@ -25,22 +26,21 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       return () => subscription.unsubscribe();
     }
 
-    let settled = false;
-
     // Safety timeout — never leave users stuck on loading screen
     const timeout = setTimeout(() => {
-      if (!settled) {
-        settled = true;
+      if (!initializedRef.current) {
+        initializedRef.current = true;
         setLoading(false);
       }
-    }, 3000);
+    }, 5000);
 
-    // Real Supabase auth: verify session on mount first
+    // Step 1: Check existing session first (synchronous-ish)
     supabase.auth.getSession().then(({ data: { session } }) => {
-      if (!settled) {
-        settled = true;
-        clearTimeout(timeout);
-      }
+      // Mark as initialized BEFORE setting state so the listener below
+      // won't double-fire a conflicting update
+      initializedRef.current = true;
+      clearTimeout(timeout);
+
       if (session?.user) {
         setUser({ id: session.user.id, email: session.user.email ?? '' });
       } else {
@@ -48,18 +48,30 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       }
       setLoading(false);
     }).catch(() => {
-      settled = true;
+      initializedRef.current = true;
       clearTimeout(timeout);
       setUser(null);
       setLoading(false);
     });
 
-    // Then listen for changes (login/logout/token refresh)
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
+    // Step 2: Listen for future auth changes (login, logout, token refresh)
+    // Only act on events AFTER the initial session check completes
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
+      // Ignore the INITIAL_SESSION event — we handle that in getSession() above.
+      // Only react to real changes: SIGNED_IN, SIGNED_OUT, TOKEN_REFRESHED etc.
+      if (event === 'INITIAL_SESSION') return;
+
       if (session?.user) {
         setUser({ id: session.user.id, email: session.user.email ?? '' });
       } else {
         setUser(null);
+      }
+
+      // If for any reason loading is still true, clear it now
+      if (!initializedRef.current) {
+        initializedRef.current = true;
+        clearTimeout(timeout);
+        setLoading(false);
       }
     });
 

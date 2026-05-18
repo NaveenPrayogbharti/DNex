@@ -1,6 +1,6 @@
 # DNex Project — Living Feature Document
 > **Auto-generated** — Do not edit manually. Regenerated on every `npm run dev` save and `npm run build`.
-> Last updated: **Thursday 14 May, 2026 at 5:15 pm**
+> Last updated: **Monday 18 May, 2026 at 2:02 pm**
 
 ---
 
@@ -95,7 +95,7 @@ GET notifications
 | **AdminDashboard** | `src/app/admin/pages/AdminDashboard.tsx` | 81 |
 | **AdminInquiries** | `src/app/admin/pages/AdminInquiries.tsx` | 207 |
 | **AdminLayout** | `src/app/admin/pages/AdminLayout.tsx` | 41 |
-| **AdminLogin** | `src/app/admin/pages/AdminLogin.tsx` | 144 |
+| **AdminLogin** | `src/app/admin/pages/AdminLogin.tsx` | 169 |
 | **AdminRedirect** | `src/app/admin/pages/AdminRedirect.tsx` | 6 |
 | **AdminServicesPage** | `src/app/admin/pages/AdminServicesPage.tsx` | 218 |
 | **AdminSettingsPage** | `src/app/admin/pages/AdminSettingsPage.tsx` | 170 |
@@ -156,10 +156,10 @@ New → Contacted → In Progress → Closed
 | Page | File | Lines |
 |------|------|-------|
 | **AnalyticsPage** | `src/app/crm/pages/AnalyticsPage.tsx` | 138 |
-| **CaseDetailPage** | `src/app/crm/pages/CaseDetailPage.tsx` | 454 |
+| **CaseDetailPage** | `src/app/crm/pages/CaseDetailPage.tsx` | 468 |
 | **CasesPage** | `src/app/crm/pages/CasesPage.tsx` | 211 |
 | **CRMDashboard** | `src/app/crm/pages/CRMDashboard.tsx` | 244 |
-| **CRMLayout** | `src/app/crm/pages/CRMLayout.tsx` | 39 |
+| **CRMLayout** | `src/app/crm/pages/CRMLayout.tsx` | 44 |
 | **CRMSettingsPage** | `src/app/crm/pages/CRMSettingsPage.tsx` | 227 |
 | **NotificationsPage** | `src/app/crm/pages/NotificationsPage.tsx` | 90 |
 | **TasksPage** | `src/app/crm/pages/TasksPage.tsx` | 186 |

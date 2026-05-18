@@ -20,7 +20,12 @@ export function CRMLayout() {
     );
   }
 
-  if (!user) return <Navigate to="/admin/login" replace />;
+  if (!user) {
+    // Save CRM destination so login can redirect back
+    sessionStorage.setItem('crm_redirect', '1');
+    const currentPath = window.location.pathname + window.location.search;
+    return <Navigate to={`/admin/login?redirect=${encodeURIComponent(currentPath)}`} replace />;
+  }
 
   return (
     <CRMNotificationProvider>

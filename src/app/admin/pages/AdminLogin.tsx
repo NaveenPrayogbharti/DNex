@@ -1,6 +1,7 @@
-import { useState } from 'react';
-import { useNavigate } from 'react-router';
+import { useState, useEffect } from 'react';
+import { useNavigate, useLocation } from 'react-router';
 import { signInAdmin } from '../services/authService';
+import { useAuth } from '../context/AuthContext';
 import { Lock, Mail, Eye, EyeOff, AlertCircle, ArrowRight } from 'lucide-react';
 
 const NAVY = '#0A1628';
@@ -8,11 +9,27 @@ const GOLD = '#C9963C';
 
 export function AdminLogin() {
   const navigate = useNavigate();
+  const location = useLocation();
+  const { user, loading: authLoading } = useAuth();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
+
+  // If user is already logged in, redirect them immediately to dashboard/CRM
+  useEffect(() => {
+    if (!authLoading && user) {
+      const params = new URLSearchParams(location.search);
+      const redirectTo = params.get('redirect') || '';
+      if (redirectTo.startsWith('/crm') || sessionStorage.getItem('crm_redirect')) {
+        sessionStorage.removeItem('crm_redirect');
+        navigate(redirectTo.startsWith('/crm') ? redirectTo : '/crm/dashboard', { replace: true });
+      } else {
+        navigate('/admin/dashboard', { replace: true });
+      }
+    }
+  }, [user, authLoading, navigate, location]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -26,7 +43,15 @@ export function AdminLogin() {
     setLoading(true);
     try {
       await signInAdmin(email, password);
-      navigate('/admin/dashboard');
+      // Check if the user was trying to access the CRM portal
+      const params = new URLSearchParams(location.search);
+      const redirectTo = params.get('redirect') || '';
+      if (redirectTo.startsWith('/crm') || sessionStorage.getItem('crm_redirect')) {
+        sessionStorage.removeItem('crm_redirect');
+        navigate(redirectTo.startsWith('/crm') ? redirectTo : '/crm/dashboard');
+      } else {
+        navigate('/admin/dashboard');
+      }
     } catch (err: unknown) {
       const message = err instanceof Error ? err.message : 'Login failed';
       setError(message);

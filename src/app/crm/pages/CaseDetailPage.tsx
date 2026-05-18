@@ -128,6 +128,13 @@ export function CaseDetailPage() {
   // What workflow panel to show
   const renderWorkflowPanel = () => {
     if (!WORKFLOW_STAGES[crmCase.status]) return null;
+
+    // Back handlers — revert to previous logical status
+    const goBack = async (prevStatus: CaseStatus) => {
+      await updateCaseStatus(crmCase.id, prevStatus);
+      await loadAll();
+    };
+
     switch (crmCase.status) {
       case 'New Lead':
         return (
@@ -142,11 +149,14 @@ export function CaseDetailPage() {
           </div>
         );
       case 'Contacted':
-        return <ContactedStep crmCase={crmCase} onRefresh={loadAll} />;
+        return <ContactedStep crmCase={crmCase} onRefresh={loadAll}
+          onBack={() => goBack('New Lead')} />;
       case 'Requirement Gathering':
-        return <RequirementStep crmCase={crmCase} onRefresh={loadAll} />;
+        return <RequirementStep crmCase={crmCase} onRefresh={loadAll}
+          onBack={() => goBack('Contacted')} />;
       case 'Interested':
-        return <ServiceStep crmCase={crmCase} onRefresh={loadAll} />;
+        return <ServiceStep crmCase={crmCase} onRefresh={loadAll}
+          onBack={() => goBack('Requirement Gathering')} />;
       case 'Not Interested':
         return (
           <div style={{ padding:20, background:'rgba(239,68,68,0.08)', border:'1px solid rgba(239,68,68,0.2)', borderRadius:12 }}>
@@ -157,11 +167,14 @@ export function CaseDetailPage() {
           </div>
         );
       case 'Service Assigned':
-        return <QuotationStep crmCase={crmCase} onRefresh={loadAll} />;
+        return <QuotationStep crmCase={crmCase} onRefresh={loadAll}
+          onBack={() => goBack('Interested')} />;
       case 'Quotation Sent':
-        return <PaymentStep crmCase={crmCase} onRefresh={loadAll} />;
+        return <PaymentStep crmCase={crmCase} onRefresh={loadAll}
+          onBack={() => goBack('Service Assigned')} />;
       case 'Payment Pending':
-        return <PaymentStep crmCase={crmCase} onRefresh={loadAll} />;
+        return <PaymentStep crmCase={crmCase} onRefresh={loadAll}
+          onBack={() => goBack('Quotation Sent')} />;
       case 'Payment Completed':
         return (
           <div style={{ padding:20, background:'rgba(52,211,153,0.08)', border:'1px solid rgba(52,211,153,0.25)', borderRadius:12 }}>
@@ -190,7 +203,8 @@ export function CaseDetailPage() {
           </div>
         );
       case 'Processing':
-        return <ProcessingStep crmCase={crmCase} onRefresh={loadAll} />;
+        return <ProcessingStep crmCase={crmCase} onRefresh={loadAll}
+          onBack={() => goBack('Document Collection')} />;
       default:
         return null;
     }
