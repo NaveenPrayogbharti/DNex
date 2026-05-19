@@ -210,8 +210,41 @@ export function CaseDetailPage() {
     }
   };
 
-  const tabs = ['timeline','calls','documents','payments','quotations'] as const;
-  const tabIcons: Record<string, string> = { timeline:'🕐', calls:'📞', documents:'📄', payments:'💰', quotations:'📋' };
+  const getVisibleTabs = () => {
+    const list: ('timeline' | 'documents' | 'payments' | 'quotations')[] = ['timeline'];
+    if (!crmCase) return list;
+
+    const status = crmCase.status;
+    const idx = CASE_STATUSES.indexOf(status);
+
+    // Quotations tab visible from Quotation Sent onwards
+    if (idx >= CASE_STATUSES.indexOf('Quotation Sent') && status !== 'Not Interested') {
+      list.push('quotations');
+    }
+
+    // Payments tab visible from Payment Pending onwards
+    if (idx >= CASE_STATUSES.indexOf('Payment Pending') && status !== 'Not Interested') {
+      list.push('payments');
+    }
+
+    // Documents tab visible from Document Collection onwards
+    if (idx >= CASE_STATUSES.indexOf('Document Collection') && status !== 'Not Interested') {
+      list.push('documents');
+    }
+
+    return list;
+  };
+
+  const visibleTabs = getVisibleTabs();
+
+  // Reset activeTab if it is not in visibleTabs
+  useEffect(() => {
+    if (crmCase && !visibleTabs.includes(activeTab as any)) {
+      setActiveTab('timeline');
+    }
+  }, [crmCase, visibleTabs, activeTab]);
+
+  const tabIcons: Record<string, string> = { timeline:'🕐', documents:'📄', payments:'💰', quotations:'📋' };
 
   return (
     <div className="crm-page">
@@ -261,7 +294,7 @@ export function CaseDetailPage() {
           {/* Left: Tabs */}
           <div style={{ display:'flex', flexDirection:'column', gap:16 }}>
             <div style={{ display:'flex', gap:4, background:'rgba(0,0,0,0.04)', padding:4, borderRadius:10, flexWrap:'wrap' }}>
-              {tabs.map(tab => (
+              {visibleTabs.map(tab => (
                 <button key={tab} className="crm-btn" onClick={() => setActiveTab(tab)}
                   style={{ padding:'7px 14px', fontSize:12, background: activeTab===tab?GOLD:'transparent', color: activeTab===tab?'#0A1628':'#94a3b8' }}>
                   {tabIcons[tab]} {tab.charAt(0).toUpperCase()+tab.slice(1)}
@@ -289,25 +322,7 @@ export function CaseDetailPage() {
               </div>
             )}
 
-            {/* Calls */}
-            {activeTab === 'calls' && (
-              <div className="crm-table-wrap" style={{ padding:20 }}>
-                <h3 style={{ color:'var(--crm-text)', margin:'0 0 16px' }}>📞 Call Log</h3>
-                {calls.length === 0
-                  ? <div className="crm-empty"><div className="crm-empty__icon">📞</div><div className="crm-empty__sub">No calls logged yet</div></div>
-                  : calls.map(c => (
-                      <div key={c.id} className="crm-payment-item">
-                        <div>
-                          <div style={{ fontWeight:600, color:'var(--crm-text)' }}>{OUTCOME_LABELS[c.outcome]}</div>
-                          <div className="crm-payment-item__meta">{c.called_at ? new Date(c.called_at).toLocaleString() : ''} · {c.duration_minutes}min</div>
-                          {c.notes && <div style={{ fontSize:13, color:'#94a3b8', marginTop:4 }}>{c.notes}</div>}
-                        </div>
-                        <div style={{ color:'#94a3b8', fontSize:13 }}>{c.called_by_name ?? 'Agent'}</div>
-                      </div>
-                    ))
-                }
-              </div>
-            )}
+
 
             {/* Documents */}
             {activeTab === 'documents' && (
@@ -317,10 +332,41 @@ export function CaseDetailPage() {
                   <button className="crm-btn crm-btn--primary" onClick={() => setShowDocForm(v => !v)}><Plus size={14}/> Add</button>
                 </div>
                 {showDocForm && (
-                  <div style={{ display:'flex', gap:8, marginBottom:16 }}>
-                    <input className="crm-input" placeholder="Document name..." value={docName} onChange={e => setDocName(e.target.value)} />
-                    <button className="crm-btn crm-btn--primary" onClick={handleAddDoc}>Add</button>
-                    <button className="crm-btn crm-btn--ghost" onClick={() => setShowDocForm(false)}>Cancel</button>
+                  <div style={{ display:'flex', flexDirection:'column', gap:8, marginBottom:16, padding:12, background:'rgba(255,255,255,0.03)', borderRadius:8, border:'1px solid var(--crm-border)' }}>
+                    <div style={{ display:'flex', gap:8 }}>
+                      <select
+                        className="crm-select"
+                        style={{ flex: 1 }}
+                        value={docName === '' || ['Passport Copy', 'Visa Copy', 'Emirates ID Copy', 'Trade License Copy', 'Memorandum of Association (MOA)', 'Board Resolution', 'No Objection Certificate (NOC)'].includes(docName) ? docName : '__custom__'}
+                        onChange={e => {
+                          if (e.target.value !== '__custom__') {
+                            setDocName(e.target.value);
+                          } else {
+                            setDocName('');
+                          }
+                        }}
+                      >
+                        <option value="">-- Choose Document Type --</option>
+                        <option value="Passport Copy">Passport Copy</option>
+                        <option value="Visa Copy">Visa Copy</option>
+                        <option value="Emirates ID Copy">Emirates ID Copy</option>
+                        <option value="Trade License Copy">Trade License Copy</option>
+                        <option value="Memorandum of Association (MOA)">Memorandum of Association (MOA)</option>
+                        <option value="Board Resolution">Board Resolution</option>
+                        <option value="No Objection Certificate (NOC)">No Objection Certificate (NOC)</option>
+                        <option value="__custom__">Other / Custom Name...</option>
+                      </select>
+                      <button className="crm-btn crm-btn--primary" onClick={handleAddDoc} disabled={!docName}>Add</button>
+                      <button className="crm-btn crm-btn--ghost" onClick={() => setShowDocForm(false)}>Cancel</button>
+                    </div>
+                    {(!['Passport Copy', 'Visa Copy', 'Emirates ID Copy', 'Trade License Copy', 'Memorandum of Association (MOA)', 'Board Resolution', 'No Objection Certificate (NOC)', ''].includes(docName) || docName === '') && (
+                      <input
+                        className="crm-input"
+                        placeholder="Enter custom document name..."
+                        value={docName}
+                        onChange={e => setDocName(e.target.value)}
+                      />
+                    )}
                   </div>
                 )}
                 {documents.map(d => {

@@ -1,6 +1,6 @@
 # DNex Project — Living Feature Document
 > **Auto-generated** — Do not edit manually. Regenerated on every `npm run dev` save and `npm run build`.
-> Last updated: **Tuesday 19 May, 2026 at 1:59 pm**
+> Last updated: **Tuesday 19 May, 2026 at 2:28 pm**
 
 ---
 
@@ -157,7 +157,7 @@ New → Contacted → In Progress → Closed
 | Page | File | Lines |
 |------|------|-------|
 | **AnalyticsPage** | `src/app/crm/pages/AnalyticsPage.tsx` | 138 |
-| **CaseDetailPage** | `src/app/crm/pages/CaseDetailPage.tsx` | 468 |
+| **CaseDetailPage** | `src/app/crm/pages/CaseDetailPage.tsx` | 514 |
 | **CasesPage** | `src/app/crm/pages/CasesPage.tsx` | 211 |
 | **CRMDashboard** | `src/app/crm/pages/CRMDashboard.tsx` | 244 |
 | **CRMLayout** | `src/app/crm/pages/CRMLayout.tsx` | 44 |

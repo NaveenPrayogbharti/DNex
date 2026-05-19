@@ -43,7 +43,7 @@ export interface CRMNotificationPayload {
 
 // ── Internal Mailer ───────────────────────────────────────────────────────────
 
-async function sendEmail(payload: EmailPayload): Promise<{ success: boolean; error?: string }> {
+export async function sendCustomEmail(payload: EmailPayload): Promise<{ success: boolean; error?: string }> {
   try {
     const res = await fetch(MAIL_API_URL, {
       method: 'POST',
@@ -128,7 +128,7 @@ export async function notifyCaseOpened(payload: CRMNotificationPayload) {
     <p>If you have any urgent queries, please contact us at <strong>info@dnexbusiness.com</strong>.</p>
   `;
 
-  return sendEmail({
+  return sendCustomEmail({
     to: payload.clientEmail,
     subject,
     body: baseTemplate('Inquiry Received', body),
@@ -152,7 +152,7 @@ export async function notifyQuotationSent(payload: CRMNotificationPayload) {
     <p>Please review the quotation and confirm your acceptance. Our team will reach out to you with next steps.</p>
   `;
 
-  return sendEmail({
+  return sendCustomEmail({
     to: payload.clientEmail,
     subject,
     body: baseTemplate('Quotation Ready', body),
@@ -182,7 +182,7 @@ export async function notifyPaymentLink(payload: CRMNotificationPayload) {
   const to: string[] = [payload.clientEmail];
   if (payload.agentEmail) to.push(payload.agentEmail);
 
-  return sendEmail({
+  return sendCustomEmail({
     to,
     subject,
     body: baseTemplate('Payment Required', body),
@@ -208,7 +208,7 @@ export async function notifyNewLeadReceived(payload: CRMNotificationPayload) {
     <p>Log in to the CRM to manage this case.</p>
   `;
 
-  return sendEmail({
+  return sendCustomEmail({
     to: payload.agentEmail,
     subject,
     body: baseTemplate('New Lead Received', body),
@@ -230,7 +230,7 @@ export async function notifyStatusChange(payload: CRMNotificationPayload) {
     <p>Our team will keep you informed of further progress. Feel free to reach out if you have any questions.</p>
   `;
 
-  return sendEmail({
+  return sendCustomEmail({
     to: payload.clientEmail,
     subject,
     body: baseTemplate('Case Update', body),
