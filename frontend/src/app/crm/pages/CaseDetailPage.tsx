@@ -78,6 +78,40 @@ export function CaseDetailPage() {
 
   useEffect(() => { loadAll(); }, [loadAll]);
 
+  const getVisibleTabs = () => {
+    const list: ('timeline' | 'documents' | 'payments' | 'quotations')[] = ['timeline'];
+    if (!crmCase) return list;
+
+    const status = crmCase.status;
+    const idx = CASE_STATUSES.indexOf(status);
+
+    // Quotations tab visible from Quotation Sent onwards
+    if (idx >= CASE_STATUSES.indexOf('Quotation Sent') && status !== 'Not Interested') {
+      list.push('quotations');
+    }
+
+    // Payments tab visible from Payment Pending onwards
+    if (idx >= CASE_STATUSES.indexOf('Payment Pending') && status !== 'Not Interested') {
+      list.push('payments');
+    }
+
+    // Documents tab visible from Document Collection onwards
+    if (idx >= CASE_STATUSES.indexOf('Document Collection') && status !== 'Not Interested') {
+      list.push('documents');
+    }
+
+    return list;
+  };
+
+  const visibleTabs = getVisibleTabs();
+
+  // Reset activeTab if it is not in visibleTabs
+  useEffect(() => {
+    if (crmCase && !visibleTabs.includes(activeTab as any)) {
+      setActiveTab('timeline');
+    }
+  }, [crmCase, visibleTabs, activeTab]);
+
   const handleSaveNotes = async () => {
     if (!crmCase) return;
     setSavingNotes(true);
@@ -210,39 +244,7 @@ export function CaseDetailPage() {
     }
   };
 
-  const getVisibleTabs = () => {
-    const list: ('timeline' | 'documents' | 'payments' | 'quotations')[] = ['timeline'];
-    if (!crmCase) return list;
 
-    const status = crmCase.status;
-    const idx = CASE_STATUSES.indexOf(status);
-
-    // Quotations tab visible from Quotation Sent onwards
-    if (idx >= CASE_STATUSES.indexOf('Quotation Sent') && status !== 'Not Interested') {
-      list.push('quotations');
-    }
-
-    // Payments tab visible from Payment Pending onwards
-    if (idx >= CASE_STATUSES.indexOf('Payment Pending') && status !== 'Not Interested') {
-      list.push('payments');
-    }
-
-    // Documents tab visible from Document Collection onwards
-    if (idx >= CASE_STATUSES.indexOf('Document Collection') && status !== 'Not Interested') {
-      list.push('documents');
-    }
-
-    return list;
-  };
-
-  const visibleTabs = getVisibleTabs();
-
-  // Reset activeTab if it is not in visibleTabs
-  useEffect(() => {
-    if (crmCase && !visibleTabs.includes(activeTab as any)) {
-      setActiveTab('timeline');
-    }
-  }, [crmCase, visibleTabs, activeTab]);
 
   const tabIcons: Record<string, string> = { timeline:'🕐', documents:'📄', payments:'💰', quotations:'📋' };
 
