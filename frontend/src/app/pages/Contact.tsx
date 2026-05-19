@@ -42,7 +42,7 @@ export function Contact() {
                             <div>
                                 <p className="text-sm text-gray-400 mb-2 uppercase tracking-wider font-semibold">Call Us</p>
                                 <a href="tel:+971555542841" className="block text-xl font-medium hover:text-[#C9963C] transition-colors mb-1">+971 555542841</a>
-                                <a href="tel:+971551251185" className="block text-xl font-medium hover:text-[#C9963C] transition-colors">+971 551251185</a>
+                                <a href="tel:+918851742425" className="block text-xl font-medium hover:text-[#C9963C] transition-colors">+91 8851742425</a>
                             </div>
                         </div>
 

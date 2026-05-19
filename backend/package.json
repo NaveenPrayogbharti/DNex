@@ -1,0 +1,19 @@
+{
+  "name": "dnex-backend",
+  "version": "1.0.0",
+  "description": "DNex mailer API server (Express + Nodemailer)",
+  "main": "server/mailer.js",
+  "scripts": {
+    "start": "node server/mailer.js",
+    "dev": "nodemon server/mailer.js"
+  },
+  "dependencies": {
+    "cors": "^2.8.5",
+    "dotenv": "^16.5.0",
+    "express": "^4.21.2",
+    "nodemailer": "^6.10.1"
+  },
+  "devDependencies": {
+    "nodemon": "^3.1.10"
+  }
+}

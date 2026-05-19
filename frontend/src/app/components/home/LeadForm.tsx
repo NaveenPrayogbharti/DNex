@@ -98,7 +98,7 @@ export function LeadForm() {
             <div className="space-y-4 mb-10">
               {[
                 { icon: Phone, label: 'Call Us', value: '+971 4 444 1234', href: 'tel:+97144441234' },
-                { icon: MessageCircle, label: 'WhatsApp', value: '+971 50 123 4567', href: 'https://wa.me/971501234567' },
+                { icon: MessageCircle, label: 'WhatsApp', value: '+971 555542841', href: 'https://wa.me/971555542841' },
                 { icon: Mail, label: 'Email', value: 'info@dubizsetup.ae', href: 'mailto:info@dubizsetup.ae' },
               ].map((c) => (
                 <a

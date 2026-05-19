@@ -94,9 +94,9 @@ export function Footer() {
                 <Phone size={15} style={{ color: GOLD }} />
                 +971 555542841
               </a>
-              <a href="tel:+971551251185" className="flex items-center gap-3 text-sm text-gray-600 hover:text-[#0D2137] transition-colors">
+              <a href="tel:+918851742425" className="flex items-center gap-3 text-sm text-gray-600 hover:text-[#0D2137] transition-colors">
                 <Phone size={15} style={{ color: GOLD }} />
-                +971 551251185
+                +91 8851742425
               </a>
               <a href="mailto:info@dnex.ae" className="flex items-center gap-3 text-sm text-gray-600 hover:text-[#0D2137] transition-colors">
                 <Mail size={15} style={{ color: GOLD }} />

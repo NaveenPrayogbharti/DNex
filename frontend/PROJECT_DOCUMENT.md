@@ -1,6 +1,6 @@
 # DNex Project — Living Feature Document
 > **Auto-generated** — Do not edit manually. Regenerated on every `npm run dev` save and `npm run build`.
-> Last updated: **Monday 18 May, 2026 at 2:02 pm**
+> Last updated: **Tuesday 19 May, 2026 at 1:59 pm**
 
 ---
 
@@ -8,7 +8,7 @@
 
 | Metric | Count |
 |--------|-------|
-| TypeScript/TSX files | 118 |
+| TypeScript/TSX files | 119 |
 | CSS stylesheets | 6 |
 | SQL schema files | 2 |
 | Registered routes | 24 |
@@ -25,19 +25,20 @@
 |------|------|-------|
 | **About** | `src/app/pages/About.tsx` | 406 |
 | **Contact** | `src/app/pages/Contact.tsx` | 94 |
-| **FreeZone** | `src/app/pages/FreeZone.tsx` | 875 |
-| **Home** | `src/app/pages/Home.tsx` | 21 |
+| **FreeZone** | `src/app/pages/FreeZone.tsx` | 878 |
+| **Home** | `src/app/pages/Home.tsx` | 23 |
 | **IndiaServices** | `src/app/pages/IndiaServices.tsx` | 553 |
 | **NotFound** | `src/app/pages/NotFound.tsx` | 106 |
 | **OurServices** | `src/app/pages/OurServices.tsx` | 1018 |
 | **Root** | `src/app/pages/Root.tsx` | 48 |
 
-### Home Section Components (7)
+### Home Section Components (8)
 
 | Component | File | Purpose |
 |-----------|------|---------|
 | **Hero** | `src/app/components/home/Hero.tsx` | Main banner with CTA buttons |
 | **LeadForm** | `src/app/components/home/LeadForm.tsx` | Client inquiry / lead capture form |
+| **PartnersClients** | `src/app/components/home/PartnersClients.tsx` | — |
 | **Pricing** | `src/app/components/home/Pricing.tsx` | Pricing packages display |
 | **Process** | `src/app/components/home/Process.tsx` | How it works — step by step |
 | **Services** | `src/app/components/home/Services.tsx` | Services overview section |
@@ -355,7 +356,7 @@ New Lead → Contacted → Requirement Gathering → Interested → Not Interest
 src/
 ├── app/
 │   ├── components/         # Shared website components
-│   │   ├── home/           # 7 home page sections
+│   │   ├── home/           # 8 home page sections
 │   │   ├── Navbar.tsx
 │   │   ├── Footer.tsx
 │   │   └── TeamCarousel.tsx

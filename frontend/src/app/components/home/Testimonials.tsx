@@ -13,7 +13,7 @@ const testimonials = [
     avatar: 'MH',
     color: '#3b82f6',
     stars: 5,
-    text: "DNex Consultancy handled everything from our DIFC company formation to all documents seamlessly. The level of professionalism and communication was exceptional. I wouldn't trust anyone else with our UAE expansion.",
+    text: "DNex Consulting handled everything from our DIFC company formation to all documents seamlessly. The level of professionalism and communication was exceptional. I wouldn't trust anyone else with our UAE expansion.",
     service: 'Free Zone Company Setup',
   },
   {
@@ -23,7 +23,7 @@ const testimonials = [
     avatar: 'PN',
     color: '#8b5cf6',
     stars: 5,
-    text: "As a first-time business owner in Dubai, I was overwhelmed by the process. DNex Consultancy made it completely stress-free. My mainland license was ready quickly, and their pricing was exactly as quoted — no hidden costs.",
+    text: "As a first-time business owner in Dubai, I was overwhelmed by the process. DNex Consulting made it completely stress-free. My mainland license was ready quickly, and their pricing was exactly as quoted — no hidden costs.",
     service: 'Mainland Company Formation',
   },
   {
@@ -43,7 +43,7 @@ const testimonials = [
     avatar: 'SR',
     color: '#f59e0b',
     stars: 5,
-    text: "We needed a bank account for our holding company. DNex Consultancy coordinated everything simultaneously and delivered ahead of schedule. Outstanding service quality and attention to detail.",
+    text: "We needed a bank account for our holding company. DNex Consulting coordinated everything simultaneously and delivered ahead of schedule. Outstanding service quality and attention to detail.",
     service: 'Banking Support',
   },
   {
@@ -53,7 +53,7 @@ const testimonials = [
     avatar: 'AP',
     color: '#ef4444',
     stars: 5,
-    text: "Set up my DMCC free zone company with DNex Consultancy in record time. The dedicated account manager was available on WhatsApp round the clock. Best investment I made for my Dubai expansion.",
+    text: "Set up my DMCC free zone company with DNex Consulting in record time. The dedicated account manager was available on WhatsApp round the clock. Best investment I made for my Dubai expansion.",
     service: 'DMCC Free Zone Setup',
   },
   {
@@ -63,7 +63,7 @@ const testimonials = [
     avatar: 'AD',
     color: '#06b6d4',
     stars: 5,
-    text: "The PRO services team is remarkable. Document attestation, government liaison, and license amendments all handled professionally. I've referred 4 of my business associates to DNex Consultancy already.",
+    text: "The PRO services team is remarkable. Document attestation, government liaison, and license amendments all handled professionally. I've referred 4 of my business associates to DNex Consulting already.",
     service: 'PRO Services',
   },
 ];
@@ -109,7 +109,7 @@ export function Testimonials() {
             Trusted by Entrepreneurs Worldwide
           </h2>
           <p className="text-gray-500 max-w-xl mx-auto text-justify" style={{ lineHeight: 1.7 }}>
-            Over 10,000+ businesses from 50+ countries have chosen DNex Consultancy to launch and grow in the UAE.
+            Over 10,000+ businesses from 50+ countries have chosen DNex Consulting to launch and grow in the UAE.
           </p>
 
           {/* Aggregate rating */}

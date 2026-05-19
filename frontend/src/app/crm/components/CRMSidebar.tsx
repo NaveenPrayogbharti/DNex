@@ -5,6 +5,8 @@ import {
 } from 'lucide-react';
 import { signOutAdmin } from '../../admin/services/authService';
 import { useCRMNotifications } from '../context/CRMNotificationContext';
+import logo from '@/assets/images/logo.png';
+
 
 const NAVY = '#0A1628';
 const GOLD = '#C9963C';
@@ -37,14 +39,10 @@ export function CRMSidebar({ collapsed, onToggle }: SidebarProps) {
     >
       <div className="crm-sidebar__header">
         <div className="crm-sidebar__logo">
-          <div className="crm-sidebar__logo-icon">
-            <span style={{ color: NAVY, fontWeight: 800, fontSize: '13px' }}>DN</span>
-          </div>
-          {!collapsed && (
-            <div className="crm-sidebar__logo-text">
-              <span style={{ color: '#fff', fontWeight: 700, fontSize: '15px' }}>DNex CRM</span>
-              <span style={{ color: 'rgba(255,255,255,0.4)', fontSize: '10px' }}>Pro Suite</span>
-            </div>
+          {collapsed ? (
+            <img src={logo} alt="DNex" style={{ height: '32px', width: '32px', objectFit: 'contain', borderRadius: 6 }} />
+          ) : (
+            <img src={logo} alt="DNex CRM" style={{ height: '38px', width: 'auto', objectFit: 'contain', maxWidth: '140px' }} />
           )}
         </div>
         <button className="crm-sidebar__toggle" onClick={onToggle}>

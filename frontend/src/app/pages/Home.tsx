@@ -4,6 +4,7 @@ import { WhyChooseUs } from '../components/home/WhyChooseUs';
 import { Process } from '../components/home/Process';
 // import { Pricing } from '../components/home/Pricing';
 import { Testimonials } from '../components/home/Testimonials';
+import { PartnersClients } from '../components/home/PartnersClients';
 import { LeadForm } from '../components/home/LeadForm';
 
 export function Home() {
@@ -15,6 +16,7 @@ export function Home() {
       <Process />
       {/* <Pricing /> */}
       <Testimonials />
+      <PartnersClients />
       <LeadForm />
     </>
   );

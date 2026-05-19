@@ -1,19 +1,21 @@
 /**
- * server/mailer.js
+ * backend/server/mailer.js
  * ──────────────────────────────────────────────────────────────────────────────
  * Backend API handler — runs on your server (Node.js / Express or standalone).
  * Receives email requests from the CRM and sends them via your server mailbox.
  *
- * PREREQUISITES:
- *   npm install nodemailer express cors dotenv
+ * PREREQUISITES (from backend/):
+ *   npm install
  *
- * USAGE:
- *   node server/mailer.js
- *   (Keep running with pm2: pm2 start server/mailer.js --name dnex-mailer)
+ * USAGE (from backend/):
+ *   npm start                            (production)
+ *   npm run dev                          (development with nodemon)
+ *   pm2 start server/mailer.js --name dnex-mailer
  * ──────────────────────────────────────────────────────────────────────────────
  */
 
-require('dotenv').config();
+// Load .env from backend/ (one directory up from this file)
+require('dotenv').config({ path: require('path').resolve(__dirname, '../.env') });
 const express = require('express');
 const nodemailer = require('nodemailer');
 const cors = require('cors');

@@ -101,7 +101,7 @@ function baseTemplate(title: string, body: string): string {
       ${body}
     </div>
     <div class="footer">
-      DNex Business Setup Consultancy &bull; Dubai, UAE<br/>
+      DNex Business Setup Consulting &bull; Dubai, UAE<br/>
       This is an automated notification. Please do not reply directly to this email.
     </div>
   </div>

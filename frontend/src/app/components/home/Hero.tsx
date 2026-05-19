@@ -11,7 +11,7 @@ const stats = [
   { number: '15 years', label: 'Experience' },
   { number: '100%', label: 'Client Satisfaction' },
   { number: '7 Days', label: 'Avg. Setup Time' },
-  { number: '52 Zones', label: 'Free Zones Covered' },
+  { number: 'UAE Mainland', label: '& All Free Zones' },
 ];
 
 const badges = [

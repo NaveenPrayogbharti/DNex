@@ -35,8 +35,8 @@ const teamMembers = [
     name: 'Jitendra Rajput',
     role: 'Principal Consultant (India & UAE)',
     category: 'Leadership',
-    expertise: 'Legal Advisory · Taxation · Business Consultancy · Compliance',
-    bio: 'With over a decade of experience in legal advisory, taxation, and business consultancy, Mr. Rajput leads DNex with a strong focus on practical solutions and client-centric strategies. He specializes in handling complex compliance matters, litigation support, and cross-border business structuring.',
+    expertise: 'Legal Advisory · Taxation · Business Consulting · Compliance',
+    bio: 'With over a decade of experience in legal advisory, taxation, and business consulting, Mr. Rajput leads DNex with a strong focus on practical solutions and client-centric strategies. He specializes in handling complex compliance matters, litigation support, and cross-border business structuring.',
     initials: 'JR',
     image: jitendraImg,
   },
@@ -127,14 +127,7 @@ const teamMembers = [
     initials: 'KS',
     image: kamaldeepImg,
   },
-  {
-    name: 'Arpita',
-    role: 'Compliance Manager',
-    category: 'Business Advisory',
-    expertise: 'Financial Reporting · Compliance · Legal Documentation · Transparency',
-    bio: 'Handles financial reporting and compliance matters with a high level of accuracy and efficiency. She coordinates with various authorities and supports legal and documentation requirements, helping maintain transparency and timely compliance across all engagements.',
-    initials: 'AR',
-  },
+
   {
     name: 'Sanjeev Rajput',
     role: 'Sales & Business Development Manager',

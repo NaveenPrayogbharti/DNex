@@ -369,15 +369,15 @@ export function Navbar() {
                 +971 555542841
               </a>
               <a
-                href="tel:+971551251185"
+                href="tel:+918851742425"
                 className="flex items-center gap-1.5 text-xs font-medium hover:opacity-80 transition-opacity"
                 style={{ color: GOLD }}
               >
                 <Phone size={11} />
-                +971 551251185
+                +91 8851742425
               </a>
               <a
-                href="https://wa.me/971501234567"
+                href="https://wa.me/971555542841"
                 className="flex items-center gap-1.5 text-xs text-slate-300 hover:text-white transition-colors"
               >
                 <MessageCircle size={11} />
