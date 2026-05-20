@@ -469,7 +469,7 @@ export function QuotationStep({ crmCase, onRefresh, onBack }: Props) {
         client_phone: crmCase.phone, service_name: crmCase.service_type,
         items, tax_rate: taxRate, discount: discountAmt, validity_days: validity, notes,
       });
-      await updateCaseWorkflowField(crmCase.id, 'quotation_currency', currency);
+      await updateCaseWorkflowField(crmCase.id, 'requirement_data', { ...crmCase.requirement_data, quotation_currency: currency });
       await updateCaseStatus(crmCase.id, 'Quotation Sent');
       setQuoteSaved(true);
       fetchQuotations(crmCase.id).then(setPrevQuotations).catch(console.error);
@@ -786,7 +786,7 @@ export function PaymentStep({ crmCase, onRefresh, onBack }: Props) {
           <ArrowLeft size={14}/> Back
         </button>
       )}
-      <div style={{ display:'flex', justifyBetween:'space-between', alignItems:'center' }}>
+      <div style={{ display:'flex', justifyContent:'space-between', alignItems:'center' }}>
         <div style={{ color:GOLD, fontWeight:700, fontSize:15 }}><CreditCard size={18} style={{ display:'inline', marginRight:6 }}/>Payment Processing</div>
         <div style={{ display:'flex', alignItems:'center', gap:6 }}>
           <label style={{ fontSize:11, color:'#94a3b8', fontWeight:700 }}>Currency:</label>
