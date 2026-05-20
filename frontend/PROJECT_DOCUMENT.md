@@ -1,6 +1,6 @@
 # DNex Project — Living Feature Document
 > **Auto-generated** — Do not edit manually. Regenerated on every `npm run dev` save and `npm run build`.
-> Last updated: **Wednesday 20 May, 2026 at 1:20 pm**
+> Last updated: **Wednesday 20 May, 2026 at 2:27 pm**
 
 ---
 
@@ -10,7 +10,7 @@
 |--------|-------|
 | TypeScript/TSX files | 119 |
 | CSS stylesheets | 6 |
-| SQL schema files | 2 |
+| SQL schema files | 0 |
 | Registered routes | 24 |
 | Supabase tables used | 13 |
 | npm dependencies | 55 |
