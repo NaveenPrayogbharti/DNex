@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useMemo } from 'react';
 import { useParams, useNavigate } from 'react-router';
 import { CRMNavbar } from '../components/CRMNavbar';
 import {
@@ -51,12 +51,13 @@ export function CaseDetailPage() {
   const [payments, setPayments] = useState<CRMPayment[]>([]);
   const [quotations, setQuotations] = useState<CRMQuotation[]>([]);
   const [loading, setLoading] = useState(true);
-  const [activeTab, setActiveTab] = useState<'timeline'|'calls'|'documents'|'payments'|'quotations'>('timeline');
+  const [activeTab, setActiveTab] = useState<'timeline'|'documents'|'payments'|'quotations'>('timeline');
   const [editingNotes, setEditingNotes] = useState(false);
   const [notes, setNotes] = useState('');
   const [savingNotes, setSavingNotes] = useState(false);
   const [showDocForm, setShowDocForm] = useState(false);
   const [docName, setDocName] = useState('');
+  const [viewingStage, setViewingStage] = useState<CaseStatus | null>(null);
 
   const loadAll = useCallback(async () => {
     if (!id) return;
@@ -78,7 +79,7 @@ export function CaseDetailPage() {
 
   useEffect(() => { loadAll(); }, [loadAll]);
 
-  const getVisibleTabs = () => {
+  const visibleTabs = useMemo((): ('timeline' | 'documents' | 'payments' | 'quotations')[] => {
     const list: ('timeline' | 'documents' | 'payments' | 'quotations')[] = ['timeline'];
     if (!crmCase) return list;
 
@@ -101,13 +102,11 @@ export function CaseDetailPage() {
     }
 
     return list;
-  };
-
-  const visibleTabs = getVisibleTabs();
+  }, [crmCase]);
 
   // Reset activeTab if it is not in visibleTabs
   useEffect(() => {
-    if (crmCase && !visibleTabs.includes(activeTab as any)) {
+    if (crmCase && !visibleTabs.includes(activeTab)) {
       setActiveTab('timeline');
     }
   }, [crmCase, visibleTabs, activeTab]);
@@ -161,15 +160,17 @@ export function CaseDetailPage() {
 
   // What workflow panel to show
   const renderWorkflowPanel = () => {
-    if (!WORKFLOW_STAGES[crmCase.status]) return null;
+    const effectiveStage = viewingStage || crmCase.status;
+    const isViewOnly = effectiveStage !== crmCase.status;
 
-    // Back handlers — revert to previous logical status
-    const goBack = async (prevStatus: CaseStatus) => {
-      await updateCaseStatus(crmCase.id, prevStatus);
-      await loadAll();
+    if (!WORKFLOW_STAGES[effectiveStage]) return null;
+
+    // View previous stage without modifying DB
+    const goBack = (prevStatus: CaseStatus) => {
+      setViewingStage(prevStatus);
     };
 
-    switch (crmCase.status) {
+    switch (effectiveStage) {
       case 'New Lead':
         return (
           <div style={{ padding:24, background:'rgba(201,150,60,0.06)', border:'1px solid rgba(201,150,60,0.2)', borderRadius:12 }}>
@@ -184,13 +185,13 @@ export function CaseDetailPage() {
         );
       case 'Contacted':
         return <ContactedStep crmCase={crmCase} onRefresh={loadAll}
-          onBack={() => goBack('New Lead')} />;
+          onBack={() => goBack('New Lead')} isViewOnly={isViewOnly} />;
       case 'Requirement Gathering':
         return <RequirementStep crmCase={crmCase} onRefresh={loadAll}
-          onBack={() => goBack('Contacted')} />;
+          onBack={() => goBack('Contacted')} isViewOnly={isViewOnly} />;
       case 'Interested':
         return <ServiceStep crmCase={crmCase} onRefresh={loadAll}
-          onBack={() => goBack('Requirement Gathering')} />;
+          onBack={() => goBack('Requirement Gathering')} isViewOnly={isViewOnly} />;
       case 'Not Interested':
         return (
           <div style={{ padding:20, background:'rgba(239,68,68,0.08)', border:'1px solid rgba(239,68,68,0.2)', borderRadius:12 }}>
@@ -202,13 +203,13 @@ export function CaseDetailPage() {
         );
       case 'Service Assigned':
         return <QuotationStep crmCase={crmCase} onRefresh={loadAll}
-          onBack={() => goBack('Interested')} />;
+          onBack={() => goBack('Interested')} isViewOnly={isViewOnly} />;
       case 'Quotation Sent':
         return <PaymentStep crmCase={crmCase} onRefresh={loadAll}
-          onBack={() => goBack('Service Assigned')} />;
+          onBack={() => goBack('Service Assigned')} isViewOnly={isViewOnly} />;
       case 'Payment Pending':
         return <PaymentStep crmCase={crmCase} onRefresh={loadAll}
-          onBack={() => goBack('Quotation Sent')} />;
+          onBack={() => goBack('Quotation Sent')} isViewOnly={isViewOnly} />;
       case 'Payment Completed':
         return (
           <div style={{ padding:20, background:'rgba(52,211,153,0.08)', border:'1px solid rgba(52,211,153,0.25)', borderRadius:12 }}>
@@ -238,7 +239,7 @@ export function CaseDetailPage() {
         );
       case 'Processing':
         return <ProcessingStep crmCase={crmCase} onRefresh={loadAll}
-          onBack={() => goBack('Document Collection')} />;
+          onBack={() => goBack('Document Collection')} isViewOnly={isViewOnly} />;
       default:
         return null;
     }
@@ -269,18 +270,42 @@ export function CaseDetailPage() {
           {CASE_STATUSES.filter(s => s !== 'Not Interested').map((s, i) => {
             const scc = STATUS_COLORS[s];
             const adjustedIdx = (CASE_STATUSES.filter(x => x !== 'Not Interested') as CaseStatus[]).indexOf(crmCase.status);
-            const isActive = i === adjustedIdx;
             const isDone = i < adjustedIdx;
+            const isActive = i === adjustedIdx && viewingStage === null;
+            const isViewing = viewingStage === s;
+            
             return (
-              <div key={s} className={`crm-pipeline__step ${isActive?'crm-pipeline__step--active':''} ${isDone?'crm-pipeline__step--done':''}`}
-                style={{ background: isActive?scc.bg:isDone?'rgba(255,255,255,0.03)':'rgba(255,255,255,0.02)',
-                  color: isActive?scc.text:isDone?'#64748b':'#475569', borderColor: isActive?scc.border:'transparent' }}
+              <div key={s} 
+                className={`crm-pipeline__step ${isActive || isViewing ?'crm-pipeline__step--active':''} ${isDone?'crm-pipeline__step--done':''}`}
+                style={{ 
+                  background: (isActive || isViewing)?scc.bg:isDone?'rgba(255,255,255,0.03)':'rgba(255,255,255,0.02)',
+                  color: (isActive || isViewing)?scc.text:isDone?'#64748b':'#475569', 
+                  borderColor: (isActive || isViewing)?scc.border:'transparent',
+                  cursor: (isDone || isActive) ? 'pointer' : 'default'
+                }}
+                onClick={() => {
+                  if (isDone || isActive) {
+                    setViewingStage(s === crmCase.status ? null : s);
+                  }
+                }}
                 title={s}>
                 {isDone && '✓ '}{s}
               </div>
             );
           })}
         </div>
+
+        {/* Return to Current Stage Banner */}
+        {viewingStage !== null && (
+          <div style={{ marginBottom: 16, padding: '10px 16px', background: 'rgba(52,211,153,0.1)', border: '1px solid rgba(52,211,153,0.3)', borderRadius: 8, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+            <span style={{ fontSize: 13, color: '#065f46', fontWeight: 600 }}>
+              You are viewing a historical stage ({viewingStage}). Actions are disabled.
+            </span>
+            <button className="crm-btn crm-btn--success" style={{ padding: '6px 12px', fontSize: 12 }} onClick={() => setViewingStage(null)}>
+              Return to Current Stage
+            </button>
+          </div>
+        )}
 
         {/* Workflow Action Panel */}
         {renderWorkflowPanel() && (

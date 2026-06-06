@@ -5,13 +5,11 @@ const supabaseKey = import.meta.env.VITE_SUPABASE_ANON_KEY!;
 
 export const supabase = createClient(supabaseUrl, supabaseKey, {
   auth: {
-    // Persist session in localStorage so refreshes don't log the user out
-    persistSession: true,
-    // Auto refresh the JWT token before it expires
+    // Persist session only for the current tab (clears when tab/browser closes)
+    // but survives page refreshes.
+    storage: window.sessionStorage,
     autoRefreshToken: true,
-    // Detect session from URL hash after OAuth redirects
     detectSessionInUrl: true,
-    // Use localStorage (default) — pkce is most secure
     flowType: 'pkce',
   },
 });

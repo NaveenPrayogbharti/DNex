@@ -651,7 +651,7 @@ export function Navbar() {
                       <h4 className="text-lg font-bold text-white mb-2">
                         {megaMenuConfig[activeMenu].featured.title}
                       </h4>
-                      <p className="text-sm text-slate-300 leading-relaxed">
+                      <p className="text-sm text-slate-300 leading-relaxed text-justify">
                         {megaMenuConfig[activeMenu].featured.desc}
                       </p>
                     </div>

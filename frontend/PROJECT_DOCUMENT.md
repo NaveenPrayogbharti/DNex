@@ -1,6 +1,6 @@
 # DNex Project — Living Feature Document
 > **Auto-generated** — Do not edit manually. Regenerated on every `npm run dev` save and `npm run build`.
-> Last updated: **Wednesday 20 May, 2026 at 2:27 pm**
+> Last updated: **Saturday 6 June, 2026 at 8:08 pm**
 
 ---
 
@@ -8,7 +8,7 @@
 
 | Metric | Count |
 |--------|-------|
-| TypeScript/TSX files | 119 |
+| TypeScript/TSX files | 120 |
 | CSS stylesheets | 6 |
 | SQL schema files | 0 |
 | Registered routes | 24 |
@@ -23,7 +23,7 @@
 
 | Page | File | Lines |
 |------|------|-------|
-| **About** | `src/app/pages/About.tsx` | 406 |
+| **About** | `src/app/pages/About.tsx` | 420 |
 | **Contact** | `src/app/pages/Contact.tsx` | 94 |
 | **FreeZone** | `src/app/pages/FreeZone.tsx` | 878 |
 | **Home** | `src/app/pages/Home.tsx` | 23 |
@@ -157,7 +157,7 @@ New → Contacted → In Progress → Closed
 | Page | File | Lines |
 |------|------|-------|
 | **AnalyticsPage** | `src/app/crm/pages/AnalyticsPage.tsx` | 138 |
-| **CaseDetailPage** | `src/app/crm/pages/CaseDetailPage.tsx` | 516 |
+| **CaseDetailPage** | `src/app/crm/pages/CaseDetailPage.tsx` | 541 |
 | **CasesPage** | `src/app/crm/pages/CasesPage.tsx` | 211 |
 | **CRMDashboard** | `src/app/crm/pages/CRMDashboard.tsx` | 244 |
 | **CRMLayout** | `src/app/crm/pages/CRMLayout.tsx` | 44 |

@@ -8,10 +8,10 @@ const NAVY = '#0D2137';
 
 
 const stats = [
-  { number: '15 years', label: 'Experience' },
+  { number: '15 years', label: 'Experienced Management' },
   { number: '100%', label: 'Client Satisfaction' },
   { number: '7 Days', label: 'Avg. Setup Time' },
-  { number: 'UAE Mainland', label: '& All Free Zones' },
+  { number: 'UAE', label: 'Mainland and Free Zones Covered' },
 ];
 
 const badges = [
@@ -121,10 +121,18 @@ export function Hero() {
                 className={`px-6 py-6 text-center ${i < stats.length - 1 ? 'border-r border-gray-100' : ''}`}
               >
                 <div
-                  className="text-2xl font-bold"
+                  className="text-2xl font-bold relative inline-block"
                   style={{ color: NAVY, letterSpacing: '-0.5px' }}
                 >
                   {stat.number}
+                  {stat.number === '15 years' && (
+                    <span
+                      title="*T&C Apply"
+                      style={{ color: GOLD, fontSize: '0.7rem', verticalAlign: 'super', cursor: 'default', marginLeft: '2px' }}
+                    >
+                      ★
+                    </span>
+                  )}
                 </div>
                 <div className="text-xs text-gray-500 mt-1 font-medium">{stat.label}</div>
               </div>

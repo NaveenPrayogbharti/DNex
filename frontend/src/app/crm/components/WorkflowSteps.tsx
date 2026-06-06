@@ -18,10 +18,11 @@ interface Props {
   crmCase: CRMCase;
   onRefresh: () => void;
   onBack?: () => void;
+  isViewOnly?: boolean;
 }
 
 // ── Step: Contacted ──────────────────────────────────────────────────────────
-export function ContactedStep({ crmCase, onRefresh, onBack }: Props) {
+export function ContactedStep({ crmCase, onRefresh, onBack, isViewOnly }: Props) {
   const [dur, setDur] = useState(5);
   const [outcome, setOutcome] = useState<'answered'|'voicemail'|'no_answer'|'busy'>('answered');
   const [notes, setNotes] = useState('');
@@ -82,60 +83,64 @@ export function ContactedStep({ crmCase, onRefresh, onBack }: Props) {
         </div>
       )}
 
-      {/* New call form */}
-      <div style={{ display:'grid', gridTemplateColumns:'1fr 1fr', gap:12 }}>
-        <div style={{ display:'flex', flexDirection:'column', gap:6 }}>
-          <label style={{ fontSize:12, color:'#94a3b8', fontWeight:600 }}>Duration (mins)</label>
-          <input className="crm-input" type="number" value={dur} min={1}
-            onChange={e => setDur(+e.target.value)} />
-        </div>
-        <div style={{ display:'flex', flexDirection:'column', gap:6 }}>
-          <label style={{ fontSize:12, color:'#94a3b8', fontWeight:600 }}>Outcome</label>
-          <select className="crm-select" value={outcome} onChange={e => setOutcome(e.target.value as any)}>
-            <option value="answered">Answered</option>
-            <option value="voicemail">Voicemail</option>
-            <option value="no_answer">No Answer</option>
-            <option value="busy">Busy</option>
-          </select>
-        </div>
-      </div>
-      <div style={{ display:'flex', flexDirection:'column', gap:6 }}>
-        <label style={{ fontSize:12, color:'#94a3b8', fontWeight:600 }}>Call Notes</label>
-        <textarea className="crm-textarea" rows={3} value={notes}
-          onChange={e => setNotes(e.target.value)} placeholder="What was discussed..." />
-      </div>
-      <button className="crm-btn crm-btn--ghost" disabled={saving} onClick={saveCallLog}
-        style={{ alignSelf:'flex-start' }}>
-        <Plus size={14}/> {saving ? 'Saving...' : 'Save Call Log'}
-      </button>
+      {/* New call form (hidden in view-only mode) */}
+      {!isViewOnly && (
+        <>
+          <div style={{ display:'grid', gridTemplateColumns:'1fr 1fr', gap:12 }}>
+            <div style={{ display:'flex', flexDirection:'column', gap:6 }}>
+              <label style={{ fontSize:12, color:'#94a3b8', fontWeight:600 }}>Duration (mins)</label>
+              <input className="crm-input" type="number" value={dur} min={1}
+                onChange={e => setDur(+e.target.value)} />
+            </div>
+            <div style={{ display:'flex', flexDirection:'column', gap:6 }}>
+              <label style={{ fontSize:12, color:'#94a3b8', fontWeight:600 }}>Outcome</label>
+              <select className="crm-select" value={outcome} onChange={e => setOutcome(e.target.value as any)}>
+                <option value="answered">Answered</option>
+                <option value="voicemail">Voicemail</option>
+                <option value="no_answer">No Answer</option>
+                <option value="busy">Busy</option>
+              </select>
+            </div>
+          </div>
+          <div style={{ display:'flex', flexDirection:'column', gap:6 }}>
+            <label style={{ fontSize:12, color:'#94a3b8', fontWeight:600 }}>Call Notes</label>
+            <textarea className="crm-textarea" rows={3} value={notes}
+              onChange={e => setNotes(e.target.value)} placeholder="What was discussed..." />
+          </div>
+          <button className="crm-btn crm-btn--ghost" disabled={saving} onClick={saveCallLog}
+            style={{ alignSelf:'flex-start' }}>
+            <Plus size={14}/> {saving ? 'Saving...' : 'Save Call Log'}
+          </button>
 
-      <div style={{ fontSize:13, color:'#1e293b', fontWeight:600 }}>What's next?</div>
-      <div style={{ display:'flex', gap:10 }}>
-        <button className={`crm-btn ${nextAction==='req_gathering'?'crm-btn--primary':'crm-btn--ghost'}`}
-          onClick={() => setNextAction('req_gathering')}>
-          <ChevronRight size={14}/> Proceed to Requirement Gathering
-        </button>
-      </div>
-      <button className="crm-btn crm-btn--primary" disabled={!nextAction || saving} onClick={confirm}
-        style={{ alignSelf:'flex-start' }}>
-        {saving ? 'Saving...' : 'Confirm & Continue'} <ChevronRight size={14}/>
-      </button>
+          <div style={{ fontSize:13, color:'#1e293b', fontWeight:600 }}>What's next?</div>
+          <div style={{ display:'flex', gap:10 }}>
+            <button className={`crm-btn ${nextAction==='req_gathering'?'crm-btn--primary':'crm-btn--ghost'}`}
+              onClick={() => setNextAction('req_gathering')}>
+              <ChevronRight size={14}/> Proceed to Requirement Gathering
+            </button>
+          </div>
+          <button className="crm-btn crm-btn--primary" disabled={!nextAction || saving} onClick={confirm}
+            style={{ alignSelf:'flex-start' }}>
+            {saving ? 'Saving...' : 'Confirm & Continue'} <ChevronRight size={14}/>
+          </button>
+        </>
+      )}
     </div>
   );
 }
 
-export function RequirementStep({ crmCase, onRefresh, onBack }: Props) {
+export function RequirementStep({ crmCase, onRefresh, onBack, isViewOnly }: Props) {
   const [fields, setFields] = useState({
-    budget: '',
-    currency: 'AED',
-    timeline: '',
-    business_type: '',
-    custom_business_type: '',
-    nationality: '',
-    other_info: ''
+    budget: crmCase.requirement_data?.budget || '',
+    currency: crmCase.requirement_data?.currency || 'AED',
+    timeline: crmCase.requirement_data?.timeline || '',
+    business_type: crmCase.requirement_data?.business_type || '',
+    custom_business_type: crmCase.requirement_data?.custom_business_type || '',
+    nationality: crmCase.requirement_data?.nationality || '',
+    other_info: crmCase.requirement_data?.other_info || ''
   });
   const [decision, setDecision] = useState<'interested'|'not_interested'|null>(null);
-  const [reason, setReason] = useState('');
+  const [reason, setReason] = useState(crmCase.not_interested_reason || '');
   const [saving, setSaving] = useState(false);
   const [natSearch, setNatSearch] = useState('');
   const [natOpen, setNatOpen] = useState(false);
@@ -290,47 +295,51 @@ export function RequirementStep({ crmCase, onRefresh, onBack }: Props) {
 
       <div style={{ display:'flex', flexDirection:'column', gap:6 }}>
         <label style={{ fontSize:12, color:'#94a3b8', fontWeight:600 }}>Additional Information</label>
-        <textarea className="crm-textarea" rows={3} value={fields.other_info}
+        <textarea className="crm-textarea" rows={3} value={fields.other_info} disabled={isViewOnly}
           onChange={e => setFields(f => ({ ...f, other_info: e.target.value }))}
           placeholder="Any special requirements, notes from client..." />
       </div>
 
-      <div style={{ padding:'14px', background:'rgba(201,150,60,0.08)', border:'1px solid rgba(201,150,60,0.2)', borderRadius:10, fontSize:13, color:'#1e293b' }}>
-        💡 Inform the client about our services. After discussion, record their decision below.
-      </div>
+      {!isViewOnly && (
+        <>
+          <div style={{ padding:'14px', background:'rgba(201,150,60,0.08)', border:'1px solid rgba(201,150,60,0.2)', borderRadius:10, fontSize:13, color:'#1e293b' }}>
+            💡 Inform the client about our services. After discussion, record their decision below.
+          </div>
 
-      <div style={{ fontSize:13, color:'#1e293b', fontWeight:600 }}>Client's Decision</div>
-      <div style={{ display:'flex', gap:10 }}>
-        <button className={`crm-btn ${decision==='interested'?'crm-btn--success':'crm-btn--ghost'}`}
-          onClick={() => setDecision('interested')}>
-          <CheckCircle size={14}/> Interested
-        </button>
-        <button className={`crm-btn ${decision==='not_interested'?'crm-btn--danger':'crm-btn--ghost'}`}
-          onClick={() => setDecision('not_interested')}>
-          <XCircle size={14}/> Not Interested
-        </button>
-      </div>
+          <div style={{ fontSize:13, color:'#1e293b', fontWeight:600 }}>Client's Decision</div>
+          <div style={{ display:'flex', gap:10 }}>
+            <button className={`crm-btn ${decision==='interested'?'crm-btn--success':'crm-btn--ghost'}`}
+              onClick={() => setDecision('interested')}>
+              <CheckCircle size={14}/> Interested
+            </button>
+            <button className={`crm-btn ${decision==='not_interested'?'crm-btn--danger':'crm-btn--ghost'}`}
+              onClick={() => setDecision('not_interested')}>
+              <XCircle size={14}/> Not Interested
+            </button>
+          </div>
 
-      {decision === 'not_interested' && (
-        <div style={{ display:'flex', flexDirection:'column', gap:6 }}>
-          <label style={{ fontSize:12, color:'#f87171', fontWeight:600 }}>Reason (required)</label>
-          <textarea className="crm-textarea" rows={3} value={reason}
-            onChange={e => setReason(e.target.value)}
-            placeholder="Describe the reason stated by the client for not choosing our service..." />
-        </div>
+          {decision === 'not_interested' && (
+            <div style={{ display:'flex', flexDirection:'column', gap:6 }}>
+              <label style={{ fontSize:12, color:'#f87171', fontWeight:600 }}>Reason (required)</label>
+              <textarea className="crm-textarea" rows={3} value={reason}
+                onChange={e => setReason(e.target.value)}
+                placeholder="Describe the reason stated by the client for not choosing our service..." />
+            </div>
+          )}
+
+          <button className="crm-btn crm-btn--primary"
+            disabled={!decision || saving || (decision==='not_interested' && !reason)}
+            onClick={confirm} style={{ alignSelf:'flex-start' }}>
+            {saving ? 'Saving...' : 'Confirm Decision'} <ChevronRight size={14}/>
+          </button>
+        </>
       )}
-
-      <button className="crm-btn crm-btn--primary"
-        disabled={!decision || saving || (decision==='not_interested' && !reason)}
-        onClick={confirm} style={{ alignSelf:'flex-start' }}>
-        {saving ? 'Saving...' : 'Confirm Decision'} <ChevronRight size={14}/>
-      </button>
     </div>
   );
 }
 
 // ── Step: Service Assignment ─────────────────────────────────────────────────
-export function ServiceStep({ crmCase, onRefresh, onBack }: Props) {
+export function ServiceStep({ crmCase, onRefresh, onBack, isViewOnly }: Props) {
   const [services, setServices] = useState<ServiceItem[]>([]);
   const [selected, setSelected] = useState<ServiceItem | null>(null);
   const [customService, setCustomService] = useState('');
@@ -414,15 +423,17 @@ export function ServiceStep({ crmCase, onRefresh, onBack }: Props) {
           </div>
         </div>
       )}
-      <button className="crm-btn crm-btn--primary" disabled={!effectiveTitle || saving} onClick={confirm} style={{ alignSelf:'flex-start' }}>
-        {saving ? 'Saving...' : 'Confirm Service & Notify Client'} <Send size={14}/>
-      </button>
+      {!isViewOnly && (
+        <button className="crm-btn crm-btn--primary" disabled={!effectiveTitle || saving} onClick={confirm} style={{ alignSelf:'flex-start' }}>
+          {saving ? 'Saving...' : 'Confirm Service & Notify Client'} <Send size={14}/>
+        </button>
+      )}
     </div>
   );
 }
 
 
-export function QuotationStep({ crmCase, onRefresh, onBack }: Props) {
+export function QuotationStep({ crmCase, onRefresh, onBack, isViewOnly }: Props) {
   const [services, setServices] = useState<ServiceItem[]>([]);
   const [items, setItems] = useState<QuotationItem[]>([{ description: crmCase.service_type || '', qty: 1, rate: 0, amount: 0 }]);
   const [taxRateStr, setTaxRateStr] = useState('5');
@@ -627,20 +638,22 @@ export function QuotationStep({ crmCase, onRefresh, onBack }: Props) {
       )}
 
       {/* Action buttons */}
-      <div style={{ display:'flex', gap:10, flexWrap:'wrap', paddingTop:4 }}>
-        <button className="crm-btn crm-btn--primary" disabled={saving || items.length === 0} onClick={saveQuotation}>
-          {saving ? 'Saving...' : '💾 Save & Advance to Quotation Sent'} <ChevronRight size={14}/>
-        </button>
-        <button className="crm-btn crm-btn--success" style={{ background:'#25d366' }} disabled={sendingWA || items.length === 0} onClick={sendViaWhatsApp}>
-          {sendingWA ? 'Opening...' : '💬 Send via WhatsApp'}
-        </button>
-        <button className="crm-btn crm-btn--primary" style={{ background:'#2563eb' }} disabled={sendingEmail || items.length === 0} onClick={sendViaEmail}>
-          {sendingEmail ? 'Sending...' : '📧 Send via Email'}
-        </button>
-      </div>
+      {!isViewOnly && (
+        <div style={{ display:'flex', gap:10, flexWrap:'wrap', paddingTop:4 }}>
+          <button className="crm-btn crm-btn--primary" disabled={saving || items.length === 0} onClick={saveQuotation}>
+            {saving ? 'Saving...' : '💾 Save & Advance to Quotation Sent'} <ChevronRight size={14}/>
+          </button>
+          <button className="crm-btn crm-btn--success" style={{ background:'#25d366' }} disabled={sendingWA || items.length === 0} onClick={sendViaWhatsApp}>
+            {sendingWA ? 'Opening...' : '💬 Send via WhatsApp'}
+          </button>
+          <button className="crm-btn crm-btn--primary" style={{ background:'#2563eb' }} disabled={sendingEmail || items.length === 0} onClick={sendViaEmail}>
+            {sendingEmail ? 'Sending...' : '📧 Send via Email'}
+          </button>
+        </div>
+      )}
 
       {/* Client confirmed → move to payment */}
-      {(quoteSaved || crmCase.status === 'Quotation Sent') && (
+      {!isViewOnly && (quoteSaved || crmCase.status === 'Quotation Sent') && (
         <div style={{ display:'flex', gap:10, padding:14, background:'rgba(52,211,153,0.08)', border:'1px solid rgba(52,211,153,0.25)', borderRadius:10, alignItems:'center', flexWrap:'wrap' }}>
           <div style={{ flex:1, fontSize:13, color:'#065f46' }}>✅ Quotation sent! Has the client confirmed acceptance?</div>
           <button className="crm-btn crm-btn--success" onClick={clientConfirmed}>
@@ -681,7 +694,7 @@ export function QuotationStep({ crmCase, onRefresh, onBack }: Props) {
 
 
 // ── Step: Payment ────────────────────────────────────────────────────────────
-export function PaymentStep({ crmCase, onRefresh, onBack }: Props) {
+export function PaymentStep({ crmCase, onRefresh, onBack, isViewOnly }: Props) {
   const [amount, setAmount] = useState('');
   const [currency, setCurrency] = useState(crmCase.requirement_data?.currency || 'AED');
   const [desc, setDesc] = useState(crmCase.service_type || '');
@@ -811,20 +824,22 @@ export function PaymentStep({ crmCase, onRefresh, onBack }: Props) {
       <div style={{ padding:10, background:'rgba(201,150,60,0.08)', border:'1px solid rgba(201,150,60,0.2)', borderRadius:8, fontSize:12, color:'#64748b' }}>
         🔗 Payment link will be sent via <strong style={{ color:GOLD }}>Email &amp; WhatsApp</strong>. Once paid, status auto-updates.
       </div>
-      <div style={{ display:'flex', gap:10 }}>
-        <button className="crm-btn crm-btn--primary" disabled={saving || !amount} onClick={sendLink}>
-          {saving ? 'Sending...' : 'Send Payment Link'} <Send size={14}/>
-        </button>
-        <button className="crm-btn crm-btn--success" disabled={markingPaid} onClick={markPaid}>
-          {markingPaid ? '...' : '✓ Mark as Paid (Manual)'}
-        </button>
-      </div>
+      {!isViewOnly && (
+        <div style={{ display:'flex', gap:10 }}>
+          <button className="crm-btn crm-btn--primary" disabled={saving || !amount} onClick={sendLink}>
+            {saving ? 'Sending...' : 'Send Payment Link'} <Send size={14}/>
+          </button>
+          <button className="crm-btn crm-btn--success" disabled={markingPaid} onClick={markPaid}>
+            {markingPaid ? '...' : '✓ Mark as Paid (Manual)'}
+          </button>
+        </div>
+      )}
     </div>
   );
 }
 
 // ── Step: Processing ─────────────────────────────────────────────────────────
-export function ProcessingStep({ crmCase, onRefresh, onBack }: Props) {
+export function ProcessingStep({ crmCase, onRefresh, onBack, isViewOnly }: Props) {
   const [procNotes, setProcNotes] = useState(crmCase.processing_notes || '');
   const [saving, setSaving] = useState(false);
   const [closing, setClosing] = useState(false);
@@ -939,14 +954,16 @@ export function ProcessingStep({ crmCase, onRefresh, onBack }: Props) {
           placeholder="Log processing progress, steps completed, issues encountered..." />
       </div>
 
-      <div style={{ display:'flex', gap:10 }}>
-        <button className="crm-btn crm-btn--ghost" disabled={saving} onClick={saveNotes}>
-          {saving ? 'Saving...' : '💾 Save Notes'}
-        </button>
-        <button className="crm-btn crm-btn--success" disabled={closing} onClick={closeCase}>
-          {closing ? '...' : '✅ Mark Service Complete & Close Case'}
-        </button>
-      </div>
+      {!isViewOnly && (
+        <div style={{ display:'flex', gap:10 }}>
+          <button className="crm-btn crm-btn--ghost" disabled={saving} onClick={saveNotes}>
+            {saving ? 'Saving...' : '💾 Save Notes'}
+          </button>
+          <button className="crm-btn crm-btn--success" disabled={closing} onClick={closeCase}>
+            {closing ? '...' : '✅ Mark Service Complete & Close Case'}
+          </button>
+        </div>
+      )}
     </div>
   );
 }

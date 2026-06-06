@@ -8,9 +8,9 @@ const GOLD = '#C9963C';
 
 // Mock Data Objects
 const stats = [
-    { value: '15+', label: 'Years Experience' },
-    { value: '100+', label: 'Companies Setup' },
-    { value: '52', label: 'Free Zones' },
+    { value: '15 years', label: ' Experienced Management' },
+    { value: '100%', label: 'Timely Completion' },
+    { value: 'UAE', label: 'Mainland and Free Zones Covered' },
     { value: '100%', label: 'Client Satisfaction' },
 ];
 
@@ -124,10 +124,19 @@ export function About() {
 
                             {/* Trust bullets */}
                             <div className="flex flex-wrap gap-x-6 gap-y-2">
-                                {['Government Licensed', '15+ Years Experience', '100+ Companies Setup'].map((b) => (
-                                    <div key={b} className="flex items-center gap-2">
+                                {[
+                                    { text: 'Government Licensed' },
+                                    { text: '15+ Years Experience', star: true },
+                                    { text: '100+ Companies Setup' },
+                                ].map((b) => (
+                                    <div key={b.text} className="flex items-center gap-2">
                                         <CheckCircle size={15} style={{ color: GOLD }} />
-                                        <span className="text-sm text-slate-300">{b}</span>
+                                        <span className="text-sm text-slate-300">
+                                            {b.text}
+                                            {b.star && (
+                                                <span title="*T&C Apply" style={{ color: GOLD, fontSize: '0.65rem', verticalAlign: 'super', cursor: 'default', marginLeft: '2px' }}>★</span>
+                                            )}
+                                        </span>
                                     </div>
                                 ))}
                             </div>
@@ -238,7 +247,7 @@ export function About() {
                         {/* Right: Stats highlight */}
                         <div className="grid grid-cols-2 gap-5">
                             {[
-                                { value: '15+', label: 'Years of Advisory Experience', icon: '📅' },
+                                { value: '15+', label: 'Years of Advisory Experience', icon: '📅', star: true },
                                 { value: '10k+', label: 'Companies Successfully Setup', icon: '🏢' },
                                 { value: '52+', label: 'Free Zones Covered', icon: '🌍' },
                                 { value: '100%', label: 'Client Satisfaction Rate', icon: '⭐' },
@@ -248,7 +257,12 @@ export function About() {
                                     className="p-6 rounded-2xl border border-slate-100 bg-white hover:shadow-lg transition-all duration-300 text-center group"
                                 >
                                     <div className="text-3xl mb-3">{s.icon}</div>
-                                    <div className="text-2xl font-bold mb-1" style={{ color: NAVY }}>{s.value}</div>
+                                    <div className="text-2xl font-bold mb-1" style={{ color: NAVY }}>
+                                        {s.value}
+                                        {s.star && (
+                                            <span title="*T&C Apply" style={{ color: GOLD, fontSize: '0.7rem', verticalAlign: 'super', cursor: 'default', marginLeft: '2px' }}>★</span>
+                                        )}
+                                    </div>
                                     <div className="text-xs text-gray-500 font-medium">{s.label}</div>
                                 </div>
                             ))}

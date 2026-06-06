@@ -1,4 +1,4 @@
-import { useRef, useEffect, useState } from 'react';
+import { useRef, useState } from 'react';
 import { ChevronLeft, ChevronRight, Mail } from 'lucide-react';
 
 // Image imports
@@ -164,39 +164,49 @@ const CATEGORIES = ['All', 'Leadership', 'Legal Team', 'Tax & Financial', 'Busin
 
 // ── Component ─────────────────────────────────────────────────────────────────
 export function TeamCarousel() {
-  const scrollRef = useRef<HTMLDivElement>(null);
-  const [isPaused, setIsPaused] = useState(false);
+  const trackRef = useRef<HTMLDivElement>(null);
   const [activeCategory, setActiveCategory] = useState('All');
 
   const filtered = activeCategory === 'All'
     ? teamMembers
     : teamMembers.filter(m => m.category === activeCategory);
 
-  // Auto-scroll effect (only when not paused)
-  useEffect(() => {
-    const container = scrollRef.current;
-    if (!container || isPaused) return;
+  // For seamless CSS loop we duplicate the card list
+  const cards = [...filtered, ...filtered];
 
-    const interval = setInterval(() => {
-      const maxScroll = container.scrollWidth - container.clientWidth;
-      if (container.scrollLeft >= maxScroll - 5) {
-        container.scrollTo({ left: 0, behavior: 'smooth' });
-      } else {
-        container.scrollBy({ left: 380, behavior: 'smooth' });
-      }
-    }, 3500);
-
-    return () => clearInterval(interval);
-  }, [isPaused, activeCategory]);
+  // Card width + gap in px (matches w-[340px] + gap-6=24px)
+  const CARD_W = 364;
+  // Total width of one set
+  const trackWidth = filtered.length * CARD_W;
 
   const scroll = (direction: 'left' | 'right') => {
-    const container = scrollRef.current;
-    if (!container) return;
-    container.scrollBy({ left: direction === 'right' ? 380 : -380, behavior: 'smooth' });
+    const track = trackRef.current;
+    if (!track) return;
+    // Nudge the animation by tweaking margin-left temporarily
+    const current = parseInt(track.style.marginLeft || '0');
+    track.style.transition = 'margin-left 0.4s ease';
+    track.style.marginLeft = `${current + (direction === 'right' ? -CARD_W : CARD_W)}px`;
+    setTimeout(() => {
+      if (track) { track.style.transition = ''; track.style.marginLeft = '0'; }
+    }, 2000);
   };
 
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 mb-24">
+      {/* Inject keyframes */}
+      <style>{`
+        @keyframes carousel-slide {
+          0%   { transform: translateX(0); }
+          100% { transform: translateX(-${trackWidth}px); }
+        }
+        .carousel-track {
+          display: flex;
+          gap: 24px;
+          animation: carousel-slide ${filtered.length * 3.5}s linear infinite;
+          will-change: transform;
+        }
+        .carousel-track:hover { animation-play-state: running; }
+      `}</style>
 
       {/* Section Header */}
       <div className="flex items-end justify-between mb-8">
@@ -238,7 +248,7 @@ export function TeamCarousel() {
         {CATEGORIES.map(cat => (
           <button
             key={cat}
-            onClick={() => { setActiveCategory(cat); scrollRef.current?.scrollTo({ left: 0, behavior: 'smooth' }); }}
+            onClick={() => { setActiveCategory(cat); trackRef.current?.parentElement?.scrollTo({ left: 0 }); }}
             className="px-4 py-1.5 rounded-full text-sm font-semibold border transition-all"
             style={{
               background: activeCategory === cat ? GOLD : 'transparent',
@@ -252,18 +262,13 @@ export function TeamCarousel() {
       </div>
 
       {/* Scrollable Cards */}
-      <div
-        ref={scrollRef}
-        className="flex gap-6 overflow-x-auto pb-4 scroll-smooth"
-        style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
-        onMouseEnter={() => setIsPaused(true)}
-        onMouseLeave={() => setIsPaused(false)}
-      >
-        {filtered.map((member, i) => {
-          const cardColor = CAT_COLORS[member.category] ?? NAVY;
-          return (
-            <div
-              key={i}
+      <div className="overflow-hidden">
+        <div ref={trackRef} className="carousel-track">
+          {cards.map((member, i) => {
+            const cardColor = CAT_COLORS[member.category] ?? NAVY;
+            return (
+              <div
+                key={i}
               className="shrink-0 w-[340px] rounded-3xl overflow-hidden border border-slate-100 hover:shadow-2xl transition-all duration-300 group"
               style={{ background: '#fff' }}
             >
@@ -339,6 +344,7 @@ export function TeamCarousel() {
             </div>
           );
         })}
+        </div>
       </div>
 
       {/* Mobile scroll hint */}

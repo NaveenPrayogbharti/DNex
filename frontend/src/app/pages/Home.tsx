@@ -16,7 +16,7 @@ export function Home() {
       <Process />
       {/* <Pricing /> */}
       <Testimonials />
-      <PartnersClients />
+      {/* <PartnersClients /> */}
       <LeadForm />
     </>
   );

@@ -1,4 +1,4 @@
-import { createBrowserRouter } from 'react-router';
+import { createBrowserRouter, redirect } from 'react-router';
 import { Root } from './pages/Root';
 import { Home } from './pages/Home';
 import { FreeZone } from './pages/FreeZone';
@@ -19,6 +19,7 @@ import { AdminUsersPage } from './admin/pages/AdminUsersPage';
 import { AdminSettingsPage } from './admin/pages/AdminSettingsPage';
 import { AdminContentPage } from './admin/pages/AdminContentPage';
 import { AdminRedirect } from './admin/pages/AdminRedirect';
+import { getCurrentUser } from './admin/services/authService';
 
 // CRM imports
 import { CRMLayout } from './crm/pages/CRMLayout';
@@ -29,6 +30,31 @@ import { TasksPage } from './crm/pages/TasksPage';
 import { AnalyticsPage } from './crm/pages/AnalyticsPage';
 import { CRMSettingsPage } from './crm/pages/CRMSettingsPage';
 import { NotificationsPage } from './crm/pages/NotificationsPage';
+
+// Middleware loader for protected routes
+const requireAuth = async ({ request }: { request: Request }) => {
+  const user = await getCurrentUser();
+  if (!user) {
+    const url = new URL(request.url);
+    const redirectUrl = encodeURIComponent(url.pathname + url.search);
+    return redirect(`/admin/login?redirect=${redirectUrl}`);
+  }
+  return null;
+};
+
+// Middleware loader for login page (redirect to dashboard if already logged in)
+const requireGuest = async ({ request }: { request: Request }) => {
+  const user = await getCurrentUser();
+  if (user) {
+    const url = new URL(request.url);
+    const redirectTo = url.searchParams.get('redirect') || '';
+    if (redirectTo.startsWith('/crm')) {
+      return redirect(redirectTo);
+    }
+    return redirect('/admin/dashboard');
+  }
+  return null;
+};
 
 export const router = createBrowserRouter([
   // Public website routes
@@ -47,14 +73,16 @@ export const router = createBrowserRouter([
     ],
   },
 
-  // Admin portal routes (unchanged)
+  // Admin portal routes
   {
     path: '/admin/login',
     Component: AdminLogin,
+    loader: requireGuest,
   },
   {
     path: '/admin',
     Component: AdminLayout,
+    loader: requireAuth,
     children: [
       { index: true, Component: AdminRedirect },
       { path: 'dashboard', Component: AdminDashboard },
@@ -66,10 +94,11 @@ export const router = createBrowserRouter([
     ],
   },
 
-  // CRM routes — separate from admin
+  // CRM routes
   {
     path: '/crm',
     Component: CRMLayout,
+    loader: requireAuth,
     children: [
       { index: true, Component: CRMDashboard },
       { path: 'dashboard', Component: CRMDashboard },

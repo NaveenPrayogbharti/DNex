@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { Send, CheckCircle, Phone, Mail, MessageCircle } from 'lucide-react';
-import { supabase } from "@/lib/supabase";
+// No Supabase client needed — form data goes to our own Express backend.
+// Backend: POST /api/leads → Prisma → Supabase PostgreSQL (server-side, no RLS issues)
 
 const GOLD = '#C9963C';
 const NAVY = '#0D2137';
@@ -37,30 +38,33 @@ export function LeadForm() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    console.log("FORM DATA:", formData);
+    const apiUrl = import.meta.env.VITE_BACKEND_API_URL ?? 'http://localhost:3001';
 
-    // 1. Insert lead into leads table. The backend database trigger 'trg_auto_create_crm_case'
-    // will securely and automatically create the corresponding crm_cases row and log the initial activity.
-    const { data: leadData, error } = await supabase.from("leads").insert([
-      {
-        full_name: formData.fullName,
-        email: formData.email,
-        phone: formData.phone,
-        country: formData.country,
-        service_needed: formData.service,
-        message: formData.message,
-      },
-    ]).select().single();
+    try {
+      const res = await fetch(`${apiUrl}/api/leads`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          full_name: formData.fullName,
+          email: formData.email,
+          phone: formData.phone,
+          country: formData.country,
+          service_needed: formData.service,
+          message: formData.message,
+        }),
+      });
 
-    console.log("LEAD DATA:", leadData);
-    console.log("ERROR:", error);
+      if (!res.ok) {
+        const err = await res.json();
+        alert(err.error ?? 'Something went wrong. Please try again.');
+        return;
+      }
 
-    if (error) {
-      alert(error.message);
-      return;
+      setSubmitted(true);
+    } catch (err) {
+      console.error('Lead submit error:', err);
+      alert('Could not connect to the server. Please try again later.');
     }
-
-    setSubmitted(true);
   };
 
 
@@ -97,9 +101,10 @@ export function LeadForm() {
             {/* Contact options */}
             <div className="space-y-4 mb-10">
               {[
-                { icon: Phone, label: 'Call Us', value: '+971 4 444 1234', href: 'tel:+97144441234' },
+                { icon: Phone, label: 'Call Us', value: '+971 555542841', href: 'tel:+971 555542841' },
+                { icon: Phone, label: 'Call Us', value: '+91 8851742425', href: 'tel:+91 8851742425' },
                 { icon: MessageCircle, label: 'WhatsApp', value: '+971 555542841', href: 'https://wa.me/971555542841' },
-                { icon: Mail, label: 'Email', value: 'info@dubizsetup.ae', href: 'mailto:info@dubizsetup.ae' },
+                { icon: Mail, label: 'Email', value: 'info@dnex.ae', href: 'mailto:info@dnex.ae' },
               ].map((c) => (
                 <a
                   key={c.label}

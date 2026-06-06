@@ -29,14 +29,14 @@ const services = [
   },
   {
     icon: Receipt,
-    title: 'NRO ACCOUNT ASSISTANCE',
+    title: 'NRO Account Assistance',
     description:
       'NRO account assistance refers to professional support services provided to Non-resident Indian (NRIs) for opening, managing and complying with requirements related to a Non-Resident ordinary NRO bank account. These services include guidance on documentation, account opening procedures, fund transfers, tax-related compliance, repatriation rules, and handling income earned in India such as rent, dividends, pensions, or investments. NRO account assistance helps NRIs manage their finances.',
     highlight: false,
   },
   {
     icon: Calculator,
-    title: 'OVERSEAS DIRECT INVESTMENT (ODI) ASSISTANCE',
+    title: 'Overseas Direct Investment (ODI) Assistance',
     description:
       'We provide comprehensive assistance for Overseas Direct Investment (ODI) to individuals and companies intending to expand their business internationally. Our services include guidance on RBI regulations, preparation of required documentation, coordination with the authorized dealer banks, filing of forms related to ODI and compliance with applicable regulatory requirements for setting up or investing in foreign entities.',
     highlight: false,

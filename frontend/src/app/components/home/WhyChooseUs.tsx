@@ -63,7 +63,7 @@ export function WhyChooseUs() {
                 <Shield size={22} style={{ color: GOLD }} />
               </div>
               <div>
-                <div className="text-xl font-bold" style={{ color: NAVY }}>ISO 9001</div>
+                <div className="text-xs font-bold" style={{ color: NAVY }}>ISO 9001</div>
                 <div className="text-xs text-gray-500">Certified Partner</div>
               </div>
             </div>
@@ -96,7 +96,7 @@ export function WhyChooseUs() {
                 letterSpacing: '-0.5px',
               }}
             >
-              Dubai's One of the  Trusted<br />Business Setup Partner
+              UAE's One of the  Trusted<br />Business Setup Partner
             </h2>
 
             <p className="text-gray-500 mb-10 text-justify" style={{ lineHeight: 1.7 }}>

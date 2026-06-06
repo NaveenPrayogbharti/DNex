@@ -84,7 +84,7 @@ export function Footer() {
             </Link>
 
             <p className="text-gray-500 text-sm leading-relaxed mb-6 max-w-xs text-justify">
-              Dubai's one of the most trusted business setup and legal services platform. We help entrepreneurs,
+              UAE's one of the most trusted business setup and legal services platform. We help entrepreneurs,
               startups, and investors establish and grow their business in the UAE with confidence.
             </p>
 
@@ -105,7 +105,7 @@ export function Footer() {
               <div className="flex items-start gap-3 text-sm text-gray-600">
                 <MapPin size={15} style={{ color: GOLD, flexShrink: 0, marginTop: '2px' }} />
                 <span className="text-justify">Business Centre, Sharjah Publishing City Free Zone,
-                Sharjah, United Arab Emirates</span>
+                  Sharjah, United Arab Emirates</span>
               </div>
             </div>
 

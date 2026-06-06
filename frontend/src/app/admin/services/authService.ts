@@ -23,7 +23,7 @@ const MOCK_SESSION_KEY = 'dnex_admin_mock_session';
 
 function getMockSession(): AdminUser | null {
   try {
-    const stored = localStorage.getItem(MOCK_SESSION_KEY);
+    const stored = sessionStorage.getItem(MOCK_SESSION_KEY);
     return stored ? JSON.parse(stored) : null;
   } catch {
     return null;
@@ -32,9 +32,9 @@ function getMockSession(): AdminUser | null {
 
 function setMockSession(user: AdminUser | null) {
   if (user) {
-    localStorage.setItem(MOCK_SESSION_KEY, JSON.stringify(user));
+    sessionStorage.setItem(MOCK_SESSION_KEY, JSON.stringify(user));
   } else {
-    localStorage.removeItem(MOCK_SESSION_KEY);
+    sessionStorage.removeItem(MOCK_SESSION_KEY);
   }
 }
 
@@ -83,7 +83,10 @@ export async function getCurrentUser() {
   }
 
   const { data: { user }, error } = await supabase.auth.getUser();
-  if (error) throw error;
+  // Don't throw if it's just a missing session error
+  if (error && error.name !== 'AuthSessionMissingError' && !error.message.includes('session')) {
+    console.error('Supabase auth error:', error);
+  }
   return user;
 }
 
