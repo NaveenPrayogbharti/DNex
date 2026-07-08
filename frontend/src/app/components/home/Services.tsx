@@ -1,5 +1,5 @@
 import { Link } from 'react-router';
-import { Globe, Building2, Briefcase, Receipt, Calculator, CreditCard, ArrowRight } from 'lucide-react';
+import { Globe, Building2, Landmark, TrendingUp, Anchor, ArrowRight } from 'lucide-react';
 
 const GOLD = '#C9963C';
 const NAVY = '#0D2137';
@@ -21,28 +21,28 @@ const services = [
     highlight: false,
   },
   {
-    icon: Briefcase,
+    icon: Anchor,
     title: 'Offshore Company Formation',
     description:
       'An offshore company in UAE is a legal business entity incorporated for the purpose of conducting business activities outside UAE, mainly used for international business, asset holding or investment outside the country.',
     highlight: false,
   },
   {
-    icon: Receipt,
+    icon: Landmark,
     title: 'NRO Account Assistance',
     description:
       'NRO account assistance refers to professional support services provided to Non-resident Indian (NRIs) for opening, managing and complying with requirements related to a Non-Resident ordinary NRO bank account. These services include guidance on documentation, account opening procedures, fund transfers, tax-related compliance, repatriation rules, and handling income earned in India such as rent, dividends, pensions, or investments. NRO account assistance helps NRIs manage their finances.',
     highlight: false,
   },
   {
-    icon: Calculator,
+    icon: TrendingUp,
     title: 'Overseas Direct Investment (ODI) Assistance',
     description:
       'We provide comprehensive assistance for Overseas Direct Investment (ODI) to individuals and companies intending to expand their business internationally. Our services include guidance on RBI regulations, preparation of required documentation, coordination with the authorized dealer banks, filing of forms related to ODI and compliance with applicable regulatory requirements for setting up or investing in foreign entities.',
     highlight: false,
   },
   {
-    icon: CreditCard,
+    icon: Building2,
     title: 'Corporate Banking Assistance',
     description:
       'Banking setup services assist businesses in opening corporate bank accounts in the UAE with the required documentation and compliance support. This ensures a smooth banking process for new and existing companies.Corporate banking assistance may also include support for multi-currency accounts, trade finance, payroll services, merchant facilities, online banking setup, foreign exchange transactions, and cash management solutions. These services help businesses maintain seamless operations.',

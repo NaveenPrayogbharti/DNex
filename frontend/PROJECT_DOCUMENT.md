@@ -1,6 +1,6 @@
 # DNex Project — Living Feature Document
 > **Auto-generated** — Do not edit manually. Regenerated on every `npm run dev` save and `npm run build`.
-> Last updated: **Saturday 6 June, 2026 at 8:08 pm**
+> Last updated: **Wednesday 8 July, 2026 at 12:42 pm**
 
 ---
 
@@ -8,10 +8,10 @@
 
 | Metric | Count |
 |--------|-------|
-| TypeScript/TSX files | 120 |
+| TypeScript/TSX files | 121 |
 | CSS stylesheets | 6 |
 | SQL schema files | 0 |
-| Registered routes | 24 |
+| Registered routes | 0 |
 | Supabase tables used | 13 |
 | npm dependencies | 55 |
 
@@ -29,7 +29,7 @@
 | **Home** | `src/app/pages/Home.tsx` | 23 |
 | **IndiaServices** | `src/app/pages/IndiaServices.tsx` | 553 |
 | **NotFound** | `src/app/pages/NotFound.tsx` | 106 |
-| **OurServices** | `src/app/pages/OurServices.tsx` | 1018 |
+| **OurServices** | `src/app/pages/OurServices.tsx` | 1027 |
 | **Root** | `src/app/pages/Root.tsx` | 48 |
 
 ### Home Section Components (8)
@@ -56,30 +56,7 @@
 ### Registered Routes
 
 ```
-GET /
-GET free-zone
-GET our-services
-GET india-services
-GET leadform
-GET contact
-GET about
-GET *
-GET /admin/login
-GET /admin
-GET dashboard
-GET inquiries
-GET services
-GET content
-GET users
-GET settings
-GET /crm
-GET dashboard
-GET cases
-GET cases/:id
-GET tasks
-GET analytics
-GET settings
-GET notifications
+
 ```
 
 ---
@@ -157,7 +134,7 @@ New → Contacted → In Progress → Closed
 | Page | File | Lines |
 |------|------|-------|
 | **AnalyticsPage** | `src/app/crm/pages/AnalyticsPage.tsx` | 138 |
-| **CaseDetailPage** | `src/app/crm/pages/CaseDetailPage.tsx` | 541 |
+| **CaseDetailPage** | `src/app/crm/pages/CaseDetailPage.tsx` | 583 |
 | **CasesPage** | `src/app/crm/pages/CasesPage.tsx` | 211 |
 | **CRMDashboard** | `src/app/crm/pages/CRMDashboard.tsx` | 244 |
 | **CRMLayout** | `src/app/crm/pages/CRMLayout.tsx` | 44 |
@@ -177,13 +154,14 @@ New → Contacted → In Progress → Closed
 | **CRMSettingsPage** | Automation rule CRUD, enable/disable toggle, seed defaults, system config display |
 | **NotificationsPage** | Read/unread notifications, mark all read, type icons, timestamp display |
 
-### CRM Components (4)
+### CRM Components (5)
 
 | Component | File | Purpose |
 |-----------|------|---------|
 | **CaseModal** | `src/app/crm/components/CaseModal.tsx` | Create new case modal with validation and automation trigger |
 | **CRMNavbar** | `src/app/crm/components/CRMNavbar.tsx` | Top bar with notification dropdown panel |
 | **CRMSidebar** | `src/app/crm/components/CRMSidebar.tsx` | CRM navigation with Back to Admin link and notification badge |
+| **EmailComposeModal** | `src/app/crm/components/EmailComposeModal.tsx` | — |
 | **WorkflowSteps** | `src/app/crm/components/WorkflowSteps.tsx` | — |
 
 ### CRM Services / Business Logic (10)
@@ -368,12 +346,12 @@ src/
 │   │   └── context/        # AuthContext
 │   ├── crm/                # CRM Portal (NEW)
 │   │   ├── pages/          # 8 CRM pages
-│   │   ├── components/     # 4 CRM components
+│   │   ├── components/     # 5 CRM components
 │   │   ├── services/       # 10 service files
 │   │   ├── context/        # CRMNotificationContext
 │   │   └── supabase_crm_schema.sql
 │   ├── App.tsx
-│   └── routes.ts           # 24 registered routes
+│   └── routes.ts           # 0 registered routes
 ├── lib/
 │   ├── supabase.ts         # Shared Supabase client
 │   └── servicesStore.ts    # Local service list store

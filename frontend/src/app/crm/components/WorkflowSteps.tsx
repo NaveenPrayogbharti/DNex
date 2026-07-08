@@ -131,6 +131,7 @@ export function ContactedStep({ crmCase, onRefresh, onBack, isViewOnly }: Props)
 
 export function RequirementStep({ crmCase, onRefresh, onBack, isViewOnly }: Props) {
   const [fields, setFields] = useState({
+    service_title: crmCase.requirement_data?.service_title || '',
     budget: crmCase.requirement_data?.budget || '',
     currency: crmCase.requirement_data?.currency || 'AED',
     timeline: crmCase.requirement_data?.timeline || '',
@@ -139,6 +140,8 @@ export function RequirementStep({ crmCase, onRefresh, onBack, isViewOnly }: Prop
     nationality: crmCase.requirement_data?.nationality || '',
     other_info: crmCase.requirement_data?.other_info || ''
   });
+  const [sendingReq, setSendingReq] = useState(false);
+  const [reqSentStatus, setReqSentStatus] = useState<'idle'|'success'|'error'>('idle');
   const [decision, setDecision] = useState<'interested'|'not_interested'|null>(null);
   const [reason, setReason] = useState(crmCase.not_interested_reason || '');
   const [saving, setSaving] = useState(false);
@@ -213,6 +216,28 @@ export function RequirementStep({ crmCase, onRefresh, onBack, isViewOnly }: Prop
     } finally { setSaving(false); }
   };
 
+  const sendRequirements = async () => {
+    setSendingReq(true);
+    setReqSentStatus('idle');
+    try {
+      const reqBody = [
+        fields.service_title ? `<b>Service Required:</b> ${fields.service_title}` : '',
+        `<b>Budget:</b> ${fields.currency} ${fields.budget || '—'}`,
+        fields.timeline ? `<b>Timeline:</b> ${fields.timeline}` : '',
+        fields.business_type ? `<b>Business Type:</b> ${fields.business_type}${fields.custom_business_type ? ` (${fields.custom_business_type})` : ''}` : '',
+        fields.nationality ? `<b>Nationality:</b> ${fields.nationality}` : '',
+        fields.other_info ? `<b>Additional Info:</b> ${fields.other_info}` : '',
+      ].filter(Boolean).join('<br/>');
+      const res = await sendCustomEmail({
+        to: crmCase.email,
+        subject: `Your Service Requirement Details — ${crmCase.case_id} | DNex Consulting`,
+        body: `<p>Dear <strong>${crmCase.full_name}</strong>,</p><p>Thank you for discussing your requirements with us. Here is a summary of what we have gathered:</p><div style="background:#f8fafc;padding:16px;border-radius:8px;margin:12px 0;">${reqBody}</div><p>Our team will review these and get back to you shortly with a tailored proposal.</p><p style="margin-top:16px;">Best regards,<br/><strong>DNex Consulting Team</strong></p>`,
+      });
+      setReqSentStatus(res.success ? 'success' : 'error');
+    } catch { setReqSentStatus('error'); }
+    finally { setSendingReq(false); }
+  };
+
   return (
     <div style={{ display:'flex', flexDirection:'column', gap:16 }}>
       {onBack && (
@@ -221,6 +246,14 @@ export function RequirementStep({ crmCase, onRefresh, onBack, isViewOnly }: Prop
         </button>
       )}
       <div style={{ color:GOLD, fontWeight:700, fontSize:15 }}>📋 Gather Client Requirements</div>
+
+      {/* Service Requirement Title */}
+      <div style={{ display:'flex', flexDirection:'column', gap:6 }}>
+        <label style={{ fontSize:12, color:'#94a3b8', fontWeight:600 }}>Service Requirement Title *</label>
+        <input className="crm-input" placeholder="e.g. Free Zone Company Setup — IFZA"
+          value={fields.service_title} disabled={isViewOnly}
+          onChange={e => setFields(f => ({ ...f, service_title: e.target.value }))} />
+      </div>
 
       <div style={{ display:'grid', gridTemplateColumns:'1fr 1fr', gap:12 }}>
         {/* Budget with Currency Selector */}
@@ -237,11 +270,13 @@ export function RequirementStep({ crmCase, onRefresh, onBack, isViewOnly }: Prop
           </div>
         </div>
 
-        {/* Timeline */}
+        {/* Timeline — Calendar */}
         <div style={{ display:'flex', flexDirection:'column', gap:6 }}>
-          <label style={{ fontSize:12, color:'#94a3b8', fontWeight:600 }}>Timeline</label>
-          <input className="crm-input" placeholder="e.g. ASAP / 2 weeks"
-            value={fields.timeline} onChange={e => setFields(f => ({ ...f, timeline: e.target.value }))} />
+          <label style={{ fontSize:12, color:'#94a3b8', fontWeight:600 }}>Timeline (Target Date)</label>
+          <input type="date" className="crm-input"
+            value={fields.timeline}
+            min={new Date().toISOString().split('T')[0]}
+            onChange={e => setFields(f => ({ ...f, timeline: e.target.value }))} />
         </div>
 
         {/* Business Type Dropdown + custom input */}
@@ -306,6 +341,17 @@ export function RequirementStep({ crmCase, onRefresh, onBack, isViewOnly }: Prop
             💡 Inform the client about our services. After discussion, record their decision below.
           </div>
 
+          {/* Send Requirements Email */}
+          <div style={{ display:'flex', alignItems:'center', gap:10 }}>
+            <button className="crm-btn crm-btn--primary" style={{ background:'#2563eb' }}
+              disabled={sendingReq}
+              onClick={sendRequirements}>
+              <Send size={14}/> {sendingReq ? 'Sending...' : 'Send Requirements to Client'}
+            </button>
+            {reqSentStatus === 'success' && <span style={{ fontSize:12, color:'#34d399', fontWeight:600 }}>✓ Sent successfully!</span>}
+            {reqSentStatus === 'error' && <span style={{ fontSize:12, color:'#f87171', fontWeight:600 }}>✗ Failed to send.</span>}
+          </div>
+
           <div style={{ fontSize:13, color:'#1e293b', fontWeight:600 }}>Client's Decision</div>
           <div style={{ display:'flex', gap:10 }}>
             <button className={`crm-btn ${decision==='interested'?'crm-btn--success':'crm-btn--ghost'}`}
@@ -338,10 +384,10 @@ export function RequirementStep({ crmCase, onRefresh, onBack, isViewOnly }: Prop
   );
 }
 
-// ── Step: Service Assignment ─────────────────────────────────────────────────
+// ── Step: Service Assignment (Multi-Select) ───────────────────────────────────
 export function ServiceStep({ crmCase, onRefresh, onBack, isViewOnly }: Props) {
   const [services, setServices] = useState<ServiceItem[]>([]);
-  const [selected, setSelected] = useState<ServiceItem | null>(null);
+  const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
   const [customService, setCustomService] = useState('');
   const [showCustom, setShowCustom] = useState(false);
   const [saving, setSaving] = useState(false);
@@ -350,7 +396,24 @@ export function ServiceStep({ crmCase, onRefresh, onBack, isViewOnly }: Props) {
     fetchServicesForCRM().then(setServices).catch(console.error);
   }, []);
 
-  const effectiveTitle = showCustom ? customService : (selected?.title ?? '');
+  const toggleService = (id: string) => {
+    setSelectedIds(prev => {
+      const next = new Set(prev);
+      if (next.has(id)) next.delete(id); else next.add(id);
+      return next;
+    });
+    setShowCustom(false);
+  };
+
+  const selectedServices = services.filter(s => selectedIds.has(s.id));
+  const effectiveTitles = showCustom
+    ? (customService ? [customService] : [])
+    : selectedServices.map(s => s.title);
+  const effectiveTitle = effectiveTitles.join(', ');
+
+  const allRequiredDocs = Array.from(new Set(
+    selectedServices.flatMap(s => s.required_docs ?? [])
+  ));
 
   const confirm = async () => {
     if (!effectiveTitle) return;
@@ -370,29 +433,49 @@ export function ServiceStep({ crmCase, onRefresh, onBack, isViewOnly }: Props) {
           <ArrowLeft size={14}/> Back
         </button>
       )}
-      <div style={{ color:GOLD, fontWeight:700, fontSize:15 }}><Package size={18} style={{ display:'inline', marginRight:6 }}/>Select Service</div>
+      <div style={{ color:GOLD, fontWeight:700, fontSize:15 }}><Package size={18} style={{ display:'inline', marginRight:6 }}/>Select Services <span style={{ fontSize:12, color:'#94a3b8', fontWeight:400 }}>(select all that apply)</span></div>
+
+      {/* Selected summary badge */}
+      {effectiveTitles.length > 0 && (
+        <div style={{ display:'flex', flexWrap:'wrap', gap:6 }}>
+          {effectiveTitles.map(t => (
+            <span key={t} style={{ background:'rgba(201,150,60,0.15)', color:GOLD, padding:'3px 10px', borderRadius:20, fontSize:12, fontWeight:600 }}>{t}</span>
+          ))}
+        </div>
+      )}
+
       {services.length === 0 ? (
         <div style={{ padding:20, textAlign:'center', color:'#64748b', fontSize:14 }}>Loading services...</div>
       ) : (
         <div style={{ display:'grid', gridTemplateColumns:'1fr 1fr', gap:10 }}>
-          {services.map(svc => (
-            <div key={svc.id}
-              onClick={() => { setSelected(svc); setShowCustom(false); }}
-              style={{
-                padding:14, border:`2px solid ${!showCustom && selected?.id===svc.id?GOLD:'rgba(0,0,0,0.1)'}`,
-                borderRadius:10, cursor:'pointer', background: !showCustom && selected?.id===svc.id?'rgba(201,150,60,0.08)':'rgba(0,0,0,0.02)',
-                transition:'all 0.2s',
-              }}>
-              <div style={{ fontWeight:700, color:'#1e293b', fontSize:14 }}>{svc.title}</div>
-              <div style={{ fontSize:12, color:'#64748b', marginTop:4 }}>{svc.description}</div>
-            </div>
-          ))}
+          {services.map(svc => {
+            const isChecked = selectedIds.has(svc.id);
+            return (
+              <div key={svc.id}
+                onClick={() => { if (!isViewOnly) { toggleService(svc.id); } }}
+                style={{
+                  padding:14, border:`2px solid ${isChecked ? GOLD : 'rgba(0,0,0,0.1)'}`,
+                  borderRadius:10, cursor: isViewOnly ? 'default' : 'pointer',
+                  background: isChecked ? 'rgba(201,150,60,0.08)' : 'rgba(0,0,0,0.02)',
+                  transition:'all 0.2s', display:'flex', gap:10, alignItems:'flex-start',
+                }}>
+                <div style={{ marginTop:2, flexShrink:0, width:18, height:18, border:`2px solid ${isChecked?GOLD:'#cbd5e1'}`, borderRadius:4, background: isChecked?GOLD:'transparent', display:'flex', alignItems:'center', justifyContent:'center' }}>
+                  {isChecked && <span style={{ color:'#fff', fontSize:12, fontWeight:700 }}>✓</span>}
+                </div>
+                <div style={{ flex:1 }}>
+                  <div style={{ fontWeight:700, color:'#1e293b', fontSize:14 }}>{svc.title}</div>
+                  <div style={{ fontSize:12, color:'#64748b', marginTop:4 }}>{svc.description}</div>
+                </div>
+              </div>
+            );
+          })}
           {/* Custom/Other option */}
           <div
-            onClick={() => { setShowCustom(true); setSelected(null); }}
+            onClick={() => { if (!isViewOnly) { setShowCustom(true); setSelectedIds(new Set()); } }}
             style={{
-              padding:14, border:`2px solid ${showCustom?GOLD:'rgba(0,0,0,0.1)'}`,
-              borderRadius:10, cursor:'pointer', background: showCustom?'rgba(201,150,60,0.08)':'rgba(0,0,0,0.02)',
+              padding:14, border:`2px solid ${showCustom ? GOLD : 'rgba(0,0,0,0.1)'}`,
+              borderRadius:10, cursor: isViewOnly ? 'default' : 'pointer',
+              background: showCustom ? 'rgba(201,150,60,0.08)' : 'rgba(0,0,0,0.02)',
               transition:'all 0.2s',
             }}>
             <div style={{ fontWeight:700, color:'#1e293b', fontSize:14 }}>➕ Other / Not Listed</div>
@@ -407,12 +490,12 @@ export function ServiceStep({ crmCase, onRefresh, onBack, isViewOnly }: Props) {
             onChange={e => setCustomService(e.target.value)} />
         </div>
       )}
-      {!showCustom && selected && (
+      {!showCustom && selectedServices.length > 0 && (
         <div style={{ padding:14, background:'rgba(79,70,229,0.06)', border:'1px solid rgba(79,70,229,0.2)', borderRadius:10 }}>
-          <div style={{ fontWeight:700, color:'#4f46e5', marginBottom:8 }}>📄 Required Documents for {selected.title}</div>
+          <div style={{ fontWeight:700, color:'#4f46e5', marginBottom:8 }}>📄 Required Documents ({selectedServices.length} service{selectedServices.length > 1 ? 's' : ''})</div>
           <div style={{ display:'flex', flexWrap:'wrap', gap:6 }}>
-            {(selected.required_docs ?? []).length > 0
-              ? (selected.required_docs ?? []).map(d => (
+            {allRequiredDocs.length > 0
+              ? allRequiredDocs.map(d => (
                   <span key={d} style={{ background:'rgba(79,70,229,0.1)', padding:'4px 10px', borderRadius:20, fontSize:12, color:'#4f46e5' }}>{d}</span>
                 ))
               : <span style={{ fontSize:13, color:'#64748b' }}>No specific documents listed.</span>
@@ -425,7 +508,7 @@ export function ServiceStep({ crmCase, onRefresh, onBack, isViewOnly }: Props) {
       )}
       {!isViewOnly && (
         <button className="crm-btn crm-btn--primary" disabled={!effectiveTitle || saving} onClick={confirm} style={{ alignSelf:'flex-start' }}>
-          {saving ? 'Saving...' : 'Confirm Service & Notify Client'} <Send size={14}/>
+          {saving ? 'Saving...' : `Confirm Service${effectiveTitles.length > 1 ? 's' : ''} & Notify Client`} <Send size={14}/>
         </button>
       )}
     </div>

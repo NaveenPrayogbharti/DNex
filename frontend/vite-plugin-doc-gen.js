@@ -10,8 +10,9 @@ export function docGenPlugin() {
   return {
     name: 'vite-plugin-doc-gen',
     buildStart() {
-      // Regenerate on every build start
-      generateDocs();
+      // Regenerate on every build start — fire-and-forget so Vite
+      // isn't blocked waiting for the filesystem scan to finish.
+      Promise.resolve().then(() => generateDocs());
     },
     handleHotUpdate({ file }) {
       // Only react to src/ changes (ignore node_modules, dist, etc.)

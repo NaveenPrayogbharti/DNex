@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { Link } from 'react-router';
 import {
-  ArrowRight, Phone, MessageCircle, Send, CheckCircle,
+  ArrowRight, Phone, MessageCircle, Send, CheckCircle, XCircle,
   Receipt, FileText, ClipboardCheck, BookOpen, Building,
   FileCheck, Landmark, Handshake, IdCard, RefreshCw, Edit3,
   FolderOpen, ShieldCheck, Building2, Globe, Anchor, GitBranch,
@@ -31,7 +31,7 @@ const serviceCategories = [
       { icon: UserCog, title: 'Real Estate Business', desc: 'Engaged in activities related to the buying, selling, leasing, management, or development of real properties.', href: '/businessmen-services' },
       { icon: UserCog, title: 'Office Setup Services', desc: 'Professional services to assist in establishing a functional office space, including infrastructure and compliance.', href: '/businessmen-services' },
     ],
-    featured: { title: 'Start in a Free Zone', desc: '100% ownership and fast registration in Dubai\'s premier free zones.', cta: 'Start Today', href: '/leadform' },
+    featured: { title: 'Start in a Free Zone', desc: '100% ownership and fast registration in UAE\'s free zones. Free zone company formation offers entrepreneurs and businesses simplified setup procedures, tax advantages, full repatriation of profits, and access to world-class infrastructure. It is an ideal option for startups, SMEs, and international businesses looking to establish a strong presence in the UAE with minimal restrictions and faster business licensing processes.', cta: 'Explore Free Zones', href: '/our-services#business-setup' },
   },
   {
     id: 'banking',
@@ -45,7 +45,7 @@ const serviceCategories = [
       { icon: UserCheck, title: 'NRO Account Assistance',       desc: 'Professional support services provided to Non-resident Indians (NRIs) for opening and managing an NRO bank account.',   href: '/employment-visa', sectionId: 'nro' },
       { icon: Laptop,    title: 'Overseas Direct Investment (ODI)', desc: 'Comprehensive assistance for ODI including RBI regulations guidance, documentation, and authorized dealer coordination.', href: '/freelance-visa', sectionId: 'odi' },
     ],
-    featured: { title: 'Banking Setup', desc: 'Banking Services for investors, professionals, and entrepreneurs.', cta: 'Apply Now', href: '/leadform' },
+    featured: { title: 'Banking Support', desc: 'Banking Services for investors, professionals, and entrepreneurs. Seamless account opening, compliance support, and tailored banking solutions.', cta: 'Apply Now', href: '/leadform' },
   },
   {
     id: 'pro-services',
@@ -105,7 +105,7 @@ const serviceCategories = [
     icon: Building,
     services: [
       { icon: Building, title: 'GoAML Registration', desc: 'Anti-Money Laundering compliance setup and registration with UAE authorities.', href: '/corporate-tax' },
-      { icon: ClipboardCheck, title: 'APR Filing', desc: 'Annual Percentage Rate regulatory filings and compliance management.', href: '/audit' },
+      { icon: ClipboardCheck, title: 'APR Filing', desc: 'Annual Performance Report regulatory filings and compliance management.', href: '/audit' },
       { icon: BookOpen, title: 'FEMA Compliances', desc: 'Foreign Exchange Management Act advisory and legal compliance support.', href: '/accounting' },
     ],
     featured: { title: 'Stay Compliant', desc: 'Navigate UAE\'s regulatory landscape with confidence using our expert compliance services.', cta: 'Learn More', href: '/leadform' },
@@ -113,7 +113,7 @@ const serviceCategories = [
 ];
 
 const stats = [
-  { value: '52', label: 'Free Zones Covered' },
+  { value: 'UAE Mainland', label: '& Free Zones' },
   { value: '15+', label: 'Years Experience' },
   { value: '4.9/5', label: 'Client Rating' },
 ];
@@ -141,12 +141,13 @@ const indiaServiceCategories = [
   {
     id: 'india-incorporation',
     title: 'Company Incorporation',
-    desc: 'End-to-end company incorporation services in India — Pvt Ltd, LLP, OPC, and Branch Office setup.',
+    desc: 'End-to-end company incorporation services in India — Private and Public company, LLP, OPC, Branch Office setup, and many more types.',
     items: [
       { icon: Building2, label: 'Private Limited Company', desc: 'Incorporate a Pvt Ltd company in India with complete registration, MOA/AOA drafting, and compliance support.', href: '/leadform' },
-      { icon: Landmark, label: 'LLP Formation', desc: 'Form a Limited Liability Partnership with end-to-end documentation and ROC filing.', href: '/leadform' },
-      { icon: FileCheck, label: 'OPC Registration', desc: 'One Person Company registration for solo entrepreneurs looking to operate in India.', href: '/leadform' },
-      { icon: Globe, label: 'Branch Office in India', desc: 'Set up a branch or liaison office in India for foreign companies.', href: '/leadform' },
+      { icon: Landmark, label: 'Public Limited Company', desc: 'End-to-end public company formation including prospectus, SEBI filing, and regulatory compliance.', href: '/leadform' },
+      { icon: FileCheck, label: 'LLP Formation', desc: 'Form a Limited Liability Partnership with end-to-end documentation and ROC filing.', href: '/leadform' },
+      { icon: Globe, label: 'OPC Registration', desc: 'One Person Company registration for solo entrepreneurs looking to operate in India.', href: '/leadform' },
+      { icon: GitBranch, label: 'Branch Office in India', desc: 'Set up a branch or liaison office in India for foreign companies.', href: '/leadform' },
     ],
   },
   {
@@ -155,30 +156,39 @@ const indiaServiceCategories = [
     desc: 'Complete GST lifecycle support — registration, filing, reconciliation, and audit.',
     items: [
       { icon: FileText, label: 'GST Registration', desc: 'New GST registration for businesses with complete documentation support.', href: '/leadform' },
-      { icon: ClipboardCheck, label: 'GSTR Filing', desc: 'Monthly, quarterly, and annual GST return (GSTR-1, GSTR-3B, GSTR-9) preparation and filing.', href: '/leadform' },
+      { icon: ClipboardCheck, label: 'GSTR Filing', desc: 'Preparation and filing of monthly, quarterly and annual GST returns (GSTR-1, GSTR-3B and GSTR-9 and 9C and many more).', href: '/leadform' },
       { icon: BookOpen, label: 'GST Reconciliation', desc: 'GSTR-2A/2B matching, ITC reconciliation, and mismatch resolution.', href: '/leadform' },
-      { icon: Receipt, label: 'GST Audit', desc: 'GST audit support and GSTR-9C preparation for businesses exceeding threshold limits.', href: '/leadform' },
+      { icon: Receipt, label: 'GST Audit', desc: 'GST audit support with preparation of GSTR-9 and 9C for businesses exceeding threshold limits.', href: '/leadform' },
     ],
   },
   {
     id: 'india-incometax',
-    title: 'Income Tax Compliances',
-    desc: 'Comprehensive income tax services — ITR filing, TDS, advance tax planning, and tax notice handling.',
+    title: 'Income Tax Services',
+    desc: 'Comprehensive income tax solutions for individuals, NRIs, HUFs, firms, LLPs, and companies, covering tax planning, compliance, assessments, and litigation support.',
     items: [
-      { icon: Receipt, label: 'ITR Filing', desc: 'Income Tax Return filing for individuals, HUFs, firms, and companies in India.', href: '/leadform' },
-      { icon: ClipboardCheck, label: 'TDS Compliance', desc: 'TDS deduction, challan payment, quarterly TDS return filing, and compliance management.', href: '/leadform' },
-      { icon: BookOpen, label: 'Advance Tax Planning', desc: 'Strategic advance tax computation and timely payment advisory to avoid interest and penalties.', href: '/leadform' },
-      { icon: ShieldCheck, label: 'Tax Notice Handling', desc: 'Expert response and representation for income tax notices, scrutiny assessments, and appeals.', href: '/leadform' },
+      { icon: Receipt, label: 'ITR Filing', desc: 'Income Tax Return filing for individuals, NRIs, HUFs, partnership firms, LLPs, trusts, and companies, ensuring accurate reporting and timely compliance.', href: '/leadform' },
+      { icon: ClipboardCheck, label: 'TDS and TCS Compliance', desc: 'TDS and TCS registration, deduction, challan payment, quarterly return filing, correction statements, lower deduction certificates, and end-to-end compliance management.', href: '/leadform' },
+      { icon: BookOpen, label: 'Advance Tax Planning', desc: 'Strategic tax planning, advance tax computation, tax optimization, and payment advisory to minimize interest and penalty exposure.', href: '/leadform' },
+      { icon: ShieldCheck, label: 'Tax Notice & Assessment Handling', desc: 'Professional representation for income tax notices, scrutiny assessments, reassessments, faceless proceedings, rectifications, and appeals.', href: '/leadform' },
+      { icon: FileText, label: 'Tax Audit & Compliance', desc: 'Assistance with Tax Audit under Section 44AB, compliance reviews, documentation support, and reporting requirements.', href: '/leadform' },
+      { icon: TrendingUp, label: 'Capital Gains Advisory', desc: 'Expert guidance on capital gains tax arising from property transactions, securities, mutual funds, ESOPs, and other investments.', href: '/leadform' },
+      { icon: Globe, label: 'NRI Taxation Services', desc: 'Specialized advisory on residential status, DTAA benefits, foreign income reporting, property transactions, and NRI return filing.', href: '/leadform' },
+      { icon: IdCard, label: 'PAN, TAN & Tax Registrations', desc: 'PAN, TAN, lower withholding applications, tax registrations, and compliance-related documentation support.', href: '/leadform' },
+      { icon: Gavel, label: 'Appeals & Litigation Support', desc: 'Representation before Income Tax Authorities, CIT(A), ITAT, and assistance in tax disputes and litigation matters.', href: '/leadform' },
+      { icon: Lightbulb, label: 'Tax Planning & Structuring', desc: 'Business and personal tax planning, entity structuring, succession planning, and tax-efficient transaction advisory.', href: '/leadform' },
     ],
   },
   {
     id: 'india-roc',
-    title: 'ROC Filings',
-    desc: 'Registrar of Companies filings — annual returns, event-based filings, and compliance management.',
+    title: 'ROC & Corporate Compliance',
+    desc: 'Comprehensive Registrar of Companies (ROC) compliance and corporate secretarial services for private and public companies, LLPs, startups, and other business entities, ensuring full compliance with the Companies Act, 2013 and MCA regulations.',
     items: [
-      { icon: FileText, label: 'Annual ROC Returns', desc: 'Timely filing of AOC-4, MGT-7/7A, and other mandatory annual returns with MCA.', href: '/leadform' },
-      { icon: ClipboardCheck, label: 'Event-Based Filings', desc: 'Director changes, share transfers, increase in authorized capital, and other event-based forms.', href: '/leadform' },
-      { icon: BookOpen, label: 'Compliance Calendar', desc: 'Proactive compliance tracking and reminders for all ROC due dates and deadlines.', href: '/leadform' },
+      { icon: FileText, label: 'Annual ROC Filings', desc: 'Timely filing of AOC-4, MGT-7/MGT-7A, DPT-3, MSME Form-I, DIR-3 KYC, LLP Form-11, LLP Form-8, and other mandatory annual compliances.', href: '/leadform' },
+      { icon: ClipboardCheck, label: 'Event-Based Filings', desc: 'Filing and compliance support for director appointments and resignations, share transfers, change in registered office, increase in authorized capital, allotment of shares, and other corporate events.', href: '/leadform' },
+      { icon: Clock, label: 'Compliance Calendar & Due Date Management', desc: 'Proactive compliance monitoring, reminders, and tracking of statutory deadlines to avoid penalties and non-compliance.', href: '/leadform' },
+      { icon: Users, label: 'Director & KMP Compliance', desc: 'DIR-3 KYC, DIN-related filings, appointment and resignation of directors, and compliance for Key Managerial Personnel (KMP).', href: '/leadform' },
+      { icon: XCircle, label: 'Strike-Off & Closure Services', desc: 'Assistance with voluntary strike-off of companies and LLPs, closure compliances, and regulatory filings.', href: '/leadform' },
+      { icon: Briefcase, label: 'Corporate Advisory', desc: 'Advisory on Companies Act matters, shareholder rights, corporate restructuring, mergers, acquisitions, and governance issues.', href: '/leadform' },
     ],
   },
   {
@@ -194,7 +204,7 @@ const indiaServiceCategories = [
   {
     id: 'india-crossborder',
     title: 'Cross-Border Services (UAE–India)',
-    desc: 'Specialized cross-border structuring, FEMA/ODI compliance, and NRI advisory for UAE–India business operations.',
+    desc: 'Seamlessly bridging the UAE and India through specialized services in FEMA compliance, NRI banking, company incorporation, tax filings, and end-to-end legal support across both jurisdictions.',
     items: [
       { icon: Globe, label: 'UAE–India Structuring', desc: 'Optimal business structuring for entities operating across both UAE and India jurisdictions.', href: '/leadform' },
       { icon: Building, label: 'FEMA & ODI Compliance', desc: 'Foreign Exchange Management Act advisory, ODI filings, and FCTRS reporting for outbound investments.', href: '/leadform' },
@@ -735,8 +745,7 @@ export function OurServices() {
                 Expert Services for NRIs, Businesses &amp; Legal Support
               </h2>
               <p className="text-gray-500 mb-10 text-justify" style={{ lineHeight: 1.7 }}>
-                Specialized services bridging UAE and India from FEMA compliance and NRI banking to
-                Indian company incorporation, tax filings, and comprehensive legal support across both jurisdictions.
+                Seamlessly bridging the UAE and India through specialized services in FEMA compliance, NRI banking, company incorporation, tax filings, and end-to-end legal support across both jurisdictions.
               </p>
 
               {/* Sub-section: Legal Services */}
@@ -780,12 +789,12 @@ export function OurServices() {
                 {/* Legal Cards */}
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   {[
-                    { icon: Scale, title: 'Litigation & Dispute Resolution', desc: 'Expert representation and strategic counsel for corporate disputes, regulatory proceedings, commercial litigation, and arbitration.' },
-                    { icon: FileText, title: 'Contract Drafting & Vetting', desc: 'Drafting, reviewing, and negotiating commercial contracts, MOUs, NDAs, and partnership agreements.' },
-                    { icon: ShieldCheck, title: 'Regulatory Compliance', desc: 'Proactive compliance management across UAE and India regulatory frameworks to minimize legal exposure.' },
-                    { icon: Gavel, title: 'Legal Advisory', desc: 'Strategic legal guidance on corporate structuring, mergers, acquisitions, and cross-border transactions.' },
-                    { icon: BookOpen, title: 'Legal Documentation', desc: 'Preparation and management of all legal documents including board resolutions, shareholder agreements, and powers of attorney.' },
-                    { icon: ShieldCheck, title: 'Tax Notice & Legal Response', desc: 'Expert handling of tax notices, show-cause notices, and regulatory queries.' },
+                    { icon: Scale, title: 'Litigation & Dispute Resolution', desc: 'Expert legal representation in civil, criminal, commercial, and regulatory matters, including court proceedings, arbitration, dispute resolution, and legal risk management.' },
+                    { icon: FileText, title: 'Contract Drafting & Vetting', desc: 'Professional drafting, review, and vetting of commercial contracts, agreements, MOUs, partnership deeds, employment contracts, and other legal documents to ensure compliance, mitigate risks, and protect your interests.' },
+                    { icon: ShieldCheck, title: 'Regulatory Compliance', desc: 'Comprehensive compliance support for UAE and Indian businesses, including corporate filings, ROC compliances, FEMA regulations, tax obligations, licensing requirements, AML, ESR, UBO reporting, and other statutory requirements to ensure seamless business operations.' },
+                    { icon: Gavel, title: 'Legal Advisory', desc: 'Expert legal advice on corporate, commercial, contractual, and regulatory matters, helping businesses make informed decisions, manage risks, and ensure legal compliance.' },
+                    { icon: BookOpen, title: 'Legal Documentation', desc: 'Preparation and management of all legal documents including board resolutions, shareholder agreements, powers of attorney, and statutory registers.' },
+                    { icon: ShieldCheck, title: 'Tax Notice & Legal Response', desc: 'Expert handling of income tax notices, show-cause notices, scrutiny assessments, faceless proceedings, and regulatory queries with professional representation.' },
                   ].map((service) => (
                     <Link
                       key={service.title}

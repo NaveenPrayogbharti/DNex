@@ -228,8 +228,8 @@ export function IndiaServices() {
           </h1>
 
           <p className="text-slate-300 text-lg max-w-2xl mb-10 text-justify" style={{ lineHeight: 1.65 }}>
-            Specialized services bridging UAE and India — from FEMA compliance and NRI banking to
-            Indian company incorporation, tax filings, and PRO support.
+            Seamlessly bridging the UAE and India through specialized services in FEMA compliance,
+            NRI banking, company incorporation, tax filings, and end-to-end legal support across both jurisdictions.
           </p>
 
           {/* Stats row */}

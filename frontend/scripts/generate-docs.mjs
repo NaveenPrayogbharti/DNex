@@ -595,5 +595,10 @@ export function generateDocs() {
   return outPath;
 }
 
-// Run directly
-generateDocs();
+// Run directly only when invoked as a script (e.g. `npm run docs`)
+// NOT when imported as a module by the Vite plugin — avoids double-run on startup.
+const scriptPath = process.argv[1]?.replace(/\\/g, '/');
+const modulePath = fileURLToPath(import.meta.url).replace(/\\/g, '/');
+if (scriptPath && modulePath.endsWith(scriptPath.split('/').pop())) {
+  generateDocs();
+}

@@ -1,24 +1,111 @@
-import { defineConfig } from 'vite'
+import { defineConfig, loadEnv } from 'vite'
 import path from 'path'
 import tailwindcss from '@tailwindcss/vite'
 import react from '@vitejs/plugin-react'
 import { docGenPlugin } from './vite-plugin-doc-gen.js'
 
-export default defineConfig({
-  plugins: [
-    // The React and Tailwind plugins are both required for Make, even if
-    // Tailwind is not being actively used – do not remove them
-    react(),
-    tailwindcss(),
-    docGenPlugin(),  // Auto-regenerates PROJECT_DOCUMENT.md on every save
-  ],
-  resolve: {
-    alias: {
-      // Alias @ to the src directory
-      '@': path.resolve(__dirname, './src'),
-    },
-  },
+export default defineConfig(({ mode }) => {
+  const env = loadEnv(mode, process.cwd(), '');
+  const isPublicOnly = env.VITE_PUBLIC_ONLY === 'true';
 
-  // File types to support raw imports. Never add .css, .tsx, or .ts files to this.
-  assetsInclude: ['**/*.svg', '**/*.csv'],
-})
+  return {
+    plugins: [
+      react(),
+      tailwindcss(),
+      // Only run doc-gen in dev (skipped in production builds for speed)
+      mode === 'development' ? docGenPlugin() : null,
+    ].filter(Boolean),
+
+    resolve: {
+      alias: {
+        '@': path.resolve(__dirname, './src'),
+      },
+    },
+
+    assetsInclude: ['**/*.svg', '**/*.csv'],
+
+    // ── Dependency Pre-Bundling ──────────────────────────────────────────────
+    optimizeDeps: {
+      include: [
+        'react',
+        'react-dom',
+        'react-router',
+        '@supabase/supabase-js',
+        'lucide-react',
+        'recharts',
+        'motion',
+        '@mui/material',
+        '@mui/icons-material',
+        'react-hook-form',
+        'sonner',
+        'date-fns',
+      ],
+    },
+
+    // ── Production Build Optimisations ──────────────────────────────────────
+    build: {
+      // Raise warning threshold to avoid false alarms on vendor chunks
+      chunkSizeWarningLimit: 1000,
+
+      rollupOptions: {
+        output: {
+          // Manual chunk splitting — separates vendor code into cacheable chunks
+          manualChunks(id) {
+            // Core React runtime
+            if (id.includes('node_modules/react/') || id.includes('node_modules/react-dom/')) {
+              return 'react-runtime';
+            }
+            // React Router
+            if (id.includes('node_modules/react-router') || id.includes('node_modules/@remix-run')) {
+              return 'react-router';
+            }
+            // Supabase (large SDK)
+            if (id.includes('node_modules/@supabase')) {
+              return 'supabase';
+            }
+            // Radix UI primitives
+            if (id.includes('node_modules/@radix-ui')) {
+              return 'radix-ui';
+            }
+            // MUI (only in full build)
+            if (!isPublicOnly && (id.includes('node_modules/@mui') || id.includes('node_modules/@emotion'))) {
+              return 'mui';
+            }
+            // Charts (only in full build — used by CRM analytics)
+            if (!isPublicOnly && id.includes('node_modules/recharts')) {
+              return 'recharts';
+            }
+            // Lucide icons — split separately (large)
+            if (id.includes('node_modules/lucide-react')) {
+              return 'lucide-icons';
+            }
+            // Motion / animation
+            if (id.includes('node_modules/motion') || id.includes('node_modules/framer-motion')) {
+              return 'animation';
+            }
+            // Everything else in node_modules → vendor chunk
+            if (id.includes('node_modules')) {
+              return 'vendor';
+            }
+          },
+        },
+      },
+
+      // Use esbuild for minification (faster than terser, good enough for prod)
+      minify: 'esbuild',
+
+      // Generate source maps only in non-public builds (saves time on Netlify)
+      sourcemap: !isPublicOnly,
+    },
+
+    // ── Dev-server proxy ─────────────────────────────────────────────────────
+    server: {
+      proxy: {
+        '/api': {
+          target: 'http://localhost:3001',
+          changeOrigin: true,
+        },
+      },
+    },
+  };
+});

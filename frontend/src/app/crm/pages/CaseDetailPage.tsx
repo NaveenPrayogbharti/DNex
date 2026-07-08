@@ -7,7 +7,7 @@ import {
 import type { CRMCase, CaseStatus } from '../services/caseService';
 import { fetchActivities, ACTIVITY_ICONS, ACTIVITY_COLORS } from '../services/activityService';
 import type { CRMActivity } from '../services/activityService';
-import { fetchCalls, OUTCOME_LABELS } from '../services/callService';
+import { fetchCalls } from '../services/callService';
 import type { CRMCall } from '../services/callService';
 import { fetchDocuments, updateDocumentStatus, addDocumentRecord } from '../services/documentService';
 import type { CRMDocument } from '../services/documentService';
@@ -18,7 +18,8 @@ import type { CRMQuotation } from '../services/quotationService';
 import {
   ContactedStep, RequirementStep, ServiceStep, QuotationStep, PaymentStep, ProcessingStep,
 } from '../components/WorkflowSteps';
-import { ArrowLeft, Edit2, Save, X, Plus, Check, XCircle } from 'lucide-react';
+import { EmailComposeModal } from '../components/EmailComposeModal';
+import { ArrowLeft, Edit2, Save, X, Plus, Check, XCircle, Mail } from 'lucide-react';
 
 const GOLD = '#C9963C';
 
@@ -58,6 +59,7 @@ export function CaseDetailPage() {
   const [showDocForm, setShowDocForm] = useState(false);
   const [docName, setDocName] = useState('');
   const [viewingStage, setViewingStage] = useState<CaseStatus | null>(null);
+  const [showEmailModal, setShowEmailModal] = useState(false);
 
   const loadAll = useCallback(async () => {
     if (!id) return;
@@ -254,8 +256,8 @@ export function CaseDetailPage() {
       <CRMNavbar title={`Case: ${crmCase.case_id}`} subtitle={crmCase.full_name} />
       <div className="crm-page__content">
 
-        {/* Back + badges */}
-        <div style={{ display:'flex', alignItems:'center', gap:12 }}>
+        {/* Back + badges + Send Email button */}
+        <div style={{ display:'flex', alignItems:'center', gap:12, flexWrap:'wrap' }}>
           <button className="crm-btn crm-btn--ghost" onClick={() => navigate('/crm/cases')}>
             <ArrowLeft size={16} /> Back
           </button>
@@ -263,6 +265,22 @@ export function CaseDetailPage() {
             {crmCase.status}
           </span>
           <span className={`crm-priority crm-priority--${crmCase.priority}`}>{crmCase.priority}</span>
+
+          {/* ── Send Email to Client ── */}
+          <button
+            className="crm-btn"
+            onClick={() => setShowEmailModal(true)}
+            style={{
+              marginLeft:'auto',
+              background:`linear-gradient(135deg, ${GOLD}, #e8b85e)`,
+              color:'#0A1628', fontWeight:700, fontSize:13,
+              display:'flex', alignItems:'center', gap:6,
+              boxShadow:'0 4px 14px rgba(201,150,60,0.3)',
+              border:'none',
+            }}
+          >
+            <Mail size={15} /> Send Email to Client
+          </button>
         </div>
 
         {/* Pipeline stepper */}
@@ -310,8 +328,23 @@ export function CaseDetailPage() {
         {/* Workflow Action Panel */}
         {renderWorkflowPanel() && (
           <div style={{ background:'var(--crm-panel)', border:'1px solid var(--crm-border)', borderRadius:12, padding:24, boxShadow:'0 1px 4px rgba(0,0,0,0.06)' }}>
-            <div style={{ fontSize:11, fontWeight:700, letterSpacing:'1px', color:'var(--crm-muted)', marginBottom:16, textTransform:'uppercase' }}>
-              Current Stage Action Required
+            <div style={{ display:'flex', justifyContent:'space-between', alignItems:'center', marginBottom:16 }}>
+              <div style={{ fontSize:11, fontWeight:700, letterSpacing:'1px', color:'var(--crm-muted)', textTransform:'uppercase' }}>
+                Current Stage Action Required
+              </div>
+              <button
+                className="crm-btn"
+                onClick={() => setShowEmailModal(true)}
+                style={{
+                  fontSize:12, padding:'6px 14px',
+                  background:'rgba(201,150,60,0.12)',
+                  border:'1px solid rgba(201,150,60,0.35)',
+                  color: GOLD, fontWeight:700,
+                  display:'flex', alignItems:'center', gap:6,
+                }}
+              >
+                <Mail size={13} /> Email Client
+              </button>
             </div>
             {renderWorkflowPanel()}
           </div>
@@ -535,6 +568,15 @@ export function CaseDetailPage() {
           </div>
         </div>
       </div>
+
+      {/* Email Compose Modal */}
+      {showEmailModal && crmCase && (
+        <EmailComposeModal
+          crmCase={crmCase}
+          stageLabel={crmCase.status}
+          onClose={() => setShowEmailModal(false)}
+        />
+      )}
     </div>
   );
 }
