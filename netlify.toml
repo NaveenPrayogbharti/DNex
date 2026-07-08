@@ -4,8 +4,14 @@
   publish = "dist"
 
 [build.environment]
-  NODE_VERSION = "20"
-  NPM_FLAGS    = "--legacy-peer-deps"
+  NODE_VERSION          = "20"
+  NPM_FLAGS             = "--legacy-peer-deps"
+  VITE_SUPABASE_URL     = "https://lowydgfaskuytfqinmhd.supabase.co"
+  VITE_SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imxvd3lkZ2Zhc2t1eXRmcWlubWhkIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzM5MDk1NjksImV4cCI6MjA4OTQ4NTU2OX0.VLJg3l-Yh9WuR60jCE93yXajpmdy6T98saBA7WbOlGo"
+  VITE_MOCK_AUTH        = "false"
+  # Update this to your production backend URL once deployed
+  VITE_BACKEND_API_URL  = "https://your-backend.onrender.com"
+  VITE_MAIL_API_URL     = "https://your-backend.onrender.com/api/notify/email"
 
 # SPA fallback — all routes serve index.html
 [[redirects]]
