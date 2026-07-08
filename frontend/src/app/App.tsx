@@ -1,25 +1,21 @@
 import { RouterProvider } from "react-router";
 import { router } from "./routes";
+import { AuthProvider } from "./admin/context/AuthContext";
 
-// Only load AuthProvider when running full mode (not public-only Netlify build)
+// VITE_PUBLIC_ONLY=true  → set in netlify.toml  → hides Admin/CRM on Netlify
+// VITE_PUBLIC_ONLY unset → default for own server → full app including Admin/CRM
 const PUBLIC_ONLY = import.meta.env.VITE_PUBLIC_ONLY === 'true';
-
-function AppContent() {
-  return <RouterProvider router={router} />;
-}
 
 export default function App() {
   if (PUBLIC_ONLY) {
-    // Skip AuthProvider entirely — it imports Supabase auth context
-    // which is not needed for the public website
-    return <AppContent />;
+    // On Netlify: skip AuthProvider (admin/CRM not needed)
+    return <RouterProvider router={router} />;
   }
 
-  // Dynamically import AuthProvider so it's tree-shaken in public builds
-  const { AuthProvider } = require("./admin/context/AuthContext");
+  // Own server: full app with auth context
   return (
     <AuthProvider>
-      <AppContent />
+      <RouterProvider router={router} />
     </AuthProvider>
   );
 }
