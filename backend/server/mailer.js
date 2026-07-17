@@ -28,10 +28,15 @@ const prisma = new PrismaClient();
 app.use(express.json());
 
 // ── CORS ──────────────────────────────────────────────────────────────────────
-app.use(cors({
-  origin: process.env.ALLOWED_ORIGIN ?? 'http://localhost:5173',
-  methods: ['GET', 'POST', 'PATCH', 'DELETE'],
-}));
+app.use(
+  cors({
+    origin: [
+      process.env.ALLOWED_ORIGIN ?? 'http://localhost:5173',
+      'https://your-frontend.example.com',
+    ],
+    methods: ['GET', 'POST', 'PATCH', 'DELETE'],
+  })
+);
 
 // ── Nodemailer ────────────────────────────────────────────────────────────────
 const transporter = nodemailer.createTransport({
@@ -318,6 +323,14 @@ process.on('SIGTERM', async () => { await prisma.$disconnect(); process.exit(0);
 // ═════════════════════════════════════════════════════════════════════════════
 // START
 // ═════════════════════════════════════════════════════════════════════════════
+
+const path = require('path');
+// Serve static assets from the frontend build
+app.use(express.static(path.resolve(__dirname, '../../frontend/dist')));
+// Fallback for client‑side routing (React Router)
+app.get('*', (req, res) => {
+  res.sendFile(path.resolve(__dirname, '../../frontend/dist', 'index.html'));
+});
 
 const PORT = process.env.MAILER_PORT ?? 3001;
 app.listen(PORT, () => {

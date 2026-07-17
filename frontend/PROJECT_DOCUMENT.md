@@ -1,6 +1,6 @@
 # DNex Project — Living Feature Document
 > **Auto-generated** — Do not edit manually. Regenerated on every `npm run dev` save and `npm run build`.
-> Last updated: **Wednesday 8 July, 2026 at 12:42 pm**
+> Last updated: **Friday 17 July, 2026 at 5:29 pm**
 
 ---
 
@@ -13,7 +13,7 @@
 | SQL schema files | 0 |
 | Registered routes | 0 |
 | Supabase tables used | 13 |
-| npm dependencies | 55 |
+| npm dependencies | 57 |
 
 ---
 
@@ -293,10 +293,10 @@ New Lead → Contacted → Requirement Gathering → Interested → Not Interest
 - **Supabase** — PostgreSQL + Auth + Storage + Realtime
 - `@supabase/supabase-js` — client SDK
 
-### Key npm Dependencies (55 total)
+### Key npm Dependencies (57 total)
 
 ```
-@emotion/react, @emotion/styled, @mui/icons-material, @mui/material, @popperjs/core, @radix-ui/react-accordion, @radix-ui/react-alert-dialog, @radix-ui/react-aspect-ratio, @radix-ui/react-avatar, @radix-ui/react-checkbox, @radix-ui/react-collapsible, @radix-ui/react-context-menu, @radix-ui/react-dialog, @radix-ui/react-dropdown-menu, @radix-ui/react-hover-card, @radix-ui/react-label, @radix-ui/react-menubar, @radix-ui/react-navigation-menu, @radix-ui/react-popover, @radix-ui/react-progress, @radix-ui/react-radio-group, @radix-ui/react-scroll-area, @radix-ui/react-select, @radix-ui/react-separator, @radix-ui/react-slider, @radix-ui/react-slot, @radix-ui/react-switch, @radix-ui/react-tabs, @radix-ui/react-toggle, @radix-ui/react-toggle-group, @radix-ui/react-tooltip, @supabase/supabase-js, class-variance-authority, clsx, cmdk, date-fns, embla-carousel-react, input-otp, lucide-react, motion, next-themes, react-day-picker, react-dnd, react-dnd-html5-backend, react-hook-form, react-popper, react-resizable-panels, react-responsive-masonry, react-router, react-slick, recharts, sonner, tailwind-merge, tw-animate-css, vaul
+@emotion/react, @emotion/styled, @mui/icons-material, @mui/material, @popperjs/core, @radix-ui/react-accordion, @radix-ui/react-alert-dialog, @radix-ui/react-aspect-ratio, @radix-ui/react-avatar, @radix-ui/react-checkbox, @radix-ui/react-collapsible, @radix-ui/react-context-menu, @radix-ui/react-dialog, @radix-ui/react-dropdown-menu, @radix-ui/react-hover-card, @radix-ui/react-label, @radix-ui/react-menubar, @radix-ui/react-navigation-menu, @radix-ui/react-popover, @radix-ui/react-progress, @radix-ui/react-radio-group, @radix-ui/react-scroll-area, @radix-ui/react-select, @radix-ui/react-separator, @radix-ui/react-slider, @radix-ui/react-slot, @radix-ui/react-switch, @radix-ui/react-tabs, @radix-ui/react-toggle, @radix-ui/react-toggle-group, @radix-ui/react-tooltip, @supabase/supabase-js, class-variance-authority, clsx, cmdk, date-fns, embla-carousel-react, input-otp, lucide-react, motion, next-themes, react, react-day-picker, react-dnd, react-dnd-html5-backend, react-dom, react-hook-form, react-popper, react-resizable-panels, react-responsive-masonry, react-router, react-slick, recharts, sonner, tailwind-merge, tw-animate-css, vaul
 ```
 
 ---

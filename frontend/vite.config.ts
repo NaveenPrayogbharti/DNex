@@ -83,10 +83,8 @@ export default defineConfig(({ mode }) => {
             if (id.includes('node_modules/motion') || id.includes('node_modules/framer-motion')) {
               return 'animation';
             }
-            // Everything else in node_modules → vendor chunk
-            if (id.includes('node_modules')) {
-              return 'vendor';
-            }
+            // Let Vite handle remaining node_modules automatically (no explicit vendor chunk)
+            // This avoids the circular‑chunk warning caused by bundling react‑runtime & vendor together.
           },
         },
       },
@@ -94,7 +92,7 @@ export default defineConfig(({ mode }) => {
       // Use esbuild for minification (faster than terser, good enough for prod)
       minify: 'esbuild',
 
-      // Generate source maps only in non-public builds (saves time on Netlify)
+      // Generate source maps only when NOT building a public‑only bundle (helps debugging on any server)
       sourcemap: !isPublicOnly,
     },
 
@@ -102,7 +100,7 @@ export default defineConfig(({ mode }) => {
     server: {
       proxy: {
         '/api': {
-          target: 'http://localhost:3001',
+          target: env.VITE_BACKEND_API_URL || 'http://localhost:3001',
           changeOrigin: true,
         },
       },
