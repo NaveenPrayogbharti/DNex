@@ -32,7 +32,8 @@ app.use(
   cors({
     origin: [
       process.env.ALLOWED_ORIGIN ?? 'http://localhost:5173',
-      'https://your-frontend.example.com',
+      'https://dnex.ae',
+      'https://www.dnex.ae',
     ],
     methods: ['GET', 'POST', 'PATCH', 'DELETE'],
   })
