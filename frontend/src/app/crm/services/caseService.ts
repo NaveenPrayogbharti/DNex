@@ -12,6 +12,7 @@ export type CaseStatus =
   | 'Payment Completed'
   | 'Document Collection'
   | 'Verification'
+  | 'Preview'
   | 'Processing'
   | 'Completed'
   | 'Closed';
@@ -27,9 +28,9 @@ export const CASE_STATUSES: CaseStatus[] = [
   'Service Assigned',
   'Quotation Sent',
   'Payment Pending',
-  'Payment Completed',
   'Document Collection',
   'Verification',
+  'Preview',
   'Processing',
   'Completed',
   'Closed',
@@ -44,12 +45,13 @@ export const STATUS_COLORS: Record<string, { bg: string; text: string; border: s
   'Service Assigned':      { bg: '#ede9fe', text: '#5b21b6', border: '#a78bfa' },
   'Quotation Sent':        { bg: '#fff7ed', text: '#c2410c', border: '#fb923c' },
   'Payment Pending':       { bg: '#fef3c7', text: '#92400e', border: '#fbbf24' },
-  'Payment Completed':     { bg: '#d1fae5', text: '#065f46', border: '#34d399' },
-  'Document Collection':   { bg: '#e0e7ff', text: '#3730a3', border: '#818cf8' },
-  'Verification':          { bg: '#fce7f3', text: '#9d174d', border: '#f472b6' },
-  'Processing':            { bg: '#f5f3ff', text: '#6d28d9', border: '#c4b5fd' },
-  'Completed':             { bg: '#ecfdf5', text: '#064e3b', border: '#6ee7b7' },
-  'Closed':                { bg: '#f3f4f6', text: '#374151', border: '#9ca3af' },
+  'Payment Completed':     { bg: '#dcfce7', text: '#15803d', border: '#86efac' },
+  'Document Collection':   { bg: '#e0e7ff', text: '#4338ca', border: '#a5b4fc' },
+  'Verification':          { bg: '#f3e8ff', text: '#7e22ce', border: '#d8b4fe' },
+  'Preview':               { bg: '#ffedd5', text: '#c2410c', border: '#fdba74' },
+  'Processing':            { bg: '#fae8ff', text: '#a21caf', border: '#f0abfc' },
+  'Completed':             { bg: '#dcfce7', text: '#15803d', border: '#86efac' },
+  'Closed':                { bg: '#f1f5f9', text: '#475569', border: '#cbd5e1' },
 };
 
 export interface CRMCase {

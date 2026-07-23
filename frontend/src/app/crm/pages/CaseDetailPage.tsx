@@ -9,17 +9,17 @@ import { fetchActivities, ACTIVITY_ICONS, ACTIVITY_COLORS } from '../services/ac
 import type { CRMActivity } from '../services/activityService';
 import { fetchCalls } from '../services/callService';
 import type { CRMCall } from '../services/callService';
-import { fetchDocuments, updateDocumentStatus, addDocumentRecord } from '../services/documentService';
+import { fetchDocuments, updateDocumentStatus, addDocumentRecord, uploadDocument } from '../services/documentService';
 import type { CRMDocument } from '../services/documentService';
 import { fetchPayments, updatePaymentStatus } from '../services/paymentService';
 import type { CRMPayment } from '../services/paymentService';
 import { fetchQuotations } from '../services/quotationService';
 import type { CRMQuotation } from '../services/quotationService';
 import {
-  ContactedStep, RequirementStep, ServiceStep, QuotationStep, PaymentStep, ProcessingStep,
+  ContactedStep, RequirementStep, ServiceStep, QuotationStep, PaymentStep, ProcessingStep, PreviewStep
 } from '../components/WorkflowSteps';
 import { EmailComposeModal } from '../components/EmailComposeModal';
-import { ArrowLeft, Edit2, Save, X, Plus, Check, XCircle, Mail } from 'lucide-react';
+import { ArrowLeft, Edit2, Save, X, Plus, Check, XCircle, Mail, UploadCloud, Eye } from 'lucide-react';
 
 const GOLD = '#C9963C';
 
@@ -33,12 +33,13 @@ const WORKFLOW_STAGES: Record<CaseStatus, boolean> = {
   'Service Assigned': true,
   'Quotation Sent': true,
   'Payment Pending': true,
-  'Payment Completed': true,
+  'Payment Completed': false,
   'Document Collection': true,
   'Verification': true,
+  'Preview': true,
   'Processing': true,
-  'Completed': false,
-  'Closed': false,
+  'Completed': true,
+  'Closed': true,
 };
 
 export function CaseDetailPage() {
@@ -58,6 +59,8 @@ export function CaseDetailPage() {
   const [savingNotes, setSavingNotes] = useState(false);
   const [showDocForm, setShowDocForm] = useState(false);
   const [docName, setDocName] = useState('');
+  const [docFile, setDocFile] = useState<File | null>(null);
+  const [isUploading, setIsUploading] = useState(false);
   const [viewingStage, setViewingStage] = useState<CaseStatus | null>(null);
   const [showEmailModal, setShowEmailModal] = useState(false);
 
@@ -65,8 +68,16 @@ export function CaseDetailPage() {
     if (!id) return;
     setLoading(true);
     try {
-      const [c, a, cl, d, p, q] = await Promise.all([
-        fetchCaseById(id),
+      let c = await fetchCaseById(id);
+      
+      // Auto-upgrade any cases stuck in 'Payment Completed' directly to 'Document Collection'
+      if (c.status === ('Payment Completed' as any)) {
+        await updateCaseStatus(c.id, 'Document Collection');
+        c.status = 'Document Collection';
+      }
+
+      setCrmCase(c); setNotes(c.notes ?? '');
+      const [a, cl, d, p, q] = await Promise.all([
         fetchActivities(id),
         fetchCalls(id),
         fetchDocuments(id),
@@ -125,24 +136,61 @@ export function CaseDetailPage() {
     try {
       await updateDocumentStatus(docId, status);
       if (status === 'approved' && crmCase) {
-        const allDocs = documents.map(d => d.id === docId ? { ...d, status } : d);
-        const allApproved = allDocs.every(d => d.status === 'approved');
-        if (allApproved) await updateCaseStatus(crmCase.id, 'Processing');
+        // Check if all pending docs are now approved
+        const otherDocs = documents.filter(d => d.id !== docId);
+        const allApproved = otherDocs.every(d => d.status === 'approved' || d.status === 'rejected');
+        if (allApproved) await updateCaseStatus(crmCase.id, 'Preview');
       }
       await loadAll();
     } catch (e) { console.error(e); }
   };
 
+  const handleViewDocument = (url: string) => {
+    if (url.startsWith('data:')) {
+      try {
+        const parts = url.split(',');
+        const mime = parts[0].match(/:(.*?);/)?.[1] || 'application/octet-stream';
+        const bstr = atob(parts[1]);
+        let n = bstr.length;
+        const u8arr = new Uint8Array(n);
+        while (n--) {
+          u8arr[n] = bstr.charCodeAt(n);
+        }
+        const blob = new Blob([u8arr], { type: mime });
+        const blobUrl = URL.createObjectURL(blob);
+        window.open(blobUrl, '_blank');
+        // Note: URL.revokeObjectURL(blobUrl) should ideally be called later, but it's fine for short-lived sessions
+        return;
+      } catch (e) {
+        console.error('Failed to parse data URL', e);
+      }
+    }
+    // Fallback for normal URLs or if parsing fails
+    window.open(url, '_blank');
+  };
+
   const handleAddDoc = async () => {
     if (!crmCase || !docName) return;
-    try { await addDocumentRecord(crmCase.id, docName, 'Agent'); setShowDocForm(false); setDocName(''); await loadAll(); }
+    setIsUploading(true);
+    try { 
+      if (docFile) {
+        await uploadDocument(crmCase.id, docFile, docName, 'Agent');
+      } else {
+        await addDocumentRecord(crmCase.id, docName, 'Agent');
+      }
+      setShowDocForm(false); 
+      setDocName(''); 
+      setDocFile(null);
+      await loadAll(); 
+    }
     catch (e) { console.error(e); }
+    finally { setIsUploading(false); }
   };
 
   const handlePaymentMark = async (pid: string, status: 'paid' | 'failed') => {
     try {
       await updatePaymentStatus(pid, status);
-      if (status === 'paid' && crmCase) await updateCaseStatus(crmCase.id, 'Payment Completed');
+      if (status === 'paid' && crmCase) await updateCaseStatus(crmCase.id, 'Document Collection');
       await loadAll();
     } catch (e) { console.error(e); }
   };
@@ -159,6 +207,7 @@ export function CaseDetailPage() {
 
   const sc = STATUS_COLORS[crmCase.status] ?? STATUS_COLORS['New Lead'];
   const currentIdx = CASE_STATUSES.indexOf(crmCase.status);
+  const isCaseLocked = crmCase.status === 'Completed' || crmCase.status === 'Closed';
 
   // What workflow panel to show
   const renderWorkflowPanel = () => {
@@ -187,13 +236,13 @@ export function CaseDetailPage() {
         );
       case 'Contacted':
         return <ContactedStep crmCase={crmCase} onRefresh={loadAll}
-          onBack={() => goBack('New Lead')} isViewOnly={isViewOnly} />;
+          onBack={() => goBack('New Lead')} isViewOnly={isViewOnly} isCaseLocked={isCaseLocked} />;
       case 'Requirement Gathering':
         return <RequirementStep crmCase={crmCase} onRefresh={loadAll}
-          onBack={() => goBack('Contacted')} isViewOnly={isViewOnly} />;
+          onBack={() => goBack('Contacted')} isViewOnly={isViewOnly} isCaseLocked={isCaseLocked} onReturnToCurrent={() => setViewingStage(null)} />;
       case 'Interested':
         return <ServiceStep crmCase={crmCase} onRefresh={loadAll}
-          onBack={() => goBack('Requirement Gathering')} isViewOnly={isViewOnly} />;
+          onBack={() => goBack('Requirement Gathering')} isViewOnly={isViewOnly} isCaseLocked={isCaseLocked} onReturnToCurrent={() => setViewingStage(null)} />;
       case 'Not Interested':
         return (
           <div style={{ padding:20, background:'rgba(239,68,68,0.08)', border:'1px solid rgba(239,68,68,0.2)', borderRadius:12 }}>
@@ -205,25 +254,13 @@ export function CaseDetailPage() {
         );
       case 'Service Assigned':
         return <QuotationStep crmCase={crmCase} onRefresh={loadAll}
-          onBack={() => goBack('Interested')} isViewOnly={isViewOnly} />;
+          onBack={() => goBack('Interested')} isViewOnly={isViewOnly} isCaseLocked={isCaseLocked} onReturnToCurrent={() => setViewingStage(null)} />;
       case 'Quotation Sent':
         return <PaymentStep crmCase={crmCase} onRefresh={loadAll}
-          onBack={() => goBack('Service Assigned')} isViewOnly={isViewOnly} />;
+          onBack={() => goBack('Service Assigned')} isViewOnly={isViewOnly} isCaseLocked={isCaseLocked} effectiveStage={effectiveStage} />;
       case 'Payment Pending':
         return <PaymentStep crmCase={crmCase} onRefresh={loadAll}
-          onBack={() => goBack('Quotation Sent')} isViewOnly={isViewOnly} />;
-      case 'Payment Completed':
-        return (
-          <div style={{ padding:20, background:'rgba(52,211,153,0.08)', border:'1px solid rgba(52,211,153,0.25)', borderRadius:12 }}>
-            <div style={{ fontWeight:700, color:'#34d399', marginBottom:8 }}>✅ Payment Received</div>
-            <div style={{ fontSize:13, color:'var(--crm-text)', marginBottom:16 }}>
-              Payment has been confirmed. Proceed to collect all required documents from the client.
-            </div>
-            <button className="crm-btn crm-btn--primary" onClick={() => { updateCaseStatus(crmCase.id, 'Document Collection').then(loadAll); }}>
-              📁 Start Document Collection
-            </button>
-          </div>
-        );
+          onBack={() => goBack('Quotation Sent')} isViewOnly={isViewOnly} isCaseLocked={isCaseLocked} effectiveStage={effectiveStage} />;
       case 'Document Collection':
       case 'Verification':
         return (
@@ -232,16 +269,60 @@ export function CaseDetailPage() {
               {crmCase.status === 'Verification' ? '🔍 Verify Documents' : '📁 Document Collection'}
             </div>
             <div style={{ fontSize:13, color:'var(--crm-text)', marginBottom:12 }}>
-              Request and collect all required documents. Once all are approved, case moves to Processing automatically.
+              Request and collect all required documents. Once all are approved, case moves to Preview automatically.
             </div>
-            <button className="crm-btn crm-btn--ghost" onClick={() => setActiveTab('documents')}>
-              📄 Go to Documents Tab
+            <div style={{ display: 'flex', gap: 10, flexWrap: 'wrap' }}>
+              <button className="crm-btn crm-btn--ghost" onClick={() => setActiveTab('documents')}>
+                📄 Go to Documents Tab
+              </button>
+              {!isViewOnly && (
+                <button 
+                  className="crm-btn crm-btn--primary" 
+                  onClick={() => { updateCaseStatus(crmCase.id, 'Preview').then(() => { setViewingStage(null); loadAll(); }); }}
+                >
+                  Proceed to Preview ➔
+                </button>
+              )}
+            </div>
+          </div>
+        );
+      case 'Preview':
+        return <PreviewStep crmCase={crmCase} onRefresh={loadAll}
+          onBack={() => goBack('Verification')} isViewOnly={isViewOnly} isCaseLocked={isCaseLocked} onReturnToCurrent={() => setViewingStage(null)} />;
+      case 'Processing':
+        return <ProcessingStep crmCase={crmCase} onRefresh={loadAll}
+          onBack={() => goBack('Preview')} isViewOnly={isViewOnly} isCaseLocked={isCaseLocked} onReturnToCurrent={() => setViewingStage(null)} />;
+      case 'Completed':
+        return (
+          <div style={{ padding: 24, background: 'rgba(52,211,153,0.08)', border: '1px solid rgba(52,211,153,0.25)', borderRadius: 12 }}>
+            <div style={{ fontSize: 16, fontWeight: 700, color: '#10b981', marginBottom: 12 }}>🎉 Case Completed Successfully</div>
+            <div style={{ fontSize: 14, color: 'var(--crm-text)', marginBottom: 20 }}>
+              All processing steps have been finished. You can now formally close the case to move it out of the active pipeline.
+            </div>
+            <div style={{ display: 'flex', gap: 12 }}>
+              <button className="crm-btn crm-btn--ghost" onClick={() => goBack('Processing')}>
+                <ArrowLeft size={16} /> Back to Processing
+              </button>
+              {!isViewOnly && (
+                <button className="crm-btn crm-btn--primary" onClick={() => { updateCaseStatus(crmCase.id, 'Closed').then(() => { setViewingStage(null); loadAll(); }); }}>
+                  🔒 Close Case
+                </button>
+              )}
+            </div>
+          </div>
+        );
+      case 'Closed':
+        return (
+          <div style={{ padding: 24, background: 'rgba(100,116,139,0.08)', border: '1px solid rgba(100,116,139,0.25)', borderRadius: 12 }}>
+            <div style={{ fontSize: 16, fontWeight: 700, color: '#64748b', marginBottom: 12 }}>🔒 Case Closed</div>
+            <div style={{ fontSize: 14, color: 'var(--crm-text)', marginBottom: 20 }}>
+              This case is archived and fully closed.
+            </div>
+            <button className="crm-btn crm-btn--ghost" onClick={() => goBack('Completed')}>
+              <ArrowLeft size={16} /> Back to Completed
             </button>
           </div>
         );
-      case 'Processing':
-        return <ProcessingStep crmCase={crmCase} onRefresh={loadAll}
-          onBack={() => goBack('Document Collection')} isViewOnly={isViewOnly} />;
       default:
         return null;
     }
@@ -267,20 +348,22 @@ export function CaseDetailPage() {
           <span className={`crm-priority crm-priority--${crmCase.priority}`}>{crmCase.priority}</span>
 
           {/* ── Send Email to Client ── */}
-          <button
-            className="crm-btn"
-            onClick={() => setShowEmailModal(true)}
-            style={{
-              marginLeft:'auto',
-              background:`linear-gradient(135deg, ${GOLD}, #e8b85e)`,
-              color:'#0A1628', fontWeight:700, fontSize:13,
-              display:'flex', alignItems:'center', gap:6,
-              boxShadow:'0 4px 14px rgba(201,150,60,0.3)',
-              border:'none',
-            }}
-          >
-            <Mail size={15} /> Send Email to Client
-          </button>
+          {!isCaseLocked && (
+            <button
+              className="crm-btn"
+              onClick={() => setShowEmailModal(true)}
+              style={{
+                marginLeft:'auto',
+                background:`linear-gradient(135deg, ${GOLD}, #e8b85e)`,
+                color:'#0A1628', fontWeight:700, fontSize:13,
+                display:'flex', alignItems:'center', gap:6,
+                boxShadow:'0 4px 14px rgba(201,150,60,0.3)',
+                border:'none',
+              }}
+            >
+              <Mail size={15} /> Send Email to Client
+            </button>
+          )}
         </div>
 
         {/* Pipeline stepper */}
@@ -306,8 +389,8 @@ export function CaseDetailPage() {
                     setViewingStage(s === crmCase.status ? null : s);
                   }
                 }}
-                title={s}>
-                {isDone && '✓ '}{s}
+                title={s === 'Payment Pending' ? 'Payment' : s}>
+                {isDone && '✓ '}{s === 'Payment Pending' ? 'Payment' : s}
               </div>
             );
           })}
@@ -332,19 +415,21 @@ export function CaseDetailPage() {
               <div style={{ fontSize:11, fontWeight:700, letterSpacing:'1px', color:'var(--crm-muted)', textTransform:'uppercase' }}>
                 Current Stage Action Required
               </div>
-              <button
-                className="crm-btn"
-                onClick={() => setShowEmailModal(true)}
-                style={{
-                  fontSize:12, padding:'6px 14px',
-                  background:'rgba(201,150,60,0.12)',
-                  border:'1px solid rgba(201,150,60,0.35)',
-                  color: GOLD, fontWeight:700,
-                  display:'flex', alignItems:'center', gap:6,
-                }}
-              >
-                <Mail size={13} /> Email Client
-              </button>
+              {!isCaseLocked && (
+                <button
+                  className="crm-btn"
+                  onClick={() => setShowEmailModal(true)}
+                  style={{
+                    fontSize:12, padding:'6px 14px',
+                    background:'rgba(201,150,60,0.12)',
+                    border:'1px solid rgba(201,150,60,0.35)',
+                    color: GOLD, fontWeight:700,
+                    display:'flex', alignItems:'center', gap:6,
+                  }}
+                >
+                  <Mail size={13} /> Email Client
+                </button>
+              )}
             </div>
             {renderWorkflowPanel()}
           </div>
@@ -389,9 +474,9 @@ export function CaseDetailPage() {
               <div className="crm-table-wrap" style={{ padding:20 }}>
                 <div style={{ display:'flex', justifyContent:'space-between', marginBottom:16 }}>
                   <h3 style={{ color:'var(--crm-text)', margin:0 }}>📄 Documents</h3>
-                  <button className="crm-btn crm-btn--primary" onClick={() => setShowDocForm(v => !v)}><Plus size={14}/> Add</button>
+                  {!isCaseLocked && <button className="crm-btn crm-btn--primary" onClick={() => setShowDocForm(v => !v)}><Plus size={14}/> Add</button>}
                 </div>
-                {showDocForm && (
+                {showDocForm && !isCaseLocked && (
                   <div style={{ display:'flex', flexDirection:'column', gap:8, marginBottom:16, padding:12, background:'rgba(255,255,255,0.03)', borderRadius:8, border:'1px solid var(--crm-border)' }}>
                     <div style={{ display:'flex', gap:8 }}>
                       <select
@@ -416,8 +501,10 @@ export function CaseDetailPage() {
                         <option value="No Objection Certificate (NOC)">No Objection Certificate (NOC)</option>
                         <option value="__custom__">Other / Custom Name...</option>
                       </select>
-                      <button className="crm-btn crm-btn--primary" onClick={handleAddDoc} disabled={!docName}>Add</button>
-                      <button className="crm-btn crm-btn--ghost" onClick={() => setShowDocForm(false)}>Cancel</button>
+                      <button className="crm-btn crm-btn--primary" onClick={handleAddDoc} disabled={!docName || isUploading}>
+                        {isUploading ? 'Uploading...' : 'Add'}
+                      </button>
+                      <button className="crm-btn crm-btn--ghost" onClick={() => { setShowDocForm(false); setDocFile(null); }}>Cancel</button>
                     </div>
                     {(!['Passport Copy', 'Visa Copy', 'Emirates ID Copy', 'Trade License Copy', 'Memorandum of Association (MOA)', 'Board Resolution', 'No Objection Certificate (NOC)', ''].includes(docName) || docName === '') && (
                       <input
@@ -427,6 +514,29 @@ export function CaseDetailPage() {
                         onChange={e => setDocName(e.target.value)}
                       />
                     )}
+                    <div>
+                      <input 
+                        id="doc-upload"
+                        type="file" 
+                        accept="image/*,application/pdf"
+                        onChange={e => setDocFile(e.target.files?.[0] || null)}
+                        style={{ display: 'none' }}
+                      />
+                      <label 
+                        htmlFor="doc-upload" 
+                        style={{ 
+                          display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8, 
+                          padding: '12px 16px', background: docFile ? 'rgba(52,211,153,0.1)' : 'rgba(201,150,60,0.08)', 
+                          border: `1px dashed ${docFile ? 'rgba(52,211,153,0.4)' : 'rgba(201,150,60,0.4)'}`, 
+                          borderRadius: 8, cursor: 'pointer', 
+                          color: docFile ? '#059669' : '#C9963C', 
+                          fontSize: 13, fontWeight: 600, transition: 'all 0.2s', marginTop: 4
+                        }}
+                      >
+                        <UploadCloud size={18} />
+                        {docFile ? `Selected: ${docFile.name}` : 'Click to Upload Picture / PDF (Optional)'}
+                      </label>
+                    </div>
                   </div>
                 )}
                 {documents.map(d => {
@@ -435,16 +545,31 @@ export function CaseDetailPage() {
                     <div key={d.id} className="crm-doc-item">
                       <div className="crm-doc-item__icon">📄</div>
                       <div className="crm-doc-item__info">
-                        <div className="crm-doc-item__name">{d.name} <span style={{ fontSize:11, color:'#94a3b8' }}>v{d.version}</span></div>
+                        <div className="crm-doc-item__name">
+                          {d.name} <span style={{ fontSize:11, color:'#94a3b8' }}>v{d.version}</span>
+                        </div>
                         <div className="crm-doc-item__meta">{d.uploaded_by_name ?? 'Agent'} · {new Date(d.created_at).toLocaleDateString()}</div>
                       </div>
                       <span className="crm-badge" style={{ background:`${c}20`, color:c, borderColor:`${c}40` }}>{d.status}</span>
-                      {d.status === 'pending' && (
-                        <div className="crm-doc-item__actions">
-                          <button className="crm-btn crm-btn--success" style={{ padding:'4px 10px', fontSize:12 }} onClick={() => handleDocStatus(d.id,'approved')}><Check size={12}/></button>
-                          <button className="crm-btn crm-btn--danger" style={{ padding:'4px 10px', fontSize:12 }} onClick={() => handleDocStatus(d.id,'rejected')}><XCircle size={12}/></button>
-                        </div>
-                      )}
+                      
+                      <div className="crm-doc-item__actions" style={{ display: 'flex', gap: 6 }}>
+                        {d.url && (
+                          <button 
+                            className="crm-btn" 
+                            style={{ padding: '4px 10px', fontSize: 12, background: 'rgba(59,130,246,0.1)', color: '#3b82f6', border: '1px solid rgba(59,130,246,0.2)' }}
+                            onClick={() => handleViewDocument(d.url!)}
+                            title="View Document"
+                          >
+                            <Eye size={12}/>
+                          </button>
+                        )}
+                        {d.status === 'pending' && !isCaseLocked && (
+                          <>
+                            <button className="crm-btn crm-btn--success" style={{ padding:'4px 10px', fontSize:12 }} onClick={() => handleDocStatus(d.id,'approved')} title="Approve"><Check size={12}/></button>
+                            <button className="crm-btn crm-btn--danger" style={{ padding:'4px 10px', fontSize:12 }} onClick={() => handleDocStatus(d.id,'rejected')} title="Reject"><XCircle size={12}/></button>
+                          </>
+                        )}
+                      </div>
                     </div>
                   );
                 })}
@@ -467,7 +592,7 @@ export function CaseDetailPage() {
                       </div>
                       <div style={{ display:'flex', flexDirection:'column', gap:6, alignItems:'flex-end' }}>
                         <span className="crm-badge" style={{ background:`${c}20`, color:c, borderColor:`${c}40` }}>{p.status}</span>
-                        {p.status === 'pending' && (
+                        {p.status === 'pending' && !isCaseLocked && (
                           <div style={{ display:'flex', gap:4 }}>
                             <button className="crm-btn crm-btn--success" style={{ padding:'4px 8px', fontSize:11 }} onClick={() => handlePaymentMark(p.id,'paid')}>✓ Mark Paid</button>
                             <button className="crm-btn crm-btn--danger" style={{ padding:'4px 8px', fontSize:11 }} onClick={() => handlePaymentMark(p.id,'failed')}>Failed</button>
@@ -537,13 +662,14 @@ export function CaseDetailPage() {
             <div className="crm-table-wrap" style={{ padding:20 }}>
               <div style={{ display:'flex', alignItems:'center', justifyContent:'space-between', marginBottom:12 }}>
                 <h3 style={{ color:GOLD, fontSize:14, fontWeight:700, margin:0 }}>Notes</h3>
-                {!editingNotes
-                  ? <button className="crm-btn crm-btn--ghost" style={{ padding:'4px 10px', fontSize:12 }} onClick={() => setEditingNotes(true)}><Edit2 size={12}/> Edit</button>
-                  : <div style={{ display:'flex', gap:4 }}>
-                      <button className="crm-btn crm-btn--primary" style={{ padding:'4px 10px', fontSize:12 }} onClick={handleSaveNotes} disabled={savingNotes}><Save size={12}/> {savingNotes?'...':'Save'}</button>
-                      <button className="crm-btn crm-btn--ghost" style={{ padding:'4px 10px', fontSize:12 }} onClick={() => { setEditingNotes(false); setNotes(crmCase.notes??''); }}><X size={12}/></button>
-                    </div>
-                }
+                {!isCaseLocked && (
+                  !editingNotes
+                    ? <button className="crm-btn crm-btn--ghost" style={{ padding:'4px 10px', fontSize:12 }} onClick={() => setEditingNotes(true)}><Edit2 size={12}/> Edit</button>
+                    : <div style={{ display:'flex', gap:4 }}>
+                        <button className="crm-btn crm-btn--primary" style={{ padding:'4px 10px', fontSize:12 }} onClick={handleSaveNotes} disabled={savingNotes}><Save size={12}/> {savingNotes?'...':'Save'}</button>
+                        <button className="crm-btn crm-btn--ghost" style={{ padding:'4px 10px', fontSize:12 }} onClick={() => { setEditingNotes(false); setNotes(crmCase.notes??''); }}><X size={12}/></button>
+                      </div>
+                )}
               </div>
               {editingNotes
                 ? <textarea className="crm-textarea" rows={5} value={notes} onChange={e => setNotes(e.target.value)} />

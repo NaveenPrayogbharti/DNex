@@ -1,6 +1,7 @@
 import { supabase } from '../../../lib/supabase';
 
 export interface QuotationItem {
+  service_name?: string;
   description: string;
   qty: number;
   rate: number;

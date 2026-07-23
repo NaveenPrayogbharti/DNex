@@ -283,7 +283,7 @@ app.get('/api/leads', async (req, res) => {
 // ═════════════════════════════════════════════════════════════════════════════
 
 app.post('/api/notify/email', async (req, res) => {
-  const { to, subject, body, replyTo } = req.body;
+  const { to, subject, body, replyTo, attachments } = req.body;
 
   if (!to || !subject || !body) {
     return res.status(400).json({ error: 'Missing required fields: to, subject, body' });
@@ -296,6 +296,7 @@ app.post('/api/notify/email', async (req, res) => {
       subject,
       html:    body,
       replyTo: replyTo ?? process.env.MAIL_REPLY_TO ?? process.env.MAIL_USER,
+      attachments: attachments ?? [],
     });
 
     console.log(`📧 Email sent: ${info.messageId} → ${to}`);

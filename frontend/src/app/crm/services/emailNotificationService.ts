@@ -21,6 +21,7 @@ export interface EmailPayload {
   subject: string;
   body: string;                 // HTML body
   replyTo?: string;
+  attachments?: { filename: string; content: string; encoding?: string; contentType?: string }[];
 }
 
 export type NotificationTrigger =

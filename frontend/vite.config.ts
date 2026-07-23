@@ -26,6 +26,7 @@ export default defineConfig(({ mode }) => {
 
     // ── Dependency Pre-Bundling ──────────────────────────────────────────────
     optimizeDeps: {
+      exclude: ['canvg', 'html2canvas', 'dompurify', 'jspdf', 'jspdf-autotable'],
       include: [
         'react',
         'react-dom',
@@ -48,6 +49,7 @@ export default defineConfig(({ mode }) => {
       chunkSizeWarningLimit: 1000,
 
       rollupOptions: {
+        external: ['canvg', 'html2canvas', 'dompurify'],
         output: {
           // Manual chunk splitting — separates vendor code into cacheable chunks
           manualChunks(id) {

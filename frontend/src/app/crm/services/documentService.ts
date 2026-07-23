@@ -56,6 +56,15 @@ export async function uploadDocument(
       .from('crm-documents')
       .getPublicUrl(fileName);
     url = urlData?.publicUrl ?? null;
+  } else {
+    console.warn('Supabase storage upload failed, falling back to base64 data URL', uploadError);
+    // Fallback to base64 data URL if bucket is not configured
+    url = await new Promise<string>((resolve, reject) => {
+      const reader = new FileReader();
+      reader.onload = () => resolve(reader.result as string);
+      reader.onerror = reject;
+      reader.readAsDataURL(file);
+    });
   }
 
   // Save record
