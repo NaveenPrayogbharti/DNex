@@ -49,6 +49,7 @@ const transporter = nodemailer.createTransport({
     pass: process.env.MAIL_PASS,
   },
   tls: { rejectUnauthorized: false },
+  name: process.env.MAIL_HOST,
 });
 
 transporter.verify((error) => {
@@ -241,7 +242,7 @@ app.post('/api/leads', async (req, res) => {
 
     for (const { label, to, subject, html, replyTo } of emailPayloads) {
       transporter.sendMail({
-        from:    `"DNex Business Setup" <${process.env.MAIL_USER}>`,
+        from:    process.env.MAIL_USER,
         to,
         subject,
         html,
@@ -291,7 +292,7 @@ app.post('/api/notify/email', async (req, res) => {
 
   try {
     const info = await transporter.sendMail({
-      from:    `"DNex Business Setup" <${process.env.MAIL_USER}>`,
+      from:    process.env.MAIL_USER,
       to:      Array.isArray(to) ? to.join(', ') : to,
       subject,
       html:    body,

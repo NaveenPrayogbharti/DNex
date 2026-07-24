@@ -593,15 +593,15 @@ function ServiceSection({ category }: { category: typeof serviceCategories[0] })
 function IndiaServicesTabs() {
   const [activeTab, setActiveTab] = useState(indiaServiceCategories[0].id);
   return (
-    <div className="flex gap-8">
+    <div className="flex flex-col md:flex-row gap-8">
       {/* Side-Tabs */}
-      <div className="w-1/3 flex flex-col gap-1 border-r border-gray-100 pr-4">
+      <div className="w-full md:w-1/3 flex flex-row md:flex-col gap-1 md:border-r border-b md:border-b-0 border-gray-100 md:pr-4 pb-4 md:pb-0 overflow-x-auto">
         {indiaServiceCategories.map((cat) => (
           <button
             key={cat.id}
-            onMouseEnter={() => setActiveTab(cat.id)}
+            onMouseEnter={() => window.innerWidth >= 768 && setActiveTab(cat.id)}
             onClick={() => setActiveTab(cat.id)}
-            className={`text-left px-4 py-2.5 rounded-xl font-semibold text-sm transition-all ${activeTab === cat.id
+            className={`text-left px-4 py-2.5 rounded-xl font-semibold text-sm transition-all whitespace-nowrap md:whitespace-normal ${activeTab === cat.id
               ? 'bg-slate-50 text-[#0D2137]'
               : 'text-gray-500 hover:text-gray-800 hover:bg-slate-50/50'
               }`}
@@ -611,7 +611,7 @@ function IndiaServicesTabs() {
         ))}
       </div>
       {/* Items panel */}
-      <div className="w-2/3 pl-2">
+      <div className="w-full md:w-2/3 md:pl-2">
         {indiaServiceCategories.filter(c => c.id === activeTab).map((cat) => (
           <div key={cat.id}>
             <p className="text-xs text-gray-500 mb-4 text-justify" style={{ lineHeight: 1.65 }}>{cat.desc}</p>

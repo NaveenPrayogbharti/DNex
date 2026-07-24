@@ -25,7 +25,7 @@ export interface CRMQuotation {
   validity_days: number;
   notes: string | null;
   terms: string | null;
-  status: 'draft' | 'sent' | 'accepted' | 'rejected';
+  status: 'draft' | 'sent' | 'accepted' | 'rejected' | 'paid';
   sent_via: string[] | null;
   created_at: string;
   updated_at: string;

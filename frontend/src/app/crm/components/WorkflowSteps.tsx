@@ -4,7 +4,7 @@ import { updateCaseStatus, updateCase, updateCaseWorkflowField } from '../servic
 import type { CRMCase, CaseStatus } from '../services/caseService';
 import { logCall, fetchCalls } from '../services/callService';
 import type { CRMCall } from '../services/callService';
-import { createQuotation, fetchQuotations } from '../services/quotationService';
+import { createQuotation, fetchQuotations, updateQuotationStatus } from '../services/quotationService';
 import type { QuotationItem, CRMQuotation } from '../services/quotationService';
 import { createPayment } from '../services/paymentService';
 import { fetchServicesForCRM } from '../../../lib/servicesStore';
@@ -636,9 +636,8 @@ export function QuotationStep({ crmCase, onRefresh, onBack, isViewOnly, isCaseLo
   const sendViaWhatsApp = async () => {
     setSendingWA(true);
     try {
-      if (!quoteSaved) {
-        alert('Please Save the quotation first before sending.');
-        return;
+      if (!quoteSaved || historicalEditMode) {
+        await saveQuotation();
       }
       let phone = crmCase.phone.replace(/[^0-9]/g, '');
       if (phone.startsWith('0')) phone = '971' + phone.slice(1);
@@ -650,9 +649,8 @@ export function QuotationStep({ crmCase, onRefresh, onBack, isViewOnly, isCaseLo
   const sendViaEmail = async () => {
     setSendingEmail(true);
     try {
-      if (!quoteSaved) {
-        alert('Please Save the quotation first before sending.');
-        return;
+      if (!quoteSaved || historicalEditMode) {
+        await saveQuotation();
       }
       const pdfBase64 = generateQuotationPDFBase64({ crmCase, items, subtotal, tax, taxRate, discountAmt, discountPct, total, validity, currency });
       await sendCustomEmail({
@@ -675,7 +673,7 @@ export function QuotationStep({ crmCase, onRefresh, onBack, isViewOnly, isCaseLo
     onRefresh();
   };
 
-  const STATUS_C: Record<string, string> = { sent: GOLD, accepted: '#34d399', rejected: '#f87171', draft: '#94a3b8' };
+  const STATUS_C: Record<string, string> = { sent: GOLD, accepted: '#34d399', rejected: '#f87171', draft: '#94a3b8', paid: '#0284c7' };
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
@@ -833,22 +831,18 @@ export function QuotationStep({ crmCase, onRefresh, onBack, isViewOnly, isCaseLo
       {/* Action buttons */}
       {!effectivelyViewOnly && (
         <div style={{ display: 'flex', gap: 10, flexWrap: 'wrap', paddingTop: 4 }}>
-          <button className="crm-btn crm-btn--primary" disabled={saving || items.length === 0} onClick={saveQuotation}>
-            {saving ? 'Saving...' : (isViewOnly ? '💾 Save New Quotation' : '💾 Save Quotation')}
+          <button className="crm-btn crm-btn--success" style={{ background: '#25d366' }} disabled={sendingWA || items.length === 0} onClick={sendViaWhatsApp}>
+            {sendingWA || saving ? 'Processing...' : '💬 Send via WhatsApp'}
           </button>
-          
-          <button className="crm-btn crm-btn--success" style={{ background: '#25d366', opacity: !quoteSaved ? 0.5 : 1 }} disabled={!quoteSaved || sendingWA || items.length === 0} onClick={sendViaWhatsApp}>
-            {sendingWA ? 'Opening...' : '💬 Send via WhatsApp'}
-          </button>
-          <button className="crm-btn crm-btn--primary" style={{ background: '#2563eb', opacity: !quoteSaved ? 0.5 : 1 }} disabled={!quoteSaved || sendingEmail || items.length === 0} onClick={sendViaEmail}>
-            {sendingEmail ? 'Sending...' : '📧 Send via Email (with PDF)'}
+          <button className="crm-btn crm-btn--primary" style={{ background: '#2563eb' }} disabled={sendingEmail || items.length === 0} onClick={sendViaEmail}>
+            {sendingEmail || saving ? 'Processing...' : '📧 Send via Email (with PDF)'}
           </button>
         </div>
       )}
 
       {/* Client confirmed → move to payment */}
-      {!effectivelyViewOnly && (quoteSaved || crmCase.status === 'Quotation Sent') && (
-        <div style={{ display: 'flex', gap: 10, padding: 14, background: 'rgba(52,211,153,0.08)', border: '1px solid rgba(52,211,153,0.25)', borderRadius: 10, alignItems: 'center', flexWrap: 'wrap' }}>
+      {(quoteSaved || crmCase.status === 'Quotation Sent') && !historicalEditMode && (
+        <div style={{ display: 'flex', gap: 10, padding: 14, background: 'rgba(52,211,153,0.08)', border: '1px solid rgba(52,211,153,0.25)', borderRadius: 10, alignItems: 'center', flexWrap: 'wrap', marginTop: 12 }}>
           <div style={{ flex: 1, fontSize: 13, color: '#065f46' }}>✅ Quotation sent! Has the client confirmed acceptance?</div>
           <button className="crm-btn crm-btn--success" onClick={clientConfirmed}>
             <CheckCircle size={14} /> Client Confirmed — Move to Payment
@@ -871,7 +865,42 @@ export function QuotationStep({ crmCase, onRefresh, onBack, isViewOnly, isCaseLo
                     <span style={{ fontSize: 11, fontWeight: 600, color: STATUS_C[q.status] ?? '#94a3b8', background: `${STATUS_C[q.status] ?? '#94a3b8'}18`, padding: '2px 8px', borderRadius: 20 }}>{q.status}</span>
                   </div>
                   <div style={{ fontSize: 12, color: '#64748b' }}>Total: <strong>{currency} {Number(q.total).toLocaleString()}</strong> · {q.service_name}</div>
-                  <div style={{ fontSize: 11, color: '#94a3b8', marginTop: 2 }}>{new Date(q.created_at).toLocaleString()} · Valid {q.validity_days}d · Tax {q.tax_rate}%{Number(q.discount) > 0 ? ` · Discount: ${currency} ${Number(q.discount).toFixed(2)}` : ''}</div>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: 6 }}>
+                    <div style={{ fontSize: 11, color: '#94a3b8' }}>{new Date(q.created_at).toLocaleString()} · Valid {q.validity_days}d · Tax {q.tax_rate}%{Number(q.discount) > 0 ? ` · Discount: ${currency} ${Number(q.discount).toFixed(2)}` : ''}</div>
+                    <div style={{ display: 'flex', gap: 6 }}>
+                      {q.status !== 'paid' && q.status !== 'rejected' && (
+                        <>
+                          <button onClick={async () => { await updateQuotationStatus(q.id, 'paid'); fetchQuotations(crmCase.id).then(setPrevQuotations); }} style={{ fontSize: 10, padding: '4px 8px', background: '#e0f2fe', color: '#0369a1', borderRadius: 4, cursor: 'pointer', border: 'none', fontWeight: 600 }}>Mark Paid</button>
+                          {q.status !== 'accepted' && <button onClick={async () => { await updateQuotationStatus(q.id, 'accepted'); fetchQuotations(crmCase.id).then(setPrevQuotations); }} style={{ fontSize: 10, padding: '4px 8px', background: '#dcfce7', color: '#166534', borderRadius: 4, cursor: 'pointer', border: 'none', fontWeight: 600 }}>Accept</button>}
+                          <button onClick={async () => { await updateQuotationStatus(q.id, 'rejected'); fetchQuotations(crmCase.id).then(setPrevQuotations); }} style={{ fontSize: 10, padding: '4px 8px', background: '#fee2e2', color: '#991b1b', borderRadius: 4, cursor: 'pointer', border: 'none', fontWeight: 600 }}>Reject</button>
+                        </>
+                      )}
+                      <button 
+                        onClick={() => {
+                          const discountPctHist = Number(q.discount) > 0 ? (Number(q.discount) / (Number(q.subtotal))) * 100 : 0;
+                          const b64 = generateQuotationPDFBase64({ 
+                            crmCase, 
+                            items: q.items || [{ description: q.service_name, qty: 1, rate: Number(q.total), amount: Number(q.total) }], 
+                            subtotal: Number(q.subtotal), 
+                            tax: Number(q.tax), 
+                            taxRate: Number(q.tax_rate), 
+                            discountAmt: Number(q.discount), 
+                            discountPct: discountPctHist, 
+                            total: Number(q.total), 
+                            validity: q.validity_days, 
+                            currency: crmCase.requirement_data?.quotation_currency || 'AED' 
+                          });
+                          const link = document.createElement('a');
+                          link.href = `data:application/pdf;base64,${b64}`;
+                          link.download = `Quotation_${q.quotation_number}.pdf`;
+                          link.click();
+                        }}
+                        style={{ fontSize: 11, padding: '4px 10px', background: '#e2e8f0', color: '#475569', borderRadius: 4, cursor: 'pointer', border: 'none', fontWeight: 600 }}
+                      >
+                        📥 View PDF
+                      </button>
+                    </div>
+                  </div>
                   {idx === 0 && <div style={{ fontSize: 10, color: GOLD, marginTop: 4, fontWeight: 600 }}>← Latest</div>}
                 </div>
               </div>

@@ -269,7 +269,7 @@ export function TeamCarousel() {
             return (
               <div
                 key={i}
-              className="shrink-0 w-[340px] rounded-3xl overflow-hidden border border-slate-100 hover:shadow-2xl transition-all duration-300 group"
+              className="shrink-0 w-[85vw] sm:w-[340px] rounded-3xl overflow-hidden border border-slate-100 hover:shadow-2xl transition-all duration-300 group"
               style={{ background: '#fff' }}
             >
               {/* Card Header */}
