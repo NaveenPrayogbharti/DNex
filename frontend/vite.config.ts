@@ -6,7 +6,7 @@ import { docGenPlugin } from './vite-plugin-doc-gen.js'
 
 export default defineConfig(({ mode }) => {
   const env = loadEnv(mode, process.cwd(), '');
-  const isPublicOnly = env.VITE_PUBLIC_ONLY === 'true';
+  const isPublicOnly = false; // Always include CRM and Admin chunks
 
   return {
     plugins: [
@@ -102,7 +102,7 @@ export default defineConfig(({ mode }) => {
     server: {
       proxy: {
         '/api': {
-          target: env.VITE_BACKEND_API_URL || 'http://localhost:3001',
+          target: env.VITE_BACKEND_API_URL || 'http://localhost:3006',
           changeOrigin: true,
         },
       },

@@ -1,6 +1,6 @@
 import { Link } from 'react-router';
 import { ArrowRight, MessageCircle, CheckCircle, Play } from 'lucide-react';
-import banner from "../../../assets/images/banner.png";
+import banner from "../../../assets/images/dnex_bg.jpeg";
 
 const GOLD = '#C9963C';
 const NAVY = '#0D2137';

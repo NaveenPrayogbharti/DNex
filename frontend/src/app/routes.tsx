@@ -1,8 +1,8 @@
 import { lazy, Suspense } from 'react';
 import { createBrowserRouter, redirect } from 'react-router';
 
-// ─── Build-time flag (set VITE_PUBLIC_ONLY=true in netlify.toml) ──────────────
-const PUBLIC_ONLY = import.meta.env.VITE_PUBLIC_ONLY === 'true';
+// ─── Build-time flag ──────────────────────────────────────────────────────────
+const PUBLIC_ONLY = false; // Permanently enabled for CRM and Admin access
 
 // ─── Spinner shown while lazy chunks load ─────────────────────────────────────
 function PageLoader() {
@@ -20,11 +20,11 @@ function PageLoader() {
   );
 }
 
-function wrap(Component: React.ComponentType) {
-  return function Wrapped(props: object) {
+function wrap(Component: React.ComponentType<any>) {
+  return function Wrapped(props: any) {
     return (
       <Suspense fallback={<PageLoader />}>
-        <Component {...(props as never)} />
+        <Component {...props} />
       </Suspense>
     );
   };

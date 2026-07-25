@@ -6,7 +6,7 @@
 [build.environment]
   NODE_VERSION          = "20"
   NPM_FLAGS             = "--legacy-peer-deps"
-  VITE_PUBLIC_ONLY      = "true"
+  VITE_PUBLIC_ONLY      = "false"
   VITE_SUPABASE_URL     = "https://lowydgfaskuytfqinmhd.supabase.co"
   VITE_SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imxvd3lkZ2Zhc2t1eXRmcWlubWhkIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzM5MDk1NjksImV4cCI6MjA4OTQ4NTU2OX0.VLJg3l-Yh9WuR60jCE93yXajpmdy6T98saBA7WbOlGo"
   VITE_MOCK_AUTH        = "false"

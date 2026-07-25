@@ -335,7 +335,7 @@ app.get('*', (req, res) => {
   res.sendFile(path.resolve(__dirname, '../../frontend/dist', 'index.html'));
 });
 
-const PORT = process.env.MAILER_PORT ?? 3001;
+const PORT = process.env.MAILER_PORT ?? 3006;
 app.listen(PORT, () => {
   console.log(`\n🚀 DNex Backend API running on http://localhost:${PORT}`);
   console.log(`   POST /api/leads        — Lead form submissions (Prisma)`);

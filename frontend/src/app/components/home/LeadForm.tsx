@@ -42,7 +42,7 @@ export function LeadForm() {
     // Falls back to localhost:3001 only in dev when variable is absent.
     const apiBase = import.meta.env.VITE_BACKEND_API_URL !== undefined
       ? import.meta.env.VITE_BACKEND_API_URL   // '' in prod → relative URLs
-      : 'http://localhost:3001';               // dev fallback
+      : 'http://localhost:3006';               // dev fallback
 
     try {
       const res = await fetch(`${apiBase}/api/leads`, {
