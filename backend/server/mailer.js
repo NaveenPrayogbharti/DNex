@@ -25,7 +25,9 @@ const { PrismaClient } = require('@prisma/client');
 const app    = express();
 const prisma = new PrismaClient();
 
-app.use(express.json());
+// Increase body size limit to 50 MB to support base64-encoded file attachments
+app.use(express.json({ limit: '50mb' }));
+app.use(express.urlencoded({ extended: true, limit: '50mb' }));
 
 // ── CORS ──────────────────────────────────────────────────────────────────────
 app.use(
@@ -276,6 +278,36 @@ app.get('/api/leads', async (req, res) => {
   } catch (err) {
     console.error('❌ Leads fetch failed:', err.message);
     return res.status(500).json({ error: 'Failed to fetch leads.' });
+  }
+});
+
+/**
+ * POST /api/subscribe
+ * Public endpoint — receives newsletter subscription emails and notifies the team.
+ */
+app.post('/api/subscribe', async (req, res) => {
+  const { email } = req.body;
+
+  if (!email) {
+    return res.status(400).json({ error: 'Email is required' });
+  }
+
+  try {
+    console.log(`📩 New subscriber: ${email}`);
+
+    // Notify the internal team
+    transporter.sendMail({
+      from: process.env.MAIL_USER,
+      to: INTERNAL_NOTIFY_EMAIL,
+      subject: `🔔 New Newsletter Subscriber`,
+      text: `A new user has subscribed to the newsletter: ${email}`,
+      replyTo: email,
+    });
+
+    res.json({ success: true });
+  } catch (error) {
+    console.error('Error processing subscription:', error);
+    res.status(500).json({ error: 'Failed to subscribe' });
   }
 });
 

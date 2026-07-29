@@ -6,47 +6,87 @@
  * Uses the backend /api/notify/email endpoint via sendCustomEmail().
  */
 
-import { useState } from 'react';
-import { X, Send, Mail, ChevronDown } from 'lucide-react';
+import { useState, useRef } from 'react';
+import { X, Send, Mail, ChevronDown, Paperclip, FileText, Image, File } from 'lucide-react';
 import { sendCustomEmail } from '../services/emailNotificationService';
 import type { CRMCase } from '../services/caseService';
 
 const GOLD = '#C9963C';
 
-// ── Quick-fill subject templates ──────────────────────────────────────────────
-const SUBJECT_TEMPLATES = [
-  { label: 'General Update', value: 'Update on Your Case — DNex Consulting' },
-  { label: 'Document Request', value: 'Documents Required for Your Case — DNex Consulting' },
-  { label: 'Payment Reminder', value: 'Payment Reminder — DNex Consulting' },
-  { label: 'Case Progress', value: 'Your Case Progress Update — DNex Consulting' },
-  { label: 'Appointment / Call', value: 'Meeting Request — DNex Consulting' },
-  { label: 'Service Completion', value: 'Service Completed — DNex Consulting' },
-  { label: 'Follow-Up', value: 'Following Up on Your Inquiry — DNex Consulting' },
-];
-
-// ── Body template blocks ──────────────────────────────────────────────────────
-const BODY_TEMPLATES = [
+// ── Unified Email Templates (Fills both Subject & Body) ───────────────────────
+const EMAIL_TEMPLATES = [
+  {
+    label: 'Welcome Mail',
+    subject: 'Welcome to DNex Consulting — Your Business Setup Partner in UAE',
+    body: (c: CRMCase) =>
+      `<p>Dear <strong>${c.full_name}</strong>,</p>\n<p>Welcome to <strong>DNex Consulting</strong>! We are thrilled to partner with you on your business setup journey in the UAE.</p>\n<p>Your inquiry has been successfully registered under Case ID: <strong>${c.case_id}</strong>. Our corporate advisory team is reviewing your requirements and will guide you step-by-step through the entire process—from trade licensing and jurisdiction selection to visa processing and corporate bank account setup.</p>\n<p>If you have any immediate questions or initial documents to share, please reply directly to this email or connect with us on WhatsApp.</p>\n<p>We look forward to building your business success in the UAE!</p>\n<p>Best regards,<br/><strong>DNex Consulting Team</strong><br/>+971 55 554 2841<br/><a href="https://dnex.ae">www.dnex.ae</a></p>`,
+  },
   {
     label: 'General Update',
+    subject: 'Update on Your Case — DNex Consulting',
     body: (c: CRMCase) =>
       `<p>Dear <strong>${c.full_name}</strong>,</p>\n<p>I wanted to provide you with an update on your case <strong>${c.case_id}</strong>.</p>\n<p>[Add your update here]</p>\n<p>Please feel free to reach out if you have any questions.</p>\n<p>Best regards,<br/><strong>DNex Consulting Team</strong><br/>+971 55 554 2841</p>`,
   },
   {
     label: 'Document Request',
+    subject: 'Documents Required for Your Case — DNex Consulting',
     body: (c: CRMCase) =>
       `<p>Dear <strong>${c.full_name}</strong>,</p>\n<p>To proceed with your case <strong>${c.case_id}</strong>, we require the following documents:</p>\n<ul>\n  <li>Passport Copy (all pages)</li>\n  <li>Visa Copy</li>\n  <li>Emirates ID Copy</li>\n  <li>[Add more as needed]</li>\n</ul>\n<p>Please share these at the earliest convenience. You can reply directly to this email or contact us on WhatsApp.</p>\n<p>Best regards,<br/><strong>DNex Consulting Team</strong><br/>+971 55 554 2841</p>`,
   },
   {
     label: 'Payment Reminder',
+    subject: 'Payment Reminder — DNex Consulting',
     body: (c: CRMCase) =>
       `<p>Dear <strong>${c.full_name}</strong>,</p>\n<p>This is a friendly reminder that we have an outstanding payment for your case <strong>${c.case_id}</strong>.</p>\n<p>Please complete the payment at your earliest to avoid any delays in processing your application.</p>\n<p>If you have already made the payment, please disregard this message.</p>\n<p>Best regards,<br/><strong>DNex Consulting Team</strong><br/>+971 55 554 2841</p>`,
   },
   {
-    label: 'Blank',
+    label: 'Case Progress',
+    subject: 'Your Case Progress Update — DNex Consulting',
+    body: (c: CRMCase) =>
+      `<p>Dear <strong>${c.full_name}</strong>,</p>\n<p>We are pleased to inform you that your case <strong>${c.case_id}</strong> is progressing smoothly. We have completed the current stage and are moving forward with the next steps of your business setup.</p>\n<p>[Add specific progress details here]</p>\n<p>We will keep you notified as soon as further milestones are achieved.</p>\n<p>Best regards,<br/><strong>DNex Consulting Team</strong><br/>+971 55 554 2841</p>`,
+  },
+  {
+    label: 'Appointment / Call',
+    subject: 'Meeting Request — DNex Consulting',
+    body: (c: CRMCase) =>
+      `<p>Dear <strong>${c.full_name}</strong>,</p>\n<p>We would like to schedule a brief consultation call regarding your case <strong>${c.case_id}</strong> to discuss your setup requirements and align on the next steps.</p>\n<p>Please let us know your preferred date and time, or reply to this email to coordinate.</p>\n<p>Best regards,<br/><strong>DNex Consulting Team</strong><br/>+971 55 554 2841</p>`,
+  },
+  {
+    label: 'Service Completion',
+    subject: 'Service Completed — DNex Consulting',
+    body: (c: CRMCase) =>
+      `<p>Dear <strong>${c.full_name}</strong>,</p>\n<p>Congratulations! We are delighted to inform you that the services requested under case <strong>${c.case_id}</strong> have been successfully completed.</p>\n<p>All finalized documents and licenses have been processed and are attached/available in your client portal.</p>\n<p>Thank you for choosing DNex Consulting as your UAE business setup partner. We wish you immense success with your new venture!</p>\n<p>Best regards,<br/><strong>DNex Consulting Team</strong><br/>+971 55 554 2841</p>`,
+  },
+  {
+    label: 'Follow-Up',
+    subject: 'Following Up on Your Inquiry — DNex Consulting',
+    body: (c: CRMCase) =>
+      `<p>Dear <strong>${c.full_name}</strong>,</p>\n<p>We are following up on your recent inquiry and case <strong>${c.case_id}</strong> with DNex Consulting.</p>\n<p>Please let us know if you have any additional questions or if you are ready to proceed with the next step in your UAE business setup.</p>\n<p>Best regards,<br/><strong>DNex Consulting Team</strong><br/>+971 55 554 2841</p>`,
+  },
+  {
+    label: 'Blank / Custom',
+    subject: '',
     body: (c: CRMCase) =>
       `<p>Dear <strong>${c.full_name}</strong>,</p>\n<p></p>\n<p>Best regards,<br/><strong>DNex Consulting Team</strong><br/>+971 55 554 2841</p>`,
   },
 ];
+
+// ── Attachment type ──────────────────────────────────────────────────────────
+interface AttachmentFile {
+  filename: string;
+  content: string;      // base64 string
+  contentType: string;  // MIME type
+  encoding: 'base64';
+  sizeKb: number;       // display only
+}
+
+const MAX_FILE_SIZE_MB = 5;
+
+function getFileIcon(contentType: string) {
+  if (contentType.startsWith('image/')) return <Image size={14} color='#94a3b8' />;
+  if (contentType === 'application/pdf' || contentType.includes('text')) return <FileText size={14} color='#94a3b8' />;
+  return <File size={14} color='#94a3b8' />;
+}
 
 // ── Props ─────────────────────────────────────────────────────────────────────
 interface Props {
@@ -66,17 +106,41 @@ export function EmailComposeModal({ crmCase, onClose, stageLabel }: Props) {
   const [sending, setSending] = useState(false);
   const [sent, setSent]       = useState(false);
   const [error, setError]     = useState('');
-  const [showSubjectDrop, setShowSubjectDrop] = useState(false);
-  const [showBodyDrop, setShowBodyDrop]       = useState(false);
+  const [showTemplatesDrop, setShowTemplatesDrop] = useState(false);
+  const [attachments, setAttachments]             = useState<AttachmentFile[]>([]);
+  const [isDragOver, setIsDragOver]               = useState(false);
+  const [attachError, setAttachError]             = useState('');
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
-  const applySubjectTemplate = (val: string) => {
-    setSubject(val);
-    setShowSubjectDrop(false);
+  const handleFiles = (files: FileList | null) => {
+    if (!files) return;
+    setAttachError('');
+    const toAdd: AttachmentFile[] = [];
+    Array.from(files).forEach(file => {
+      if (file.size > MAX_FILE_SIZE_MB * 1024 * 1024) {
+        setAttachError(`"${file.name}" exceeds ${MAX_FILE_SIZE_MB} MB limit and was skipped.`);
+        return;
+      }
+      const reader = new FileReader();
+      reader.onload = () => {
+        const base64 = (reader.result as string).split(',')[1];
+        setAttachments(prev => [
+          ...prev,
+          { filename: file.name, content: base64, contentType: file.type || 'application/octet-stream', encoding: 'base64', sizeKb: Math.round(file.size / 1024) },
+        ]);
+      };
+      reader.readAsDataURL(file);
+    });
+    return toAdd;
   };
 
-  const applyBodyTemplate = (fn: (c: CRMCase) => string) => {
-    setBody(fn(crmCase));
-    setShowBodyDrop(false);
+  const removeAttachment = (idx: number) =>
+    setAttachments(prev => prev.filter((_, i) => i !== idx));
+
+  const applyTemplate = (t: typeof EMAIL_TEMPLATES[0]) => {
+    if (t.subject) setSubject(t.subject);
+    setBody(t.body(crmCase));
+    setShowTemplatesDrop(false);
   };
 
   const handleSend = async () => {
@@ -95,6 +159,7 @@ export function EmailComposeModal({ crmCase, onClose, stageLabel }: Props) {
         subject,
         body: wrapHtml(subject, body),
         replyTo: 'consultant@dnex.ae',
+        attachments: attachments.map(a => ({ filename: a.filename, content: a.content, encoding: a.encoding, contentType: a.contentType })),
       });
 
       if (result.success) {
@@ -225,36 +290,36 @@ export function EmailComposeModal({ crmCase, onClose, stageLabel }: Props) {
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
               <label style={{ fontSize: 12, color: '#94a3b8', fontWeight: 700, letterSpacing: '0.5px' }}>SUBJECT *</label>
               <button
-                onClick={() => setShowSubjectDrop(v => !v)}
+                onClick={() => setShowTemplatesDrop(v => !v)}
                 style={{
-                  background: 'none', border: '1px solid rgba(201,150,60,0.4)',
+                  background: 'rgba(201,150,60,0.15)', border: '1px solid rgba(201,150,60,0.6)',
                   borderRadius: 6, cursor: 'pointer', fontSize: 11, color: GOLD,
-                  fontWeight: 600, padding: '3px 8px', display: 'flex', alignItems: 'center', gap: 4,
+                  fontWeight: 700, padding: '4px 10px', display: 'flex', alignItems: 'center', gap: 4,
                 }}
               >
-                Templates <ChevronDown size={12} />
+                ⚡ Select Template <ChevronDown size={12} />
               </button>
             </div>
-            {showSubjectDrop && (
+            {showTemplatesDrop && (
               <div style={{
                 position: 'absolute', top: '100%', right: 0, zIndex: 50,
-                background: '#1e2d45', border: '1px solid rgba(201,150,60,0.3)',
-                borderRadius: 10, boxShadow: '0 8px 24px rgba(0,0,0,0.4)',
-                minWidth: 280, overflow: 'hidden',
+                background: '#1e2d45', border: '1px solid rgba(201,150,60,0.4)',
+                borderRadius: 10, boxShadow: '0 8px 24px rgba(0,0,0,0.5)',
+                minWidth: 300, maxHeight: 260, overflowY: 'auto',
               }}>
-                {SUBJECT_TEMPLATES.map(t => (
+                {EMAIL_TEMPLATES.map(t => (
                   <div
                     key={t.label}
-                    onClick={() => applySubjectTemplate(t.value)}
+                    onClick={() => applyTemplate(t)}
                     style={{
                       padding: '10px 14px', cursor: 'pointer', fontSize: 13, color: '#e2e8f0',
                       borderBottom: '1px solid rgba(255,255,255,0.06)',
                     }}
-                    onMouseEnter={e => (e.currentTarget.style.background = 'rgba(201,150,60,0.1)')}
+                    onMouseEnter={e => (e.currentTarget.style.background = 'rgba(201,150,60,0.15)')}
                     onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}
                   >
-                    <div style={{ fontWeight: 600, fontSize: 12, color: GOLD }}>{t.label}</div>
-                    <div style={{ fontSize: 12, color: '#94a3b8', marginTop: 2 }}>{t.value}</div>
+                    <div style={{ fontWeight: 700, fontSize: 12, color: GOLD }}>{t.label}</div>
+                    {t.subject && <div style={{ fontSize: 11, color: '#94a3b8', marginTop: 2, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{t.subject}</div>}
                   </div>
                 ))}
               </div>
@@ -269,43 +334,8 @@ export function EmailComposeModal({ crmCase, onClose, stageLabel }: Props) {
           </div>
 
           {/* Body */}
-          <div style={{ display: 'flex', flexDirection: 'column', gap: 6, position: 'relative' }}>
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-              <label style={{ fontSize: 12, color: '#94a3b8', fontWeight: 700, letterSpacing: '0.5px' }}>MESSAGE BODY *</label>
-              <button
-                onClick={() => setShowBodyDrop(v => !v)}
-                style={{
-                  background: 'none', border: '1px solid rgba(201,150,60,0.4)',
-                  borderRadius: 6, cursor: 'pointer', fontSize: 11, color: GOLD,
-                  fontWeight: 600, padding: '3px 8px', display: 'flex', alignItems: 'center', gap: 4,
-                }}
-              >
-                Templates <ChevronDown size={12} />
-              </button>
-            </div>
-            {showBodyDrop && (
-              <div style={{
-                position: 'absolute', top: '100%', right: 0, zIndex: 50,
-                background: '#1e2d45', border: '1px solid rgba(201,150,60,0.3)',
-                borderRadius: 10, boxShadow: '0 8px 24px rgba(0,0,0,0.4)',
-                minWidth: 220, overflow: 'hidden',
-              }}>
-                {BODY_TEMPLATES.map(t => (
-                  <div
-                    key={t.label}
-                    onClick={() => applyBodyTemplate(t.body)}
-                    style={{
-                      padding: '10px 14px', cursor: 'pointer',
-                      borderBottom: '1px solid rgba(255,255,255,0.06)',
-                    }}
-                    onMouseEnter={e => (e.currentTarget.style.background = 'rgba(201,150,60,0.1)')}
-                    onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}
-                  >
-                    <div style={{ fontWeight: 600, fontSize: 13, color: GOLD }}>{t.label}</div>
-                  </div>
-                ))}
-              </div>
-            )}
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
+            <label style={{ fontSize: 12, color: '#94a3b8', fontWeight: 700, letterSpacing: '0.5px' }}>MESSAGE BODY *</label>
             <textarea
               className="crm-textarea"
               value={body}
@@ -321,6 +351,75 @@ export function EmailComposeModal({ crmCase, onClose, stageLabel }: Props) {
             <div style={{ fontSize: 11, color: '#64748b' }}>
               💡 You can use HTML tags like &lt;b&gt;, &lt;p&gt;, &lt;br/&gt;, &lt;ul&gt;, &lt;li&gt; in the body.
             </div>
+          </div>
+
+          {/* Attachments */}
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+              <label style={{ fontSize: 12, color: '#94a3b8', fontWeight: 700, letterSpacing: '0.5px' }}>
+                <Paperclip size={12} style={{ marginRight: 5, verticalAlign: 'middle' }} />
+                ATTACHMENTS <span style={{ fontWeight: 400, color: '#475569' }}>(optional · max {MAX_FILE_SIZE_MB} MB each)</span>
+              </label>
+              {attachments.length > 0 && (
+                <span style={{ fontSize: 11, color: '#64748b' }}>{attachments.length} file{attachments.length > 1 ? 's' : ''} selected</span>
+              )}
+            </div>
+
+            {/* Drop zone */}
+            <div
+              onClick={() => fileInputRef.current?.click()}
+              onDragOver={e => { e.preventDefault(); setIsDragOver(true); }}
+              onDragLeave={() => setIsDragOver(false)}
+              onDrop={e => { e.preventDefault(); setIsDragOver(false); handleFiles(e.dataTransfer.files); }}
+              style={{
+                border: `2px dashed ${isDragOver ? GOLD : 'rgba(201,150,60,0.25)'}`,
+                borderRadius: 10, padding: '14px 18px', cursor: 'pointer',
+                background: isDragOver ? 'rgba(201,150,60,0.08)' : 'rgba(255,255,255,0.02)',
+                textAlign: 'center', transition: 'all 0.2s',
+                display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8,
+              }}
+            >
+              <Paperclip size={15} color={isDragOver ? GOLD : '#475569'} />
+              <span style={{ fontSize: 12, color: isDragOver ? GOLD : '#475569' }}>
+                Drag & drop files here, or <span style={{ color: GOLD, fontWeight: 600 }}>click to browse</span>
+              </span>
+            </div>
+            <input
+              ref={fileInputRef}
+              type='file'
+              multiple
+              style={{ display: 'none' }}
+              onChange={e => handleFiles(e.target.files)}
+            />
+
+            {/* Attach error */}
+            {attachError && (
+              <div style={{ fontSize: 11, color: '#f87171' }}>⚠ {attachError}</div>
+            )}
+
+            {/* File list */}
+            {attachments.length > 0 && (
+              <div style={{ display: 'flex', flexDirection: 'column', gap: 5 }}>
+                {attachments.map((f, i) => (
+                  <div key={i} style={{
+                    display: 'flex', alignItems: 'center', gap: 8,
+                    padding: '7px 12px', borderRadius: 8,
+                    background: 'rgba(201,150,60,0.07)', border: '1px solid rgba(201,150,60,0.2)',
+                  }}>
+                    {getFileIcon(f.contentType)}
+                    <span style={{ flex: 1, fontSize: 12, color: '#e2e8f0', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{f.filename}</span>
+                    <span style={{ fontSize: 11, color: '#64748b', whiteSpace: 'nowrap' }}>{f.sizeKb} KB</span>
+                    <button
+                      onClick={() => removeAttachment(i)}
+                      style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#64748b', padding: 2, display: 'flex', alignItems: 'center' }}
+                      title='Remove'
+                    >
+                      <X size={13} />
+                    </button>
+                  </div>
+                ))}
+              </div>
+            )}
           </div>
 
           {/* Preview strip */}

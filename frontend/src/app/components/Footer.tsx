@@ -2,8 +2,9 @@ import { Link } from 'react-router';
 import {
   Phone, Mail, MapPin,
   Linkedin, Twitter, Facebook, Instagram, Youtube,
-  ArrowRight, Shield,
+  ArrowRight, Shield, CheckCircle2,
 } from 'lucide-react';
+import { useState } from 'react';
 import logo from '../../assets/images/logo.png';
 
 const NAVY = '#0D2137';
@@ -36,6 +37,34 @@ const footerLinks = {
 };
 
 export function Footer() {
+  const [email, setEmail] = useState('');
+  const [status, setStatus] = useState<'idle' | 'loading' | 'success' | 'error'>('idle');
+
+  const handleSubscribe = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!email) return;
+
+    setStatus('loading');
+    try {
+      const res = await fetch('/api/subscribe', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email }),
+      });
+
+      if (res.ok) {
+        setStatus('success');
+        setEmail('');
+        setTimeout(() => setStatus('idle'), 3000);
+      } else {
+        setStatus('error');
+      }
+    } catch (err) {
+      console.error(err);
+      setStatus('error');
+    }
+  };
+
   return (
     <footer style={{ backgroundColor: '#ffffff', fontFamily: "'Inter', sans-serif" }}>
       {/* Newsletter bar */}
@@ -50,19 +79,24 @@ export function Footer() {
             </div>
             <form
               className="flex w-full md:w-auto gap-2"
-              onSubmit={(e) => e.preventDefault()}
+              onSubmit={handleSubscribe}
             >
               <input
                 type="email"
+                required
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
                 placeholder="Enter your email"
-                className="px-4 py-2.5 rounded-lg text-sm bg-white/10 text-white placeholder-slate-400 border border-white/15 focus:outline-none focus:border-[#C9963C] w-full md:w-64 transition-colors"
+                disabled={status === 'loading' || status === 'success'}
+                className="px-4 py-2.5 rounded-lg text-sm bg-white/10 text-white placeholder-slate-400 border border-white/15 focus:outline-none focus:border-[#C9963C] w-full md:w-64 transition-colors disabled:opacity-50"
               />
               <button
                 type="submit"
-                className="px-5 py-2.5 rounded-lg text-sm font-semibold text-white shrink-0 hover:opacity-90 transition-opacity"
-                style={{ backgroundColor: GOLD }}
+                disabled={status === 'loading' || status === 'success'}
+                className="px-5 py-2.5 rounded-lg text-sm font-semibold text-white shrink-0 transition-opacity flex items-center justify-center min-w-[110px]"
+                style={{ backgroundColor: status === 'success' ? '#10b981' : GOLD, opacity: status === 'loading' ? 0.7 : 1 }}
               >
-                Subscribe
+                {status === 'loading' ? 'Sending...' : status === 'success' ? <><CheckCircle2 size={16} className="mr-1"/> Subscribed</> : 'Subscribe'}
               </button>
             </form>
           </div>

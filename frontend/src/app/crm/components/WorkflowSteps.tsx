@@ -1,5 +1,5 @@
-import { useState, useEffect } from 'react';
-import { Phone, CheckCircle, XCircle, ChevronRight, Send, FileText, CreditCard, Package, ArrowLeft, Plus } from 'lucide-react';
+import { useState, useEffect, useRef } from 'react';
+import { Phone, CheckCircle, XCircle, ChevronRight, Send, FileText, CreditCard, Package, ArrowLeft, Plus, Paperclip, Image, File } from 'lucide-react';
 import { updateCaseStatus, updateCase, updateCaseWorkflowField } from '../services/caseService';
 import type { CRMCase, CaseStatus } from '../services/caseService';
 import { logCall, fetchCalls } from '../services/callService';
@@ -18,6 +18,21 @@ import type { CRMDocument } from '../services/documentService';
 import { fetchPayments } from '../services/paymentService';
 import type { CRMPayment } from '../services/paymentService';
 const GOLD = '#C9963C';
+
+// ── Shared attachment type (used in ProcessingStep) ────────────────────────────
+interface AttachmentFile {
+  filename: string;
+  content: string;       // base64
+  contentType: string;   // MIME type
+  encoding: 'base64';
+  sizeKb: number;        // for display
+}
+const MAX_ATTACH_MB = 5;
+function getAttachIcon(contentType: string) {
+  if (contentType.startsWith('image/')) return <Image size={13} color='#94a3b8' />;
+  if (contentType === 'application/pdf' || contentType.includes('text')) return <FileText size={13} color='#94a3b8' />;
+  return <File size={13} color='#94a3b8' />;
+}
 
 interface Props {
   crmCase: CRMCase;
@@ -1286,6 +1301,35 @@ export function ProcessingStep({ crmCase, onRefresh, onBack, isViewOnly, onRetur
   const [saving, setSaving] = useState(false);
   const [closing, setClosing] = useState(false);
 
+  // Attachment state
+  const [attachments, setAttachments]   = useState<AttachmentFile[]>([]);
+  const [isDragOver, setIsDragOver]     = useState(false);
+  const [attachError, setAttachError]   = useState('');
+  const fileInputRef = useRef<HTMLInputElement>(null);
+
+  const handleFiles = (files: FileList | null) => {
+    if (!files) return;
+    setAttachError('');
+    Array.from(files).forEach(file => {
+      if (file.size > MAX_ATTACH_MB * 1024 * 1024) {
+        setAttachError(`"${file.name}" exceeds ${MAX_ATTACH_MB} MB and was skipped.`);
+        return;
+      }
+      const reader = new FileReader();
+      reader.onload = () => {
+        const base64 = (reader.result as string).split(',')[1];
+        setAttachments(prev => [
+          ...prev,
+          { filename: file.name, content: base64, contentType: file.type || 'application/octet-stream', encoding: 'base64', sizeKb: Math.round(file.size / 1024) },
+        ]);
+      };
+      reader.readAsDataURL(file);
+    });
+  };
+
+  const removeAttachment = (idx: number) =>
+    setAttachments(prev => prev.filter((_, i) => i !== idx));
+
   // Email form state
   const [emailSubject, setEmailSubject] = useState(`Update regarding your application - ${crmCase.case_id}`);
   const [emailBody, setEmailBody] = useState(`Dear ${crmCase.full_name},\n\nWe are pleased to inform you that your case (${crmCase.case_id}) for ${crmCase.service_type || 'business setup'} is currently in processing. We are making great progress and will share further milestones soon.\n\nBest regards,\nDNex Consulting Team`);
@@ -1319,11 +1363,12 @@ export function ProcessingStep({ crmCase, onRefresh, onBack, isViewOnly, onRetur
         to: crmCase.email,
         subject: emailSubject,
         body: emailBody.replace(/\n/g, '<br/>'),
+        attachments: attachments.map(a => ({ filename: a.filename, content: a.content, encoding: a.encoding, contentType: a.contentType })),
       });
       if (res.success) {
         setEmailStatus('success');
-        // Clear body
         setEmailBody('');
+        setAttachments([]);   // clear attachments after send
       } else {
         setEmailStatus('error');
       }
@@ -1390,6 +1435,78 @@ export function ProcessingStep({ crmCase, onRefresh, onBack, isViewOnly, onRetur
           </div>
         </div>
       )}
+
+      {/* Attachment upload — before Processing Notes */}
+      <div style={{ display: 'flex', flexDirection: 'column', gap: 8, borderTop: '1px solid var(--crm-border)', paddingTop: 16 }}>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+          <label style={{ fontSize: 12, color: '#94a3b8', fontWeight: 600 }}>
+            <Paperclip size={12} style={{ marginRight: 5, verticalAlign: 'middle' }} />
+            ATTACH DOCUMENTS TO EMAIL
+            <span style={{ fontWeight: 400, color: '#475569', marginLeft: 6 }}>(optional · max {MAX_ATTACH_MB} MB each)</span>
+          </label>
+          {attachments.length > 0 && (
+            <span style={{ fontSize: 11, color: '#64748b' }}>{attachments.length} file{attachments.length > 1 ? 's' : ''} attached</span>
+          )}
+        </div>
+
+        {/* Drop zone */}
+        <div
+          onClick={() => fileInputRef.current?.click()}
+          onDragOver={e => { e.preventDefault(); setIsDragOver(true); }}
+          onDragLeave={() => setIsDragOver(false)}
+          onDrop={e => { e.preventDefault(); setIsDragOver(false); handleFiles(e.dataTransfer.files); }}
+          style={{
+            border: `2px dashed ${isDragOver ? GOLD : 'rgba(201,150,60,0.25)'}`,
+            borderRadius: 10, padding: '12px 16px', cursor: 'pointer',
+            background: isDragOver ? 'rgba(201,150,60,0.08)' : 'rgba(255,255,255,0.02)',
+            display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8,
+            transition: 'all 0.2s',
+          }}
+        >
+          <Paperclip size={14} color={isDragOver ? GOLD : '#475569'} />
+          <span style={{ fontSize: 12, color: isDragOver ? GOLD : '#475569' }}>
+            Drag & drop files here, or{' '}
+            <span style={{ color: GOLD, fontWeight: 600 }}>click to browse</span>
+          </span>
+        </div>
+        <input
+          ref={fileInputRef}
+          type='file'
+          multiple
+          style={{ display: 'none' }}
+          onChange={e => handleFiles(e.target.files)}
+        />
+
+        {/* Size error */}
+        {attachError && <div style={{ fontSize: 11, color: '#f87171' }}>⚠ {attachError}</div>}
+
+        {/* Hint when files present */}
+        {attachments.length > 0 && (
+          <div style={{ fontSize: 11, color: '#64748b' }}>
+            📎 These files will be attached to the next email you send.
+          </div>
+        )}
+
+        {/* File list */}
+        {attachments.map((f, i) => (
+          <div key={i} style={{
+            display: 'flex', alignItems: 'center', gap: 8,
+            padding: '6px 12px', borderRadius: 8,
+            background: 'rgba(201,150,60,0.07)', border: '1px solid rgba(201,150,60,0.2)',
+          }}>
+            {getAttachIcon(f.contentType)}
+            <span style={{ flex: 1, fontSize: 12, color: 'var(--crm-text)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{f.filename}</span>
+            <span style={{ fontSize: 11, color: '#64748b', whiteSpace: 'nowrap' }}>{f.sizeKb} KB</span>
+            <button
+              onClick={() => removeAttachment(i)}
+              style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#64748b', padding: 2, display: 'flex', alignItems: 'center' }}
+              title='Remove'
+            >
+              <XCircle size={13} />
+            </button>
+          </div>
+        ))}
+      </div>
 
       <div style={{ display: 'flex', flexDirection: 'column', gap: 6, borderTop: '1px solid var(--crm-border)', paddingTop: 16 }}>
         <label style={{ fontSize: 12, color: '#94a3b8', fontWeight: 600 }}>Processing Notes (internal)</label>

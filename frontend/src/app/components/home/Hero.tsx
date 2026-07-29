@@ -29,6 +29,7 @@ export function Hero() {
           src={banner}
           alt="Hero Banner"
           className="w-full h-full object-cover"
+          style={{ filter: 'brightness(1.4)' }}
         />
         <div
           className="absolute inset-0"

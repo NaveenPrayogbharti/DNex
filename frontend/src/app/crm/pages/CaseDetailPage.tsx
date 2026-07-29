@@ -19,7 +19,8 @@ import {
   ContactedStep, RequirementStep, ServiceStep, QuotationStep, PaymentStep, ProcessingStep, PreviewStep
 } from '../components/WorkflowSteps';
 import { EmailComposeModal } from '../components/EmailComposeModal';
-import { ArrowLeft, Edit2, Save, X, Plus, Check, XCircle, Mail, UploadCloud, Eye } from 'lucide-react';
+import { sendCustomEmail } from '../services/emailNotificationService';
+import { ArrowLeft, Edit2, Save, X, Plus, Check, XCircle, Mail, UploadCloud, Eye, Download, Bell } from 'lucide-react';
 
 const GOLD = '#C9963C';
 
@@ -63,6 +64,7 @@ export function CaseDetailPage() {
   const [isUploading, setIsUploading] = useState(false);
   const [viewingStage, setViewingStage] = useState<CaseStatus | null>(null);
   const [showEmailModal, setShowEmailModal] = useState(false);
+  const [sendingReminder, setSendingReminder] = useState<string | null>(null); // payment id being reminded
 
   const loadAll = useCallback(async () => {
     if (!id) return;
@@ -193,6 +195,63 @@ export function CaseDetailPage() {
       if (status === 'paid' && crmCase) await updateCaseStatus(crmCase.id, 'Document Collection');
       await loadAll();
     } catch (e) { console.error(e); }
+  };
+
+  // ── Generate and download a payment receipt as HTML ───────────────────────
+  const downloadPaymentReceipt = (p: CRMPayment) => {
+    if (!crmCase) return;
+    const paidDate = p.paid_at ? new Date(p.paid_at).toLocaleDateString('en-AE', { day: '2-digit', month: 'long', year: 'numeric' }) : new Date(p.created_at).toLocaleDateString('en-AE', { day: '2-digit', month: 'long', year: 'numeric' });
+    const receiptNumber = `RCP-${new Date(p.created_at).getFullYear()}-${p.id.slice(0, 6).toUpperCase()}`;
+    const html = `<!DOCTYPE html><html><head><meta charset="UTF-8"><title>Payment Receipt — ${receiptNumber}</title>
+<style>body{font-family:Arial,sans-serif;background:#f8fafc;margin:0;padding:0}
+.wrap{max-width:600px;margin:40px auto;background:#fff;border-radius:12px;overflow:hidden;border:1px solid #e2e8f0}
+.hdr{background:linear-gradient(135deg,#0A1628,#1a2a48);padding:28px 32px;text-align:center}
+.hdr h1{color:#C9963C;margin:0 0 4px;font-size:22px}.hdr p{color:rgba(255,255,255,.5);font-size:12px;margin:0}
+.body{padding:28px 32px}.row{display:flex;justify-content:space-between;padding:10px 0;border-bottom:1px solid #e2e8f0}
+.label{color:#94a3b8;font-size:13px}.value{color:#1e293b;font-size:13px;font-weight:600}
+.total{background:#f0fdf4;border-radius:8px;padding:14px 20px;display:flex;justify-content:space-between;margin-top:16px}
+.total .label{color:#166534;font-size:15px;font-weight:700}.total .value{color:#15803d;font-size:18px;font-weight:800}
+.stamp{text-align:center;margin:20px 0;color:#15803d;font-size:14px;font-weight:700;letter-spacing:1px;border:2px solid #15803d;border-radius:8px;padding:8px 0}
+.footer{background:#f8fafc;border-top:1px solid #e2e8f0;padding:16px 32px;text-align:center;font-size:11px;color:#94a3b8}
+</style></head><body><div class="wrap">
+<div class="hdr"><h1>DNex Business Setup</h1><p>Official Payment Receipt</p></div>
+<div class="body">
+<div class="stamp">✓ PAYMENT CONFIRMED</div>
+<div class="row"><span class="label">Receipt No.</span><span class="value">${receiptNumber}</span></div>
+<div class="row"><span class="label">Client Name</span><span class="value">${crmCase.full_name}</span></div>
+<div class="row"><span class="label">Email</span><span class="value">${crmCase.email}</span></div>
+<div class="row"><span class="label">Case ID</span><span class="value">${crmCase.case_id}</span></div>
+<div class="row"><span class="label">Description</span><span class="value">${p.description ?? 'Business Setup Service'}</span></div>
+<div class="row"><span class="label">Payment Date</span><span class="value">${paidDate}</span></div>
+<div class="total"><span class="label">Amount Paid</span><span class="value">AED ${Number(p.amount).toLocaleString()}</span></div>
+</div>
+<div class="footer">DNex Business Setup Consulting · Dubai, UAE<br/>📞 +971 55 554 2841 · consultant@dnex.ae · www.dnex.ae</div>
+</div></body></html>`;
+    const blob = new Blob([html], { type: 'text/html' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url; a.download = `${receiptNumber}.html`;
+    a.click(); URL.revokeObjectURL(url);
+  };
+
+  // ── Send a pending payment reminder email ─────────────────────────────────
+  const handleSendPaymentReminder = async (p: CRMPayment) => {
+    if (!crmCase) return;
+    setSendingReminder(p.id);
+    try {
+      await sendCustomEmail({
+        to: crmCase.email,
+        subject: `Payment Reminder — Your Case ${crmCase.case_id} · DNex Consulting`,
+        body: `<p>Dear <strong>${crmCase.full_name}</strong>,</p><p>This is a friendly reminder that a payment of <strong>AED ${Number(p.amount).toLocaleString()}</strong> is currently pending for your case <strong>${crmCase.case_id}</strong>${p.description ? ` (${p.description})` : ''}.</p><p>Please complete the payment at the earliest to avoid any delays in processing your application.${p.payment_link ? `</p><p>👉 <a href="${p.payment_link}">Click here to make payment</a>` : ''}</p><p>If you have already made the payment, please disregard this message or contact us to confirm.</p><p>Best regards,<br/><strong>DNex Consulting Team</strong><br/>+971 55 554 2841</p>`,
+        replyTo: 'consultant@dnex.ae',
+      });
+      alert('✅ Payment reminder sent to ' + crmCase.email);
+    } catch (e) {
+      console.error(e);
+      alert('❌ Failed to send reminder. Please try again.');
+    } finally {
+      setSendingReminder(null);
+    }
   };
 
   // Open case from New Lead
@@ -582,21 +641,60 @@ export function CaseDetailPage() {
               <div className="crm-table-wrap" style={{ padding:20 }}>
                 <h3 style={{ color:'var(--crm-text)', margin:'0 0 16px' }}>💰 Payments</h3>
                 {payments.map(p => {
-                  const c = p.status==='paid'?'#34d399':p.status==='failed'?'#f87171':'#fbbf24';
+                  const isPaid = p.status === 'paid';
+                  const isFailed = p.status === 'failed';
+                  const c = isPaid ? '#34d399' : isFailed ? '#f87171' : '#fbbf24';
                   return (
-                    <div key={p.id} className="crm-payment-item">
-                      <div>
-                        <div className="crm-payment-item__amount">AED {Number(p.amount).toLocaleString()}</div>
-                        <div className="crm-payment-item__meta">{p.description ?? '—'} · {new Date(p.created_at).toLocaleDateString()}</div>
-                        {p.payment_link && <a href={p.payment_link} target="_blank" rel="noreferrer" style={{ fontSize:12, color:GOLD }}>🔗 Payment Link</a>}
-                      </div>
-                      <div style={{ display:'flex', flexDirection:'column', gap:6, alignItems:'flex-end' }}>
+                    <div key={p.id} className="crm-payment-item" style={{ flexDirection: 'column', gap: 12, alignItems: 'stretch' }}>
+                      {/* Top row: amount + status badge */}
+                      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
+                        <div>
+                          <div className="crm-payment-item__amount">AED {Number(p.amount).toLocaleString()}</div>
+                          <div className="crm-payment-item__meta">{p.description ?? '—'} · {new Date(p.created_at).toLocaleDateString()}</div>
+                          {p.payment_link && <a href={p.payment_link} target="_blank" rel="noreferrer" style={{ fontSize:12, color:GOLD }}>🔗 Payment Link</a>}
+                          {isPaid && p.paid_at && (
+                            <div style={{ fontSize:11, color:'#34d399', marginTop:4 }}>✓ Paid on {new Date(p.paid_at).toLocaleDateString('en-AE', { day:'2-digit', month:'long', year:'numeric' })}</div>
+                          )}
+                        </div>
                         <span className="crm-badge" style={{ background:`${c}20`, color:c, borderColor:`${c}40` }}>{p.status}</span>
+                      </div>
+
+                      {/* Action buttons row */}
+                      <div style={{ display:'flex', gap:8, flexWrap:'wrap', borderTop:'1px solid rgba(255,255,255,0.07)', paddingTop:10 }}>
+                        {/* Mark paid / failed (pending only, not locked) */}
                         {p.status === 'pending' && !isCaseLocked && (
-                          <div style={{ display:'flex', gap:4 }}>
-                            <button className="crm-btn crm-btn--success" style={{ padding:'4px 8px', fontSize:11 }} onClick={() => handlePaymentMark(p.id,'paid')}>✓ Mark Paid</button>
-                            <button className="crm-btn crm-btn--danger" style={{ padding:'4px 8px', fontSize:11 }} onClick={() => handlePaymentMark(p.id,'failed')}>Failed</button>
-                          </div>
+                          <>
+                            <button className="crm-btn crm-btn--success" style={{ padding:'5px 10px', fontSize:11 }} onClick={() => handlePaymentMark(p.id,'paid')}>
+                              <Check size={11} style={{ marginRight:4 }} />Mark Paid
+                            </button>
+                            <button className="crm-btn crm-btn--danger" style={{ padding:'5px 10px', fontSize:11 }} onClick={() => handlePaymentMark(p.id,'failed')}>
+                              <XCircle size={11} style={{ marginRight:4 }} />Mark Failed
+                            </button>
+                          </>
+                        )}
+
+                        {/* Send pending payment reminder email */}
+                        {p.status === 'pending' && !isCaseLocked && (
+                          <button
+                            className="crm-btn crm-btn--ghost"
+                            style={{ padding:'5px 10px', fontSize:11, borderColor: '#fbbf24', color: '#fbbf24' }}
+                            onClick={() => handleSendPaymentReminder(p)}
+                            disabled={sendingReminder === p.id}
+                          >
+                            <Bell size={11} style={{ marginRight:4 }} />
+                            {sendingReminder === p.id ? 'Sending...' : 'Send Reminder Email'}
+                          </button>
+                        )}
+
+                        {/* Download receipt (paid only) */}
+                        {isPaid && (
+                          <button
+                            className="crm-btn crm-btn--ghost"
+                            style={{ padding:'5px 10px', fontSize:11, borderColor:'#34d399', color:'#34d399' }}
+                            onClick={() => downloadPaymentReceipt(p)}
+                          >
+                            <Download size={11} style={{ marginRight:4 }} />Download Receipt
+                          </button>
                         )}
                       </div>
                     </div>
