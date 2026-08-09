@@ -20,7 +20,7 @@ import {
 } from '../components/WorkflowSteps';
 import { EmailComposeModal } from '../components/EmailComposeModal';
 import { sendCustomEmail } from '../services/emailNotificationService';
-import { ArrowLeft, Edit2, Save, X, Plus, Check, XCircle, Mail, UploadCloud, Eye, Download, Bell } from 'lucide-react';
+import { ArrowLeft, Edit2, Save, X, Plus, Check, XCircle, Mail, UploadCloud, Eye, Download, Bell, CreditCard } from 'lucide-react';
 
 const GOLD = '#C9963C';
 
@@ -195,6 +195,67 @@ export function CaseDetailPage() {
       if (status === 'paid' && crmCase) await updateCaseStatus(crmCase.id, 'Document Collection');
       await loadAll();
     } catch (e) { console.error(e); }
+  };
+
+  const handleRazorpayPayment = async (p: CRMPayment) => {
+    if (!crmCase) return;
+    
+    if (!p.razorpay_id) {
+        alert("No Razorpay order ID found for this payment.");
+        return;
+    }
+
+    const options = {
+      key: import.meta.env.VITE_RAZORPAY_KEY_ID || 'rzp_test_TKMzRZ167Z70fw',
+      amount: p.amount * 100,
+      currency: p.currency,
+      name: 'DNex Consulting',
+      description: p.description || 'Service Payment',
+      order_id: p.razorpay_id, 
+      handler: async function (response: any) {
+        try {
+          const verifyData = {
+            razorpay_payment_id: response.razorpay_payment_id,
+            razorpay_order_id: response.razorpay_order_id,
+            razorpay_signature: response.razorpay_signature,
+            payment_record_id: p.id,
+            case_id: crmCase.id,
+            amount: p.amount,
+            currency: p.currency
+          };
+          
+          const API_URL = import.meta.env.VITE_BACKEND_API_URL || 'http://localhost:3006';
+          const verifyRes = await fetch(`${API_URL}/api/payments/verify-payment`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(verifyData)
+          });
+          
+          if (verifyRes.ok) {
+            alert('Payment Successful!');
+            await loadAll();
+          } else {
+            alert('Payment verification failed.');
+          }
+        } catch (error) {
+          console.error(error);
+          alert('Error verifying payment.');
+        }
+      },
+      prefill: {
+        name: crmCase.full_name,
+        email: crmCase.email,
+        contact: crmCase.phone
+      },
+      theme: {
+        color: '#C9963C'
+      }
+    };
+    const rzp1 = new (window as any).Razorpay(options);
+    rzp1.on('payment.failed', function (response: any){
+      alert(response.error.description);
+    });
+    rzp1.open();
   };
 
   // ── Generate and download a payment receipt as HTML ───────────────────────
@@ -664,6 +725,9 @@ export function CaseDetailPage() {
                         {/* Mark paid / failed (pending only, not locked) */}
                         {p.status === 'pending' && !isCaseLocked && (
                           <>
+                            <button className="crm-btn crm-btn--primary" style={{ padding:'5px 10px', fontSize:11, background: '#3b82f6' }} onClick={() => handleRazorpayPayment(p)}>
+                              <CreditCard size={11} style={{ marginRight:4 }} />Pay via Razorpay
+                            </button>
                             <button className="crm-btn crm-btn--success" style={{ padding:'5px 10px', fontSize:11 }} onClick={() => handlePaymentMark(p.id,'paid')}>
                               <Check size={11} style={{ marginRight:4 }} />Mark Paid
                             </button>

@@ -1,10 +1,12 @@
 import { useState, useEffect } from 'react';
 import { AdminNavbar } from '../components/AdminNavbar';
+import { CommunicationTemplates } from '../components/CommunicationTemplates';
 import {
   Globe, Save, Edit, ChevronDown, ChevronUp, Plus, Trash2, Image,
   FileText, Star, Phone, MessageSquare, RefreshCw,
 } from 'lucide-react';
 import { supabase } from '../../../lib/supabase';
+import { useContentStore } from '../../../store/contentStore';
 
 const GOLD = '#C9963C';
 const NAVY = '#0A1628';
@@ -111,7 +113,9 @@ export function AdminContentPage() {
   const [saving, setSaving] = useState(false);
   const [saved, setSaved] = useState(false);
   const [loading, setLoading] = useState(true);
+  const [activeTab, setActiveTab] = useState<'website' | 'templates'>('website');
   const [openSections, setOpenSections] = useState<Record<string, boolean>>({ hero: true, contact: true });
+  const { fetchContent } = useContentStore();
 
   // Load from Supabase (fallback: localStorage)
   useEffect(() => {
@@ -163,6 +167,10 @@ export function AdminContentPage() {
         .upsert(rows, { onConflict: 'key' });
 
       if (error) console.warn('[Content] Supabase unavailable, saved to localStorage:', error.message);
+      
+      // Update global content store
+      await fetchContent();
+      
       setSaved(true);
       setTimeout(() => setSaved(false), 3000);
     } finally {
@@ -197,10 +205,53 @@ export function AdminContentPage() {
 
   return (
     <div className="admin-page">
-      <AdminNavbar title="Content Management" subtitle="Manage your website content from here" />
+      <AdminNavbar title="Content Management" subtitle="Manage your website content and templates from here" />
 
       <div className="admin-page__content">
-        {/* Top Action Bar */}
+        
+        {/* Tabs */}
+        <div style={{ display: 'flex', gap: 16, marginBottom: 24, borderBottom: '1px solid #e2e8f0', paddingBottom: 16 }}>
+          <button
+            onClick={() => setActiveTab('website')}
+            style={{
+              background: activeTab === 'website' ? GOLD : '#f8fafc',
+              color: activeTab === 'website' ? '#fff' : NAVY,
+              border: '1px solid #e2e8f0',
+              padding: '10px 20px',
+              borderRadius: 8,
+              cursor: 'pointer',
+              fontWeight: 600,
+              display: 'flex',
+              alignItems: 'center',
+              gap: 8,
+            }}
+          >
+            <Globe size={16} /> Website Content
+          </button>
+          <button
+            onClick={() => setActiveTab('templates')}
+            style={{
+              background: activeTab === 'templates' ? GOLD : '#f8fafc',
+              color: activeTab === 'templates' ? '#fff' : NAVY,
+              border: '1px solid #e2e8f0',
+              padding: '10px 20px',
+              borderRadius: 8,
+              cursor: 'pointer',
+              fontWeight: 600,
+              display: 'flex',
+              alignItems: 'center',
+              gap: 8,
+            }}
+          >
+            <MessageSquare size={16} /> Communication Templates
+          </button>
+        </div>
+
+        {activeTab === 'templates' ? (
+          <CommunicationTemplates />
+        ) : (
+          <>
+            {/* Top Action Bar */}
         <div style={{
           display:'flex', justifyContent:'space-between', alignItems:'center',
           background:'#fff', border:'1px solid #e2e8f0', borderRadius:12,
@@ -338,7 +389,9 @@ ALTER TABLE admin_content ENABLE ROW LEVEL SECURITY;
 CREATE POLICY "admin_read"  ON admin_content FOR SELECT USING (true);
 CREATE POLICY "admin_write" ON admin_content FOR ALL USING (auth.role() = 'authenticated');`}
           </pre>
-        </div>
+          </div>
+          </>
+        )}
       </div>
     </div>
   );

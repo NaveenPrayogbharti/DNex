@@ -1,0 +1,210 @@
+import { useState, useEffect } from 'react';
+import { useParams } from 'react-router';
+import { CreditCard, CheckCircle, ShieldCheck } from 'lucide-react';
+import { fetchPaymentById } from '../crm/services/paymentService';
+import type { CRMPayment } from '../crm/services/paymentService';
+
+export function ClientPayment() {
+  const { id } = useParams<{ id: string }>();
+  const [payment, setPayment] = useState<CRMPayment | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState('');
+  const [paying, setPaying] = useState(false);
+
+  useEffect(() => {
+    if (!id) return;
+
+    // Check query parameters first
+    const params = new URLSearchParams(window.location.search);
+    const qAmount = params.get('amount');
+    const qCurrency = params.get('currency');
+    const qDesc = params.get('desc');
+    const qRzp = params.get('rzp');
+
+    if (qAmount && qCurrency && qDesc && qRzp) {
+      setPayment({
+        id,
+        amount: parseFloat(qAmount),
+        currency: qCurrency,
+        description: qDesc,
+        razorpay_id: qRzp,
+        status: 'pending',
+        case_id: '',
+        created_at: new Date().toISOString()
+      } as CRMPayment);
+      setLoading(false);
+      return;
+    }
+
+    fetchPaymentById(id)
+      .then(p => {
+        if (!p) throw new Error('Payment not found');
+        setPayment(p);
+      })
+      .catch(e => {
+        console.error(e);
+        setError('Payment link is invalid or expired.');
+      })
+      .finally(() => setLoading(false));
+  }, [id]);
+
+  const handleRazorpayPayment = async () => {
+    if (!payment) return;
+    
+    if (!payment.razorpay_id) {
+        alert("No Razorpay order ID found for this payment.");
+        return;
+    }
+
+    setPaying(true);
+
+    const options = {
+      key: import.meta.env.VITE_RAZORPAY_KEY_ID || 'rzp_test_TKMzRZ167Z70fw',
+      amount: payment.amount * 100,
+      currency: payment.currency,
+      name: 'DNex Consulting',
+      description: payment.description || 'Service Payment',
+      order_id: payment.razorpay_id, 
+      handler: async function (response: any) {
+        try {
+          const verifyData = {
+            razorpay_payment_id: response.razorpay_payment_id,
+            razorpay_order_id: response.razorpay_order_id,
+            razorpay_signature: response.razorpay_signature,
+            payment_record_id: payment.id,
+            case_id: payment.case_id,
+            amount: payment.amount,
+            currency: payment.currency
+          };
+          
+          const API_URL = import.meta.env.VITE_BACKEND_API_URL || 'http://localhost:3006';
+          const verifyRes = await fetch(`${API_URL}/api/payments/verify-payment`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(verifyData)
+          });
+          
+          if (verifyRes.ok) {
+            // Update local state to show success
+            setPayment({ ...payment, status: 'paid' });
+          } else {
+            alert('Payment verification failed.');
+          }
+        } catch (error) {
+          console.error(error);
+          alert('Error verifying payment.');
+        } finally {
+          setPaying(false);
+        }
+      },
+      prefill: {
+        name: 'Client', // Normally we'd prefill from case data, but skipping case fetch for simplicity
+      },
+      theme: {
+        color: '#C9963C'
+      }
+    };
+    
+    const rzp1 = new (window as any).Razorpay(options);
+    rzp1.on('payment.failed', function (response: any){
+      alert(response.error.description);
+      setPaying(false);
+    });
+    rzp1.open();
+  };
+
+  if (loading) {
+    return (
+      <div className="min-h-[60vh] flex items-center justify-center">
+        <div className="animate-spin h-8 w-8 border-4 border-[#C9963C] border-t-transparent rounded-full"></div>
+      </div>
+    );
+  }
+
+  if (error || !payment) {
+    return (
+      <div className="min-h-[60vh] flex flex-col items-center justify-center p-6 text-center">
+        <div className="bg-red-50 text-red-600 p-6 rounded-2xl max-w-md w-full border border-red-100 shadow-sm">
+          <ShieldCheck className="w-12 h-12 mx-auto mb-4 text-red-400" />
+          <h2 className="text-xl font-bold mb-2">Invalid Link</h2>
+          <p className="text-sm">{error}</p>
+        </div>
+      </div>
+    );
+  }
+
+  if (payment.status === 'paid') {
+    return (
+      <div className="min-h-[60vh] flex flex-col items-center justify-center p-6 bg-slate-50">
+        <div className="bg-white p-8 rounded-2xl max-w-md w-full text-center shadow-lg border border-slate-100">
+          <CheckCircle className="w-16 h-16 mx-auto mb-6 text-green-500" />
+          <h2 className="text-2xl font-bold text-slate-800 mb-2">Payment Complete</h2>
+          <p className="text-slate-500 mb-6 text-sm">Thank you for your payment. Your receipt has been sent to your email.</p>
+          <div className="bg-slate-50 p-4 rounded-xl text-left border border-slate-100">
+            <div className="flex justify-between mb-2">
+              <span className="text-slate-500 text-sm">Amount Paid</span>
+              <span className="font-bold text-slate-800">{payment.currency} {payment.amount.toLocaleString()}</span>
+            </div>
+            <div className="flex justify-between mb-2">
+              <span className="text-slate-500 text-sm">Description</span>
+              <span className="font-medium text-slate-700 text-sm">{payment.description}</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <div className="min-h-[70vh] flex flex-col items-center justify-center p-6 bg-slate-50">
+      <div className="max-w-md w-full bg-white rounded-3xl shadow-xl overflow-hidden border border-slate-100">
+        <div className="bg-[#0A1628] p-8 text-center text-white relative">
+          <div className="absolute top-0 right-0 p-4 opacity-10">
+            <ShieldCheck size={64} />
+          </div>
+          <h2 className="text-xl text-slate-300 mb-1">DNex Checkout</h2>
+          <div className="text-4xl font-bold text-white tracking-tight mb-2">
+            {payment.currency} {payment.amount.toLocaleString(undefined, { minimumFractionDigits: 2 })}
+          </div>
+          <p className="text-sm text-slate-400">Secure Payment Portal</p>
+        </div>
+        
+        <div className="p-8">
+          <div className="mb-8">
+            <h3 className="text-sm font-semibold text-slate-400 uppercase tracking-wider mb-4">Payment Summary</h3>
+            <div className="space-y-3 bg-slate-50 p-4 rounded-xl border border-slate-100">
+              <div className="flex justify-between items-center text-sm">
+                <span className="text-slate-500">Service Description</span>
+                <span className="font-medium text-slate-800 max-w-[150px] text-right truncate">{payment.description}</span>
+              </div>
+              <div className="flex justify-between items-center text-sm">
+                <span className="text-slate-500">Subtotal</span>
+                <span className="font-medium text-slate-800">{payment.currency} {payment.amount.toLocaleString()}</span>
+              </div>
+            </div>
+          </div>
+
+          <button
+            onClick={handleRazorpayPayment}
+            disabled={paying}
+            className="w-full flex items-center justify-center space-x-2 bg-[#C9963C] hover:bg-[#b08030] text-white py-4 px-6 rounded-xl font-bold text-lg transition-all shadow-md hover:shadow-lg disabled:opacity-70 disabled:cursor-not-allowed"
+          >
+            {paying ? (
+              <div className="animate-spin h-5 w-5 border-2 border-white border-t-transparent rounded-full" />
+            ) : (
+              <>
+                <CreditCard className="w-5 h-5" />
+                <span>Pay Securely Now</span>
+              </>
+            )}
+          </button>
+          
+          <div className="mt-6 flex justify-center items-center space-x-2 text-xs text-slate-400">
+            <ShieldCheck className="w-4 h-4" />
+            <span>Payments are 256-bit encrypted and secure</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}

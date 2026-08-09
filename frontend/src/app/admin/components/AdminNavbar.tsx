@@ -69,12 +69,12 @@ export function AdminNavbar({ title, subtitle }: AdminNavbarProps) {
               className="admin-navbar__avatar"
               style={{ background: `linear-gradient(135deg, ${GOLD}, #E8B85E)` }}
             >
-              <span style={{ color: '#0A1628', fontWeight: 700, fontSize: '12px' }}>
-                {user?.email?.charAt(0).toUpperCase() ?? 'A'}
+              <span style={{ color: '#0A1628', fontWeight: 700, fontSize: '12px', textTransform: 'uppercase' }}>
+                {user?.name?.charAt(0) || user?.email?.charAt(0) || 'A'}
               </span>
             </div>
             <div className="admin-navbar__user-info">
-              <span className="admin-navbar__user-name">Admin</span>
+              <span className="admin-navbar__user-name">{user?.name || 'Admin'}</span>
               <span className="admin-navbar__user-email">{user?.email ?? 'admin'}</span>
             </div>
             <ChevronDown size={14} style={{ color: '#94a3b8', marginLeft: '4px' }} />

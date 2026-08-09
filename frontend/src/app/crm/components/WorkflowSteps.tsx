@@ -1,5 +1,6 @@
 import { useState, useEffect, useRef } from 'react';
-import { Phone, CheckCircle, XCircle, ChevronRight, Send, FileText, CreditCard, Package, ArrowLeft, Plus, Paperclip, Image, File } from 'lucide-react';
+import { supabase } from '../../../lib/supabase';
+import { Phone, CheckCircle, XCircle, ChevronRight, ChevronDown, Send, FileText, CreditCard, Package, ArrowLeft, Plus, Paperclip, Image, File } from 'lucide-react';
 import { updateCaseStatus, updateCase, updateCaseWorkflowField } from '../services/caseService';
 import type { CRMCase, CaseStatus } from '../services/caseService';
 import { logCall, fetchCalls } from '../services/callService';
@@ -978,10 +979,13 @@ export function PaymentStep({ crmCase, onRefresh, onBack, isViewOnly, effectiveS
     setSaving(true);
     try {
       // Create payment in DB
-      const payRecord = await createPayment(crmCase.id, parseFloat(amount), `${currency} ${desc}`);
+      const payRecord = await createPayment(crmCase.id, parseFloat(amount), desc, currency);
       
       // Fetch latest quotation to attach
       const qs = await fetchQuotations(crmCase.id);
+      let attachments: any[] = [];
+      let emailBody = `<p>Dear ${crmCase.full_name},</p><p>You can complete your payment of <b>${currency} ${amount}</b> for <b>${desc}</b> securely online.</p><p>Payment Link: <a href="${window.location.origin}/pay/${payRecord.id}?amount=${amount}&currency=${currency}&desc=${encodeURIComponent(desc)}&rzp=${payRecord.razorpay_id}">Pay Now</a></p>`;
+
       if (qs.length > 0) {
         const q = qs[0];
         
@@ -999,24 +1003,34 @@ export function PaymentStep({ crmCase, onRefresh, onBack, isViewOnly, effectiveS
           currency: currency
         });
 
-        // Send email with PDF attachment
-        await sendCustomEmail({
-          to: crmCase.email,
-          subject: `Payment Link for ${desc} - DNex Consulting`,
-          body: `<p>Dear ${crmCase.full_name},</p><p>Please find attached your official quotation. You can complete your payment of <b>${currency} ${amount}</b> for <b>${desc}</b> securely online.</p><p>Payment Link: <a href="https://pay.dnex.com/${payRecord.id}">Pay Now</a></p>`,
-          attachments: [
-            {
-              filename: `Quotation_${crmCase.case_id}.pdf`,
-              content: pdfBase64,
-              encoding: 'base64',
-              contentType: 'application/pdf'
-            }
-          ]
-        });
+        attachments = [{
+          filename: `Quotation_${crmCase.case_id}.pdf`,
+          content: pdfBase64,
+          encoding: 'base64',
+          contentType: 'application/pdf'
+        }];
+        emailBody = `<p>Dear ${crmCase.full_name},</p><p>Please find attached your official quotation. You can complete your payment of <b>${currency} ${amount}</b> for <b>${desc}</b> securely online.</p><p>Payment Link: <a href="${window.location.origin}/pay/${payRecord.id}?amount=${amount}&currency=${currency}&desc=${encodeURIComponent(desc)}&rzp=${payRecord.razorpay_id}">Pay Now</a></p>`;
+      }
+
+      // Send email
+      const emailRes = await sendCustomEmail({
+        to: crmCase.email,
+        subject: `Payment Link for ${desc} - DNex Consulting`,
+        body: emailBody,
+        attachments
+      });
+
+      if (!emailRes.success) {
+        alert('Payment link created, but failed to send email: ' + emailRes.error);
+      } else {
+        alert('Payment link sent successfully!');
       }
 
       await updateCaseStatus(crmCase.id, 'Payment Pending');
       onRefresh();
+    } catch (err: any) {
+      console.error(err);
+      alert('Error creating payment link: ' + (err.message || String(err)));
     } finally { setSaving(false); }
   };
 
@@ -1338,6 +1352,30 @@ export function ProcessingStep({ crmCase, onRefresh, onBack, isViewOnly, onRetur
 
   // WhatsApp state
   const [waText, setWaText] = useState(`Hello ${crmCase.full_name}, we have an update regarding your ${crmCase.service_type || 'business setup'} application with DNex Consulting. We have processed the files and submitted them to the department.`);
+  const [waTemplates, setWaTemplates] = useState<any[]>([]);
+  const [showWaTemplates, setShowWaTemplates] = useState(false);
+
+  useEffect(() => {
+    supabase.from('system_templates').select('*').eq('type', 'whatsapp')
+      .then(({ data }) => setWaTemplates(data || []));
+  }, []);
+
+  const applyWaTemplate = (t: any) => {
+    let finalBody = t.body || '';
+    const vars: Record<string, string> = {
+      'client_name': crmCase.full_name || '',
+      'full_name': crmCase.full_name || '',
+      'case_id': crmCase.case_id || '',
+      'email': crmCase.email || '',
+      'phone': crmCase.phone || '',
+    };
+    for (const [key, val] of Object.entries(vars)) {
+      const regex = new RegExp(`{{${key}}}`, 'g');
+      finalBody = finalBody.replace(regex, val);
+    }
+    setWaText(finalBody);
+    setShowWaTemplates(false);
+  };
 
   const saveNotes = async () => {
     setSaving(true);
@@ -1425,8 +1463,46 @@ export function ProcessingStep({ crmCase, onRefresh, onBack, isViewOnly, onRetur
           {/* WhatsApp Client form */}
           <div style={{ display: 'flex', flexDirection: 'column', gap: 8, background: 'rgba(255,255,255,0.02)', padding: 14, borderRadius: 10, border: '1px solid var(--crm-border)' }}>
             <div style={{ fontWeight: 700, fontSize: 13, color: '#25d366' }}>💬 Send WhatsApp Update</div>
-            <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
-              <label style={{ fontSize: 11, color: '#94a3b8' }}>WhatsApp Message</label>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 6, position: 'relative' }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                <label style={{ fontSize: 11, color: '#94a3b8' }}>WhatsApp Message</label>
+                <button
+                  onClick={() => setShowWaTemplates(v => !v)}
+                  style={{
+                    background: 'rgba(37,211,102,0.15)', border: '1px solid rgba(37,211,102,0.4)',
+                    borderRadius: 6, cursor: 'pointer', fontSize: 11, color: '#25d366',
+                    fontWeight: 700, padding: '2px 8px', display: 'flex', alignItems: 'center', gap: 4,
+                  }}
+                >
+                  ⚡ Select Template <ChevronDown size={12} />
+                </button>
+              </div>
+              
+              {showWaTemplates && (
+                <div style={{
+                  position: 'absolute', top: '100%', right: 0, zIndex: 50,
+                  background: '#1e2d45', border: '1px solid rgba(37,211,102,0.4)',
+                  borderRadius: 10, boxShadow: '0 8px 24px rgba(0,0,0,0.5)',
+                  minWidth: 260, maxHeight: 260, overflowY: 'auto', marginTop: 4,
+                }}>
+                  {waTemplates.map(t => (
+                    <div
+                      key={t.id}
+                      onClick={() => applyWaTemplate(t)}
+                      style={{
+                        padding: '10px 14px', cursor: 'pointer', fontSize: 13, color: '#e2e8f0',
+                        borderBottom: '1px solid rgba(255,255,255,0.06)',
+                      }}
+                      onMouseEnter={e => (e.currentTarget.style.background = 'rgba(37,211,102,0.15)')}
+                      onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}
+                    >
+                      <div style={{ fontWeight: 700, fontSize: 12, color: '#25d366' }}>{t.name}</div>
+                    </div>
+                  ))}
+                  {waTemplates.length === 0 && <div style={{ padding: '10px 14px', color: '#94a3b8', fontSize: 13 }}>No templates found</div>}
+                </div>
+              )}
+              
               <textarea className="crm-textarea" rows={6} value={waText} onChange={e => setWaText(e.target.value)} />
             </div>
             <button className="crm-btn crm-btn--success" onClick={handleSendWhatsApp} disabled={!waText}>

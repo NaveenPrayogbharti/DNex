@@ -1,4 +1,5 @@
 import { MapPin, Phone, Mail, Clock } from 'lucide-react';
+import { BaseLeadForm } from '../components/home/BaseLeadForm';
 
 const NAVY = '#0D2137';
 const GOLD = '#C9963C';
@@ -7,7 +8,7 @@ export function Contact() {
     return (
         <div className="min-h-screen bg-slate-50 pt-36 pb-20" style={{ fontFamily: "'Inter', sans-serif" }}>
             {/* Page Header */}
-            <div className="max-w-4xl mx-auto px-4 sm:px-6 mb-16 text-center">
+            <div className="max-w-7xl mx-auto px-4 sm:px-6 mb-16 text-center">
                 <h1 className="text-4xl md:text-5xl font-bold mb-4" style={{ color: NAVY }}>
                     Get in <span style={{ color: GOLD }}>Touch</span>
                 </h1>
@@ -16,10 +17,12 @@ export function Contact() {
                 </p>
             </div>
 
-            {/* Contact Details Premium Card */}
-            <div className="max-w-4xl mx-auto px-4 sm:px-6">
-                <div
-                    className="rounded-3xl shadow-2xl overflow-hidden relative p-8 md:p-16 text-white"
+            {/* Main Content Grid */}
+            <div className="max-w-7xl mx-auto px-4 sm:px-6">
+                <div className="grid grid-cols-1 lg:grid-cols-2 gap-10 lg:gap-14">
+                    {/* Left: Contact Info Card */}
+                    <div
+                        className="rounded-3xl shadow-2xl overflow-hidden relative p-8 md:p-14 text-white flex flex-col justify-center"
                     style={{ backgroundColor: NAVY }}
                 >
                     {/* Subtle Background Design Elements */}
@@ -32,7 +35,7 @@ export function Contact() {
                         style={{ backgroundColor: GOLD }}
                     ></div>
 
-                    <div className="relative z-10 grid grid-cols-1 md:grid-cols-2 gap-10 md:gap-14">
+                    <div className="relative z-10 flex flex-col gap-10">
 
                         {/* Phone */}
                         <div className="flex items-start gap-5">
@@ -86,6 +89,13 @@ export function Contact() {
                             </div>
                         </div>
 
+                        </div>
+
+                    </div>
+
+                    {/* Right: LeadForm */}
+                    <div className="bg-white rounded-3xl shadow-2xl overflow-hidden p-8 md:p-12">
+                        <BaseLeadForm />
                     </div>
                 </div>
             </div>

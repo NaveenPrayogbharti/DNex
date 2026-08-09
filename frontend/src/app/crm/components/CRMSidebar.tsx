@@ -56,7 +56,7 @@ export function CRMSidebar({ collapsed, onToggle }: SidebarProps) {
           <NavLink
             key={item.path}
             to={item.path}
-            className={({ isActive }) =>
+            className={({ isActive }: { isActive: boolean }) =>
               `crm-sidebar__link ${isActive ? 'crm-sidebar__link--active' : ''}`
             }
             title={collapsed ? item.label : undefined}
@@ -69,7 +69,7 @@ export function CRMSidebar({ collapsed, onToggle }: SidebarProps) {
         {/* Notifications link */}
         <NavLink
           to="/crm/notifications"
-          className={({ isActive }) =>
+          className={({ isActive }: { isActive: boolean }) =>
             `crm-sidebar__link ${isActive ? 'crm-sidebar__link--active' : ''}`
           }
           title={collapsed ? 'Notifications' : undefined}

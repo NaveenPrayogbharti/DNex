@@ -1,6 +1,7 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { AdminNavbar } from '../components/AdminNavbar';
 import { Settings as SettingsIcon, Save, Image, FileText, Globe } from 'lucide-react';
+import { supabase } from '../../../lib/supabase';
 
 const GOLD = '#C9963C';
 const NAVY = '#0A1628';
@@ -10,6 +11,72 @@ export function AdminSettingsPage() {
   const [companyName, setCompanyName] = useState('DNex');
   const [contactEmail, setContactEmail] = useState('info@dnex.com');
   const [contactPhone, setContactPhone] = useState('+971 123 4567');
+  
+  const [seoTitle, setSeoTitle] = useState('DNex | Business Setup in Dubai');
+  const [seoDescription, setSeoDescription] = useState('Expert business setup consultants in Dubai, UAE.');
+
+  const [saving, setSaving] = useState(false);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    loadSettings();
+  }, []);
+
+  const loadSettings = async () => {
+    setLoading(true);
+    try {
+      const { data, error } = await supabase.from('admin_settings').select('*');
+      if (error) throw error;
+      if (data) {
+        const settingsMap: Record<string, string> = {};
+        data.forEach((row: any) => {
+          settingsMap[row.key] = row.value;
+        });
+        if (settingsMap['company_name']) setCompanyName(settingsMap['company_name']);
+        if (settingsMap['contact_email']) setContactEmail(settingsMap['contact_email']);
+        if (settingsMap['contact_phone']) setContactPhone(settingsMap['contact_phone']);
+        if (settingsMap['seo_title']) setSeoTitle(settingsMap['seo_title']);
+        if (settingsMap['seo_description']) setSeoDescription(settingsMap['seo_description']);
+      }
+    } catch (err) {
+      console.error('Error loading settings:', err);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const saveSettings = async () => {
+    setSaving(true);
+    try {
+      const updates = [
+        { key: 'company_name', value: companyName },
+        { key: 'contact_email', value: contactEmail },
+        { key: 'contact_phone', value: contactPhone },
+        { key: 'seo_title', value: seoTitle },
+        { key: 'seo_description', value: seoDescription },
+      ];
+      
+      const { error } = await supabase.from('admin_settings').upsert(updates, { onConflict: 'key' });
+      if (error) throw error;
+      alert('Settings saved successfully!');
+    } catch (err) {
+      console.error('Error saving settings:', err);
+      alert('Failed to save settings.');
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  if (loading) {
+    return (
+      <div className="admin-page">
+        <AdminNavbar title="Settings & Content" subtitle="Loading..." />
+        <div style={{ display:'flex', justifyContent:'center', padding:'60px' }}>
+          <div style={{ width:36, height:36, border:`3px solid rgba(0,0,0,0.1)`, borderTopColor:GOLD, borderRadius:'50%', animation:'spin 0.7s linear infinite' }} />
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="admin-page">
@@ -89,12 +156,15 @@ export function AdminSettingsPage() {
                       style={{ width: '100%', padding: '12px', border: '1px solid #ddd', borderRadius: '4px' }} 
                     />
                   </div>
-                  <button style={{ 
-                    marginTop: '10px', background: GOLD, color: '#fff', border: 'none', 
-                    padding: '12px 20px', borderRadius: '4px', cursor: 'pointer', fontWeight: 'bold',
-                    display: 'flex', alignItems: 'center', gap: '8px', width: 'fit-content'
-                  }}>
-                    <Save size={18} /> Save Settings
+                  <button 
+                    onClick={saveSettings}
+                    disabled={saving}
+                    style={{ 
+                      marginTop: '10px', background: GOLD, color: '#fff', border: 'none', 
+                      padding: '12px 20px', borderRadius: '4px', cursor: 'pointer', fontWeight: 'bold',
+                      display: 'flex', alignItems: 'center', gap: '8px', width: 'fit-content'
+                    }}>
+                    <Save size={18} /> {saving ? 'Saving...' : 'Save Settings'}
                   </button>
                 </div>
               </div>
@@ -104,37 +174,7 @@ export function AdminSettingsPage() {
               <div>
                 <h3 style={{ marginBottom: '20px', color: NAVY }}>Website Content Management</h3>
                 <p style={{ color: '#666', marginBottom: '20px' }}>Update main text and photos for different sections of the site.</p>
-                
-                <div style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
-                  <div style={{ border: '1px solid #eee', padding: '20px', borderRadius: '8px' }}>
-                    <h4 style={{ marginBottom: '15px' }}>Hero Section (Home Page)</h4>
-                    <label style={{ display: 'block', marginBottom: '8px', fontWeight: 500 }}>Headline</label>
-                    <input type="text" defaultValue="Setup Your Business in Dubai" style={{ width: '100%', padding: '10px', border: '1px solid #ddd', borderRadius: '4px', marginBottom: '15px' }} />
-                    <label style={{ display: 'block', marginBottom: '8px', fontWeight: 500 }}>Sub-headline</label>
-                    <textarea rows={3} defaultValue="We provide expert guidance to open your company quickly." style={{ width: '100%', padding: '10px', border: '1px solid #ddd', borderRadius: '4px', marginBottom: '15px' }}></textarea>
-                    
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '15px' }}>
-                      <div style={{ width: '100px', height: '60px', background: '#f5f5f5', display: 'flex', alignItems: 'center', justifyContent: 'center', borderRadius: '4px' }}>
-                        <Image color="#ccc" />
-                      </div>
-                      <button style={{ border: '1px solid #ddd', padding: '8px 15px', borderRadius: '4px', background: '#fff', cursor: 'pointer' }}>Change Hero Image</button>
-                    </div>
-                  </div>
-
-                  <div style={{ border: '1px solid #eee', padding: '20px', borderRadius: '8px' }}>
-                    <h4 style={{ marginBottom: '15px' }}>About Us Section</h4>
-                    <label style={{ display: 'block', marginBottom: '8px', fontWeight: 500 }}>Content</label>
-                    <textarea rows={5} defaultValue="DNex is a leading corporate service provider..." style={{ width: '100%', padding: '10px', border: '1px solid #ddd', borderRadius: '4px' }}></textarea>
-                  </div>
-
-                  <button style={{ 
-                    background: GOLD, color: '#fff', border: 'none', 
-                    padding: '12px 20px', borderRadius: '4px', cursor: 'pointer', fontWeight: 'bold',
-                    display: 'flex', alignItems: 'center', gap: '8px', width: 'fit-content'
-                  }}>
-                    <Save size={18} /> Update Content
-                  </button>
-                </div>
+                <p style={{ color: '#059669', marginBottom: '20px', fontWeight: 'bold' }}>Note: Please use the "Content" menu tab for comprehensive content management.</p>
               </div>
             )}
 
@@ -144,18 +184,31 @@ export function AdminSettingsPage() {
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '20px', maxWidth: '600px' }}>
                   <div>
                     <label style={{ display: 'block', marginBottom: '8px', fontWeight: 500, color: '#444' }}>Global Meta Title</label>
-                    <input type="text" defaultValue="DNex | Business Setup in Dubai" style={{ width: '100%', padding: '12px', border: '1px solid #ddd', borderRadius: '4px' }} />
+                    <input 
+                      type="text" 
+                      value={seoTitle}
+                      onChange={(e) => setSeoTitle(e.target.value)}
+                      style={{ width: '100%', padding: '12px', border: '1px solid #ddd', borderRadius: '4px' }} 
+                    />
                   </div>
                   <div>
                     <label style={{ display: 'block', marginBottom: '8px', fontWeight: 500, color: '#444' }}>Global Meta Description</label>
-                    <textarea rows={4} defaultValue="Expert business setup consultants in Dubai, UAE." style={{ width: '100%', padding: '12px', border: '1px solid #ddd', borderRadius: '4px' }}></textarea>
+                    <textarea 
+                      rows={4} 
+                      value={seoDescription}
+                      onChange={(e) => setSeoDescription(e.target.value)}
+                      style={{ width: '100%', padding: '12px', border: '1px solid #ddd', borderRadius: '4px' }}
+                    ></textarea>
                   </div>
-                  <button style={{ 
-                    marginTop: '10px', background: GOLD, color: '#fff', border: 'none', 
-                    padding: '12px 20px', borderRadius: '4px', cursor: 'pointer', fontWeight: 'bold',
-                    display: 'flex', alignItems: 'center', gap: '8px', width: 'fit-content'
-                  }}>
-                    <Save size={18} /> Save SEO Info
+                  <button 
+                    onClick={saveSettings}
+                    disabled={saving}
+                    style={{ 
+                      marginTop: '10px', background: GOLD, color: '#fff', border: 'none', 
+                      padding: '12px 20px', borderRadius: '4px', cursor: 'pointer', fontWeight: 'bold',
+                      display: 'flex', alignItems: 'center', gap: '8px', width: 'fit-content'
+                    }}>
+                    <Save size={18} /> {saving ? 'Saving...' : 'Save SEO Info'}
                   </button>
                 </div>
               </div>

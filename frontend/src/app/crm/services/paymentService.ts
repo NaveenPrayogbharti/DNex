@@ -41,6 +41,8 @@ function generateInvoiceNumber(): string {
   return `INV-${year}-${rand}`;
 }
 
+const API_URL = import.meta.env.VITE_BACKEND_API_URL || '';
+
 // ─── Payments ─────────────────────────────────────────────────────────────────
 
 export async function fetchPayments(caseId: string): Promise<CRMPayment[]> {
@@ -54,18 +56,51 @@ export async function fetchPayments(caseId: string): Promise<CRMPayment[]> {
   return (data ?? []) as CRMPayment[];
 }
 
+export async function fetchPaymentById(paymentId: string): Promise<CRMPayment | null> {
+  try {
+    const res = await fetch(`${API_URL}/api/payments/${paymentId}`);
+    if (!res.ok) return null;
+    return await res.json() as CRMPayment;
+  } catch (err) {
+    console.error('Error fetching payment via API:', err);
+    return null;
+  }
+}
+
 export async function createPayment(
   caseId: string,
   amount: number,
   description?: string,
   currency = 'INR'
-): Promise<CRMPayment> {
-  // In production: call Razorpay API here to generate payment_link
-  const payment_link = `https://razorpay.com/pay/dnex_${Date.now()}`;
+): Promise<CRMPayment & { order_id?: string }> {
+  
+  // 1. Call Backend to create Razorpay Order (amount is expected in paise by Razorpay)
+  const orderRes = await fetch(`${API_URL}/api/payments/create-order`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ amount: Math.round(amount * 100), currency, receipt: caseId.substring(0, 40) })
+  });
 
+  if (!orderRes.ok) {
+    const errorText = await orderRes.text();
+    console.error('Backend response:', errorText);
+    throw new Error('Failed to create Razorpay order: ' + errorText);
+  }
+  const orderData = await orderRes.json();
+  const order_id = orderData.id;
+
+  // 2. Insert into our DB
   const { data, error } = await supabase
     .from('crm_payments')
-    .insert({ case_id: caseId, amount, currency, description, payment_link, status: 'pending' })
+    .insert({ 
+      case_id: caseId, 
+      amount, 
+      currency, 
+      description, 
+      payment_link: null, 
+      razorpay_id: order_id, // Store order_id temporarily
+      status: 'pending' 
+    })
     .select()
     .single();
 
@@ -74,11 +109,34 @@ export async function createPayment(
   await supabase.from('crm_activities').insert({
     case_id: caseId,
     type: 'payment',
-    description: `Payment link created: ₹${amount.toLocaleString()}`,
-    metadata: { amount, currency, status: 'pending' },
+    description: `Payment initiated: ₹${amount.toLocaleString()}`,
+    metadata: { amount, currency, status: 'pending', razorpay_order_id: order_id },
   });
 
-  return data as CRMPayment;
+  return { ...(data as CRMPayment), order_id };
+}
+
+export async function verifyPayment(verificationData: {
+  razorpay_payment_id: string;
+  razorpay_order_id: string;
+  razorpay_signature: string;
+  payment_record_id: string;
+  case_id: string;
+  amount: number;
+  currency: string;
+}) {
+  const verifyRes = await fetch(`${API_URL}/api/payments/verify-payment`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(verificationData)
+  });
+
+  if (!verifyRes.ok) {
+    const errData = await verifyRes.json();
+    throw new Error(errData.error || 'Payment verification failed');
+  }
+
+  return await verifyRes.json();
 }
 
 export async function updatePaymentStatus(

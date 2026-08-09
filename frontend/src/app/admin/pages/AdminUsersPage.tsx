@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { AdminNavbar } from '../components/AdminNavbar';
 import { Users as UsersIcon, Plus, Edit, Trash2, Shield, User, MessageSquare } from 'lucide-react';
+import { supabase } from '../../../lib/supabase';
 
 const GOLD = '#C9963C';
 
@@ -13,22 +14,34 @@ interface AdminUser {
   name: string;
 }
 
-// Initial mock data until backend is fully hooked up
-const INITIAL_USERS: AdminUser[] = [
-  { id: '1', email: 'admin@dnex.com', role: 'superadmin', name: 'Super Admin' },
-  { id: '2', email: 'content@dnex.com', role: 'content', name: 'Content Manager' },
-  { id: '3', email: 'support@dnex.com', role: 'support', name: 'Support Rep' },
-];
-
 export function AdminUsersPage() {
-  const [users, setUsers] = useState<AdminUser[]>(INITIAL_USERS);
+  const [users, setUsers] = useState<AdminUser[]>([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingUser, setEditingUser] = useState<AdminUser | null>(null);
+  const [loading, setLoading] = useState(true);
 
   // Form states
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
   const [role, setRole] = useState<Role>('support');
+
+  useEffect(() => {
+    fetchUsers();
+  }, []);
+
+  const fetchUsers = async () => {
+    setLoading(true);
+    try {
+      const { data, error } = await supabase.from('admin_users').select('*').order('created_at', { ascending: false });
+      if (error) throw error;
+      if (data) setUsers(data as AdminUser[]);
+    } catch (err) {
+      console.error('Error fetching admin users:', err);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   // Sync form state when editing user changes
   useEffect(() => {
@@ -36,37 +49,75 @@ export function AdminUsersPage() {
       setName(editingUser.name);
       setEmail(editingUser.email);
       setRole(editingUser.role);
+      setPassword(''); // Password reset is not supported here yet
     } else {
       setName('');
       setEmail('');
+      setPassword('');
       setRole('support');
     }
   }, [editingUser]);
 
-  const handleDelete = (id: string) => {
+  const handleDelete = async (id: string) => {
     if (confirm('Are you sure you want to remove this admin user?')) {
-      setUsers(users.filter(u => u.id !== id));
+      try {
+        const { error } = await supabase.from('admin_users').delete().eq('id', id);
+        if (error) throw error;
+        setUsers(users.filter(u => u.id !== id));
+      } catch (err) {
+        console.error('Error deleting user:', err);
+        alert('Failed to delete user.');
+      }
     }
   };
 
-  const handleSave = () => {
+  const handleSave = async () => {
     if (!name || !email) {
       alert("Name and Email are required");
       return;
     }
     
-    if (editingUser) {
-      setUsers(users.map(u => u.id === editingUser.id ? { ...u, name, email, role } : u));
-    } else {
-      const newUser: AdminUser = {
-        id: Date.now().toString(),
-        name,
-        email,
-        role
-      };
-      setUsers([...users, newUser]);
+    try {
+      if (editingUser) {
+        const { data, error } = await supabase
+          .from('admin_users')
+          .update({ name, email, role })
+          .eq('id', editingUser.id)
+          .select();
+          
+        if (error) throw error;
+        if (data && data.length > 0) {
+          setUsers(users.map(u => u.id === editingUser.id ? data[0] as AdminUser : u));
+        }
+      } else {
+        if (!password) {
+          alert("Password is required for new users");
+          return;
+        }
+
+        // Use backend endpoint to create auth user and admin_users record securely
+        const backendUrl = import.meta.env.VITE_BACKEND_API_URL || 'http://localhost:3006';
+        const response = await fetch(`${backendUrl}/api/admin/create-user`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ name, email, role, password })
+        });
+        
+        const result = await response.json();
+        
+        if (!response.ok) {
+          throw new Error(result.error || 'Failed to create user');
+        }
+        
+        if (result.success && result.user) {
+          setUsers([result.user as AdminUser, ...users]);
+        }
+      }
+      setIsModalOpen(false);
+    } catch (err: any) {
+      console.error('Error saving user:', err);
+      alert(`Failed to save user: ${err.message}`);
     }
-    setIsModalOpen(false);
   };
 
   const getRoleIcon = (role: Role) => {
@@ -115,34 +166,44 @@ export function AdminUsersPage() {
               </tr>
             </thead>
             <tbody>
-              {users.map(user => (
-                <tr key={user.id} className="admin-table__row">
-                  <td style={{ fontWeight: 600 }}>{user.name}</td>
-                  <td>{user.email}</td>
-                  <td>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                      {getRoleIcon(user.role)}
-                      <span>{getRoleLabel(user.role)}</span>
-                    </div>
-                  </td>
-                  <td>
-                    <div style={{ display: 'flex', gap: '10px' }}>
-                      <button 
-                        onClick={() => { setEditingUser(user); setIsModalOpen(true); }}
-                        style={{ border: 'none', background: 'transparent', cursor: 'pointer', color: '#666' }}
-                      >
-                        <Edit size={16} />
-                      </button>
-                      <button 
-                        onClick={() => handleDelete(user.id)}
-                        style={{ border: 'none', background: 'transparent', cursor: 'pointer', color: '#ef4444' }}
-                      >
-                        <Trash2 size={16} />
-                      </button>
-                    </div>
-                  </td>
+              {loading ? (
+                <tr>
+                  <td colSpan={4} style={{ textAlign: 'center', padding: '20px' }}>Loading...</td>
                 </tr>
-              ))}
+              ) : users.length === 0 ? (
+                <tr>
+                  <td colSpan={4} style={{ textAlign: 'center', padding: '20px' }}>No users found. Add one to get started.</td>
+                </tr>
+              ) : (
+                users.map(user => (
+                  <tr key={user.id} className="admin-table__row">
+                    <td style={{ fontWeight: 600 }}>{user.name}</td>
+                    <td>{user.email}</td>
+                    <td>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                        {getRoleIcon(user.role)}
+                        <span>{getRoleLabel(user.role)}</span>
+                      </div>
+                    </td>
+                    <td>
+                      <div style={{ display: 'flex', gap: '10px' }}>
+                        <button 
+                          onClick={() => { setEditingUser(user); setIsModalOpen(true); }}
+                          style={{ border: 'none', background: 'transparent', cursor: 'pointer', color: '#666' }}
+                        >
+                          <Edit size={16} />
+                        </button>
+                        <button 
+                          onClick={() => handleDelete(user.id)}
+                          style={{ border: 'none', background: 'transparent', cursor: 'pointer', color: '#ef4444' }}
+                        >
+                          <Trash2 size={16} />
+                        </button>
+                      </div>
+                    </td>
+                  </tr>
+                ))
+              )}
             </tbody>
           </table>
         </div>
@@ -174,6 +235,18 @@ export function AdminUsersPage() {
                   style={{ width: '100%', padding: '10px', borderRadius: '4px', border: '1px solid #ccc' }} 
                 />
               </div>
+              {!editingUser && (
+                <div style={{ marginBottom: '15px' }}>
+                  <label style={{ display: 'block', marginBottom: '5px' }}>Password</label>
+                  <input 
+                    type="password" 
+                    value={password} 
+                    onChange={e => setPassword(e.target.value)}
+                    style={{ width: '100%', padding: '10px', borderRadius: '4px', border: '1px solid #ccc' }} 
+                    placeholder="Set initial password for user"
+                  />
+                </div>
+              )}
               <div style={{ marginBottom: '15px' }}>
                 <label style={{ display: 'block', marginBottom: '5px' }}>Role</label>
                 <select 

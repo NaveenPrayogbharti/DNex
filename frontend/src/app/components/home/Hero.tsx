@@ -1,5 +1,6 @@
 import { Link } from 'react-router';
-import { ArrowRight, MessageCircle, CheckCircle, Play } from 'lucide-react';
+import { ArrowRight, MessageCircle, CheckCircle } from 'lucide-react';
+import { useContentStore } from '../../../store/contentStore';
 import banner from "../../../assets/images/dnex_bg.jpeg";
 
 const GOLD = '#C9963C';
@@ -21,6 +22,8 @@ const badges = [
 ];
 
 export function Hero() {
+  const { getValue } = useContentStore();
+
   return (
     <section className="relative flex items-center" style={{ minHeight: '100vh' }}>
       {/* Background */}
@@ -56,22 +59,18 @@ export function Hero() {
 
           {/* Headline */}
           <h1
-            className="text-white mb-5"
+            className="text-white mb-5 whitespace-pre-wrap"
             style={{
               fontSize: 'clamp(2.4rem, 5vw, 3.75rem)',
               fontWeight: 800,
               lineHeight: 1.08,
               letterSpacing: '-1px',
             }}
-          >
-            Start Your Business<br />
-            in UAE {' '}
-            <span style={{ color: GOLD }}>The Right Way.</span>
-          </h1>
+            dangerouslySetInnerHTML={{ __html: getValue('hero_headline', 'Start Your Business<br />in UAE <span style="color: #C9963C">The Right Way.</span>') }}
+          />
 
           <p className="text-lg text-slate-300 mb-8 max-w-[520px]" style={{ lineHeight: 1.65 }}>
-            From company formation to setup, Tax compliance, Banking support and PRO services
-            we handle everything so you can focus on building your UAE business.
+            {getValue('hero_subheadline', 'From company formation to setup, Tax compliance, Banking support and PRO services we handle everything so you can focus on building your UAE business.')}
           </p>
 
           {/* Trust bullets */}
@@ -91,7 +90,7 @@ export function Hero() {
               className="inline-flex items-center justify-center gap-2 px-8 py-4 rounded-xl text-white font-semibold text-base transition-all hover:opacity-90 active:scale-95 shadow-lg"
               style={{ backgroundColor: GOLD }}
             >
-              Start Your Business
+              {getValue('hero_cta_primary', 'Start Your Business')}
               <ArrowRight size={18} />
             </Link>
             <Link
@@ -100,7 +99,9 @@ export function Hero() {
               style={{ borderColor: 'rgba(255,255,255,0.4)' }}
             >
               <MessageCircle size={18} />
-              <span className="group-hover:text-[#0D2137] transition-colors">Talk to Consultant</span>
+              <span className="group-hover:text-[#0D2137] transition-colors">
+                {getValue('hero_cta_secondary', 'Talk to Consultant')}
+              </span>
             </Link>
           </div>
 

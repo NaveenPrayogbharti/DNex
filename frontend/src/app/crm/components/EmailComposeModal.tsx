@@ -6,70 +6,16 @@
  * Uses the backend /api/notify/email endpoint via sendCustomEmail().
  */
 
-import { useState, useRef } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import { X, Send, Mail, ChevronDown, Paperclip, FileText, Image, File } from 'lucide-react';
+import { supabase } from '../../../lib/supabase';
 import { sendCustomEmail } from '../services/emailNotificationService';
 import type { CRMCase } from '../services/caseService';
 
 const GOLD = '#C9963C';
 
 // ── Unified Email Templates (Fills both Subject & Body) ───────────────────────
-const EMAIL_TEMPLATES = [
-  {
-    label: 'Welcome Mail',
-    subject: 'Welcome to DNex Consulting — Your Business Setup Partner in UAE',
-    body: (c: CRMCase) =>
-      `<p>Dear <strong>${c.full_name}</strong>,</p>\n<p>Welcome to <strong>DNex Consulting</strong>! We are thrilled to partner with you on your business setup journey in the UAE.</p>\n<p>Your inquiry has been successfully registered under Case ID: <strong>${c.case_id}</strong>. Our corporate advisory team is reviewing your requirements and will guide you step-by-step through the entire process—from trade licensing and jurisdiction selection to visa processing and corporate bank account setup.</p>\n<p>If you have any immediate questions or initial documents to share, please reply directly to this email or connect with us on WhatsApp.</p>\n<p>We look forward to building your business success in the UAE!</p>\n<p>Best regards,<br/><strong>DNex Consulting Team</strong><br/>+971 55 554 2841<br/><a href="https://dnex.ae">www.dnex.ae</a></p>`,
-  },
-  {
-    label: 'General Update',
-    subject: 'Update on Your Case — DNex Consulting',
-    body: (c: CRMCase) =>
-      `<p>Dear <strong>${c.full_name}</strong>,</p>\n<p>I wanted to provide you with an update on your case <strong>${c.case_id}</strong>.</p>\n<p>[Add your update here]</p>\n<p>Please feel free to reach out if you have any questions.</p>\n<p>Best regards,<br/><strong>DNex Consulting Team</strong><br/>+971 55 554 2841</p>`,
-  },
-  {
-    label: 'Document Request',
-    subject: 'Documents Required for Your Case — DNex Consulting',
-    body: (c: CRMCase) =>
-      `<p>Dear <strong>${c.full_name}</strong>,</p>\n<p>To proceed with your case <strong>${c.case_id}</strong>, we require the following documents:</p>\n<ul>\n  <li>Passport Copy (all pages)</li>\n  <li>Visa Copy</li>\n  <li>Emirates ID Copy</li>\n  <li>[Add more as needed]</li>\n</ul>\n<p>Please share these at the earliest convenience. You can reply directly to this email or contact us on WhatsApp.</p>\n<p>Best regards,<br/><strong>DNex Consulting Team</strong><br/>+971 55 554 2841</p>`,
-  },
-  {
-    label: 'Payment Reminder',
-    subject: 'Payment Reminder — DNex Consulting',
-    body: (c: CRMCase) =>
-      `<p>Dear <strong>${c.full_name}</strong>,</p>\n<p>This is a friendly reminder that we have an outstanding payment for your case <strong>${c.case_id}</strong>.</p>\n<p>Please complete the payment at your earliest to avoid any delays in processing your application.</p>\n<p>If you have already made the payment, please disregard this message.</p>\n<p>Best regards,<br/><strong>DNex Consulting Team</strong><br/>+971 55 554 2841</p>`,
-  },
-  {
-    label: 'Case Progress',
-    subject: 'Your Case Progress Update — DNex Consulting',
-    body: (c: CRMCase) =>
-      `<p>Dear <strong>${c.full_name}</strong>,</p>\n<p>We are pleased to inform you that your case <strong>${c.case_id}</strong> is progressing smoothly. We have completed the current stage and are moving forward with the next steps of your business setup.</p>\n<p>[Add specific progress details here]</p>\n<p>We will keep you notified as soon as further milestones are achieved.</p>\n<p>Best regards,<br/><strong>DNex Consulting Team</strong><br/>+971 55 554 2841</p>`,
-  },
-  {
-    label: 'Appointment / Call',
-    subject: 'Meeting Request — DNex Consulting',
-    body: (c: CRMCase) =>
-      `<p>Dear <strong>${c.full_name}</strong>,</p>\n<p>We would like to schedule a brief consultation call regarding your case <strong>${c.case_id}</strong> to discuss your setup requirements and align on the next steps.</p>\n<p>Please let us know your preferred date and time, or reply to this email to coordinate.</p>\n<p>Best regards,<br/><strong>DNex Consulting Team</strong><br/>+971 55 554 2841</p>`,
-  },
-  {
-    label: 'Service Completion',
-    subject: 'Service Completed — DNex Consulting',
-    body: (c: CRMCase) =>
-      `<p>Dear <strong>${c.full_name}</strong>,</p>\n<p>Congratulations! We are delighted to inform you that the services requested under case <strong>${c.case_id}</strong> have been successfully completed.</p>\n<p>All finalized documents and licenses have been processed and are attached/available in your client portal.</p>\n<p>Thank you for choosing DNex Consulting as your UAE business setup partner. We wish you immense success with your new venture!</p>\n<p>Best regards,<br/><strong>DNex Consulting Team</strong><br/>+971 55 554 2841</p>`,
-  },
-  {
-    label: 'Follow-Up',
-    subject: 'Following Up on Your Inquiry — DNex Consulting',
-    body: (c: CRMCase) =>
-      `<p>Dear <strong>${c.full_name}</strong>,</p>\n<p>We are following up on your recent inquiry and case <strong>${c.case_id}</strong> with DNex Consulting.</p>\n<p>Please let us know if you have any additional questions or if you are ready to proceed with the next step in your UAE business setup.</p>\n<p>Best regards,<br/><strong>DNex Consulting Team</strong><br/>+971 55 554 2841</p>`,
-  },
-  {
-    label: 'Blank / Custom',
-    subject: '',
-    body: (c: CRMCase) =>
-      `<p>Dear <strong>${c.full_name}</strong>,</p>\n<p></p>\n<p>Best regards,<br/><strong>DNex Consulting Team</strong><br/>+971 55 554 2841</p>`,
-  },
-];
+// Dynamic templates are fetched from Supabase
 
 // ── Attachment type ──────────────────────────────────────────────────────────
 interface AttachmentFile {
@@ -111,6 +57,14 @@ export function EmailComposeModal({ crmCase, onClose, stageLabel }: Props) {
   const [isDragOver, setIsDragOver]               = useState(false);
   const [attachError, setAttachError]             = useState('');
   const fileInputRef = useRef<HTMLInputElement>(null);
+  
+  // Dynamic templates state
+  const [templates, setTemplates] = useState<any[]>([]);
+
+  useEffect(() => {
+    supabase.from('system_templates').select('*').eq('type', 'email')
+      .then(({ data }) => setTemplates(data || []));
+  }, []);
 
   const handleFiles = (files: FileList | null) => {
     if (!files) return;
@@ -137,9 +91,27 @@ export function EmailComposeModal({ crmCase, onClose, stageLabel }: Props) {
   const removeAttachment = (idx: number) =>
     setAttachments(prev => prev.filter((_, i) => i !== idx));
 
-  const applyTemplate = (t: typeof EMAIL_TEMPLATES[0]) => {
-    if (t.subject) setSubject(t.subject);
-    setBody(t.body(crmCase));
+  const applyTemplate = (t: any) => {
+    let finalSubject = t.subject || '';
+    let finalBody = t.body || '';
+
+    // Replace common variables
+    const vars: Record<string, string> = {
+      'client_name': crmCase.full_name || '',
+      'full_name': crmCase.full_name || '',
+      'case_id': crmCase.case_id || '',
+      'email': crmCase.email || '',
+      'phone': crmCase.phone || '',
+    };
+
+    for (const [key, val] of Object.entries(vars)) {
+      const regex = new RegExp(`{{${key}}}`, 'g');
+      finalSubject = finalSubject.replace(regex, val);
+      finalBody = finalBody.replace(regex, val);
+    }
+
+    setSubject(finalSubject);
+    setBody(finalBody);
     setShowTemplatesDrop(false);
   };
 
@@ -307,9 +279,9 @@ export function EmailComposeModal({ crmCase, onClose, stageLabel }: Props) {
                 borderRadius: 10, boxShadow: '0 8px 24px rgba(0,0,0,0.5)',
                 minWidth: 300, maxHeight: 260, overflowY: 'auto',
               }}>
-                {EMAIL_TEMPLATES.map(t => (
+                {templates.map(t => (
                   <div
-                    key={t.label}
+                    key={t.id}
                     onClick={() => applyTemplate(t)}
                     style={{
                       padding: '10px 14px', cursor: 'pointer', fontSize: 13, color: '#e2e8f0',
@@ -318,10 +290,11 @@ export function EmailComposeModal({ crmCase, onClose, stageLabel }: Props) {
                     onMouseEnter={e => (e.currentTarget.style.background = 'rgba(201,150,60,0.15)')}
                     onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}
                   >
-                    <div style={{ fontWeight: 700, fontSize: 12, color: GOLD }}>{t.label}</div>
+                    <div style={{ fontWeight: 700, fontSize: 12, color: GOLD }}>{t.name}</div>
                     {t.subject && <div style={{ fontSize: 11, color: '#94a3b8', marginTop: 2, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{t.subject}</div>}
                   </div>
                 ))}
+                {templates.length === 0 && <div style={{ padding: '10px 14px', color: '#94a3b8', fontSize: 13 }}>No templates found</div>}
               </div>
             )}
             <input

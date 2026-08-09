@@ -3,7 +3,8 @@ import { supabase } from './supabaseClient';
 export interface AdminUser {
   id: string;
   email: string;
-  role?: string;
+  name?: string;
+  role?: 'superadmin' | 'content' | 'support';
 }
 
 // Mock auth configuration
@@ -16,6 +17,8 @@ const MOCK_ADMIN = {
 const MOCK_USER: AdminUser = {
   id: 'mock-admin-001',
   email: MOCK_ADMIN.email,
+  name: 'Admin',
+  role: 'superadmin',
 };
 
 // Storage key for mock session

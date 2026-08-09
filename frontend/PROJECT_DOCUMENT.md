@@ -1,6 +1,6 @@
 # DNex Project — Living Feature Document
 > **Auto-generated** — Do not edit manually. Regenerated on every `npm run dev` save and `npm run build`.
-> Last updated: **Wednesday, 29 July 2026 at 4:03 pm**
+> Last updated: **Sunday, 9 August 2026 at 10:21 pm**
 
 ---
 
@@ -8,23 +8,24 @@
 
 | Metric | Count |
 |--------|-------|
-| TypeScript/TSX files | 122 |
+| TypeScript/TSX files | 126 |
 | CSS stylesheets | 6 |
 | SQL schema files | 0 |
 | Registered routes | 0 |
-| Supabase tables used | 13 |
-| npm dependencies | 62 |
+| Supabase tables used | 16 |
+| npm dependencies | 63 |
 
 ---
 
 ## 🌐 Public Website
 
-### Pages (8)
+### Pages (9)
 
 | Page | File | Lines |
 |------|------|-------|
 | **About** | `src/app/pages/About.tsx` | 420 |
-| **Contact** | `src/app/pages/Contact.tsx` | 94 |
+| **ClientPayment** | `src/app/pages/ClientPayment.tsx` | 211 |
+| **Contact** | `src/app/pages/Contact.tsx` | 104 |
 | **FreeZone** | `src/app/pages/FreeZone.tsx` | 878 |
 | **Home** | `src/app/pages/Home.tsx` | 23 |
 | **IndiaServices** | `src/app/pages/IndiaServices.tsx` | 553 |
@@ -32,10 +33,11 @@
 | **OurServices** | `src/app/pages/OurServices.tsx` | 1027 |
 | **Root** | `src/app/pages/Root.tsx` | 48 |
 
-### Home Section Components (8)
+### Home Section Components (9)
 
 | Component | File | Purpose |
 |-----------|------|---------|
+| **BaseLeadForm** | `src/app/components/home/BaseLeadForm.tsx` | — |
 | **Hero** | `src/app/components/home/Hero.tsx` | Main banner with CTA buttons |
 | **LeadForm** | `src/app/components/home/LeadForm.tsx` | Client inquiry / lead capture form |
 | **PartnersClients** | `src/app/components/home/PartnersClients.tsx` | — |
@@ -69,15 +71,15 @@
 
 | Page | File | Lines |
 |------|------|-------|
-| **AdminContentPage** | `src/app/admin/pages/AdminContentPage.tsx` | 346 |
+| **AdminContentPage** | `src/app/admin/pages/AdminContentPage.tsx` | 399 |
 | **AdminDashboard** | `src/app/admin/pages/AdminDashboard.tsx` | 81 |
 | **AdminInquiries** | `src/app/admin/pages/AdminInquiries.tsx` | 207 |
-| **AdminLayout** | `src/app/admin/pages/AdminLayout.tsx` | 41 |
+| **AdminLayout** | `src/app/admin/pages/AdminLayout.tsx` | 58 |
 | **AdminLogin** | `src/app/admin/pages/AdminLogin.tsx` | 169 |
 | **AdminRedirect** | `src/app/admin/pages/AdminRedirect.tsx` | 6 |
 | **AdminServicesPage** | `src/app/admin/pages/AdminServicesPage.tsx` | 218 |
-| **AdminSettingsPage** | `src/app/admin/pages/AdminSettingsPage.tsx` | 170 |
-| **AdminUsersPage** | `src/app/admin/pages/AdminUsersPage.tsx` | 210 |
+| **AdminSettingsPage** | `src/app/admin/pages/AdminSettingsPage.tsx` | 223 |
+| **AdminUsersPage** | `src/app/admin/pages/AdminUsersPage.tsx` | 283 |
 
 ### Admin Pages — Feature Detail
 
@@ -91,11 +93,12 @@
 | **AdminUsersPage** | Add/edit/delete admin users, role assignment (superadmin/content/support) |
 | **AdminSettingsPage** | General settings, site content editor, SEO meta configuration |
 
-### Admin Components (5)
+### Admin Components (6)
 
 | Component | File | Purpose |
 |-----------|------|---------|
 | **AdminNavbar** | `src/app/admin/components/AdminNavbar.tsx` | Top bar with page title and subtitle |
+| **CommunicationTemplates** | `src/app/admin/components/CommunicationTemplates.tsx` | — |
 | **DashboardCards** | `src/app/admin/components/DashboardCards.tsx` | KPI stat cards (total, new, contacted, etc.) |
 | **InquiryModal** | `src/app/admin/components/InquiryModal.tsx` | Full inquiry detail modal with status update + notes |
 | **InquiryTable** | `src/app/admin/components/InquiryTable.tsx` | Sortable inquiry data table with actions |
@@ -134,7 +137,7 @@ New → Contacted → In Progress → Closed
 | Page | File | Lines |
 |------|------|-------|
 | **AnalyticsPage** | `src/app/crm/pages/AnalyticsPage.tsx` | 138 |
-| **CaseDetailPage** | `src/app/crm/pages/CaseDetailPage.tsx` | 807 |
+| **CaseDetailPage** | `src/app/crm/pages/CaseDetailPage.tsx` | 871 |
 | **CasesPage** | `src/app/crm/pages/CasesPage.tsx` | 211 |
 | **CRMDashboard** | `src/app/crm/pages/CRMDashboard.tsx` | 244 |
 | **CRMLayout** | `src/app/crm/pages/CRMLayout.tsx` | 44 |
@@ -243,6 +246,8 @@ New Lead → Contacted → Requirement Gathering → Interested → Not Interest
 **All tables detected in codebase:**
 - `admin_content`
 - `admin_services`
+- `admin_settings`
+- `admin_users`
 - `crm_activities`
 - `crm_automation_rules`
 - `crm_calls`
@@ -254,6 +259,7 @@ New Lead → Contacted → Requirement Gathering → Interested → Not Interest
 - `crm_quotations`
 - `crm_tasks`
 - `leads`
+- `system_templates`
 
 ---
 
@@ -293,10 +299,10 @@ New Lead → Contacted → Requirement Gathering → Interested → Not Interest
 - **Supabase** — PostgreSQL + Auth + Storage + Realtime
 - `@supabase/supabase-js` — client SDK
 
-### Key npm Dependencies (62 total)
+### Key npm Dependencies (63 total)
 
 ```
-@emotion/react, @emotion/styled, @mui/icons-material, @mui/material, @popperjs/core, @radix-ui/react-accordion, @radix-ui/react-alert-dialog, @radix-ui/react-aspect-ratio, @radix-ui/react-avatar, @radix-ui/react-checkbox, @radix-ui/react-collapsible, @radix-ui/react-context-menu, @radix-ui/react-dialog, @radix-ui/react-dropdown-menu, @radix-ui/react-hover-card, @radix-ui/react-label, @radix-ui/react-menubar, @radix-ui/react-navigation-menu, @radix-ui/react-popover, @radix-ui/react-progress, @radix-ui/react-radio-group, @radix-ui/react-scroll-area, @radix-ui/react-select, @radix-ui/react-separator, @radix-ui/react-slider, @radix-ui/react-slot, @radix-ui/react-switch, @radix-ui/react-tabs, @radix-ui/react-toggle, @radix-ui/react-toggle-group, @radix-ui/react-tooltip, @supabase/supabase-js, canvg, class-variance-authority, clsx, cmdk, date-fns, dompurify, embla-carousel-react, html2canvas, input-otp, jspdf, jspdf-autotable, lucide-react, motion, next-themes, react, react-day-picker, react-dnd, react-dnd-html5-backend, react-dom, react-hook-form, react-popper, react-resizable-panels, react-responsive-masonry, react-router, react-slick, recharts, sonner, tailwind-merge, tw-animate-css, vaul
+@emotion/react, @emotion/styled, @mui/icons-material, @mui/material, @popperjs/core, @radix-ui/react-accordion, @radix-ui/react-alert-dialog, @radix-ui/react-aspect-ratio, @radix-ui/react-avatar, @radix-ui/react-checkbox, @radix-ui/react-collapsible, @radix-ui/react-context-menu, @radix-ui/react-dialog, @radix-ui/react-dropdown-menu, @radix-ui/react-hover-card, @radix-ui/react-label, @radix-ui/react-menubar, @radix-ui/react-navigation-menu, @radix-ui/react-popover, @radix-ui/react-progress, @radix-ui/react-radio-group, @radix-ui/react-scroll-area, @radix-ui/react-select, @radix-ui/react-separator, @radix-ui/react-slider, @radix-ui/react-slot, @radix-ui/react-switch, @radix-ui/react-tabs, @radix-ui/react-toggle, @radix-ui/react-toggle-group, @radix-ui/react-tooltip, @supabase/supabase-js, canvg, class-variance-authority, clsx, cmdk, date-fns, dompurify, embla-carousel-react, html2canvas, input-otp, jspdf, jspdf-autotable, lucide-react, motion, next-themes, react, react-day-picker, react-dnd, react-dnd-html5-backend, react-dom, react-hook-form, react-popper, react-resizable-panels, react-responsive-masonry, react-router, react-slick, recharts, sonner, tailwind-merge, tw-animate-css, vaul, zustand
 ```
 
 ---
@@ -334,14 +340,14 @@ New Lead → Contacted → Requirement Gathering → Interested → Not Interest
 src/
 ├── app/
 │   ├── components/         # Shared website components
-│   │   ├── home/           # 8 home page sections
+│   │   ├── home/           # 9 home page sections
 │   │   ├── Navbar.tsx
 │   │   ├── Footer.tsx
 │   │   └── TeamCarousel.tsx
-│   ├── pages/              # 8 public pages
+│   ├── pages/              # 9 public pages
 │   ├── admin/              # Admin Portal
 │   │   ├── pages/          # 9 admin pages
-│   │   ├── components/     # 5 admin components
+│   │   ├── components/     # 6 admin components
 │   │   ├── services/       # 3 service files
 │   │   └── context/        # AuthContext
 │   ├── crm/                # CRM Portal (NEW)

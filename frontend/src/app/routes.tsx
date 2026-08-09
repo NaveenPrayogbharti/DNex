@@ -40,6 +40,7 @@ const Contact       = wrap(lazy(() => import('./pages/Contact').then(m => ({ def
 const About         = wrap(lazy(() => import('./pages/About').then(m => ({ default: m.About }))));
 const OurServices   = wrap(lazy(() => import('./pages/OurServices').then(m => ({ default: m.OurServices }))));
 const IndiaServices = wrap(lazy(() => import('./pages/IndiaServices').then(m => ({ default: m.IndiaServices }))));
+const ClientPayment = wrap(lazy(() => import('./pages/ClientPayment').then(m => ({ default: m.ClientPayment }))));
 
 const publicRoutes = [
   {
@@ -53,6 +54,7 @@ const publicRoutes = [
       { path: 'leadform',       Component: LeadForm },
       { path: 'contact',        Component: Contact },
       { path: 'about',          Component: About },
+      { path: 'pay/:id',        Component: ClientPayment },
       { path: '*',              Component: NotFound },
     ],
   },

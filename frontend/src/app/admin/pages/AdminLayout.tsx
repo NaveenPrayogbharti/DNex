@@ -1,10 +1,11 @@
-import { Outlet, Navigate } from 'react-router';
+import { Outlet, Navigate, useLocation } from 'react-router';
 import { useState } from 'react';
 import { Sidebar } from '../components/Sidebar';
 import { useAuth } from '../context/AuthContext';
 
 export function AdminLayout() {
   const { user, loading } = useAuth();
+  const location = useLocation();
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
 
   if (loading) {
@@ -18,6 +19,22 @@ export function AdminLayout() {
 
   if (!user) {
     return <Navigate to="/admin/login" replace />;
+  }
+
+  const role = user.role || 'support';
+  const path = location.pathname;
+
+  // Enforce role-based access to specific routes
+  if (role !== 'superadmin') {
+    if (path.includes('/admin/users') || path.includes('/admin/settings')) {
+      return <Navigate to="/admin/dashboard" replace />;
+    }
+    if (role === 'content' && (path.includes('/admin/inquiries') || path.includes('/crm'))) {
+      return <Navigate to="/admin/dashboard" replace />;
+    }
+    if (role === 'support' && (path.includes('/admin/services') || path.includes('/admin/content'))) {
+      return <Navigate to="/admin/dashboard" replace />;
+    }
   }
 
   return (

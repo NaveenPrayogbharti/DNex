@@ -42,11 +42,29 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       clearTimeout(timeout);
 
       if (session?.user) {
-        setUser({ id: session.user.id, email: session.user.email ?? '' });
+        supabase.from('admin_users').select('role, name').eq('id', session.user.id).single()
+          .then(({ data, error }) => {
+            if (error || !data) {
+              setUser({ 
+                id: session.user.id, 
+                email: session.user.email ?? '', 
+                role: session.user.email === 'admin@dnex.ae' ? 'superadmin' : 'support',
+                name: session.user.email === 'admin@dnex.ae' ? 'Admin' : undefined
+              });
+            } else {
+              setUser({ 
+                id: session.user.id, 
+                email: session.user.email ?? '', 
+                role: session.user.email === 'admin@dnex.ae' ? 'superadmin' : (data?.role as any || 'support'),
+                name: (session.user.email === 'admin@dnex.ae' && !data?.name) ? 'Admin' : data?.name
+              });
+            }
+            setLoading(false);
+          });
       } else {
         setUser(null);
+        setLoading(false);
       }
-      setLoading(false);
     }).catch(() => {
       initializedRef.current = true;
       clearTimeout(timeout);
@@ -62,7 +80,30 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       if (event === 'INITIAL_SESSION') return;
 
       if (session?.user) {
-        setUser({ id: session.user.id, email: session.user.email ?? '' });
+        supabase.from('admin_users').select('role, name').eq('id', session.user.id).single()
+          .then(({ data, error }) => {
+            if (error || !data) {
+              setUser({ 
+                id: session.user.id, 
+                email: session.user.email ?? '', 
+                role: session.user.email === 'admin@dnex.ae' ? 'superadmin' : 'support',
+                name: session.user.email === 'admin@dnex.ae' ? 'Admin' : undefined
+              });
+            } else {
+              setUser({ 
+                id: session.user.id, 
+                email: session.user.email ?? '', 
+                role: session.user.email === 'admin@dnex.ae' ? 'superadmin' : (data?.role as any || 'support'),
+                name: (session.user.email === 'admin@dnex.ae' && !data?.name) ? 'Admin' : data?.name
+              });
+            }
+            if (!initializedRef.current) {
+              initializedRef.current = true;
+              clearTimeout(timeout);
+              setLoading(false);
+            }
+          });
+        return; // wait for role fetch to finish loading state
       } else {
         setUser(null);
       }
