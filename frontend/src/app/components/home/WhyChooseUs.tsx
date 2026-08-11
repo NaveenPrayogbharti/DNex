@@ -1,6 +1,6 @@
 import { Shield, Clock, DollarSign, Users, CheckCircle, ArrowRight } from 'lucide-react';
 import { Link } from 'react-router';
-import businessImage from '../../../assets/images/business_meeting.png';
+import businessImage from '../../../assets/images/Dnex-i.jpg';
 
 const GOLD = '#C9963C';
 const NAVY = '#0D2137';

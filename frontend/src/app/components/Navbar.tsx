@@ -1,6 +1,6 @@
 import { useState, useRef, useEffect } from "react";
 import { Link, useLocation } from "react-router";
-import logo from "@/assets/images/logo.png";
+import logo from "@/assets/images/Black.png";
 import {
   Menu,
   X,
@@ -456,7 +456,7 @@ export function Navbar() {
                 <img
                   src={logo}
                   alt="Logo"
-                  className="h-full w-auto object-contain"
+                  className="h-[48px] w-auto object-contain"
                 />
               </Link>
 

@@ -3,6 +3,7 @@ import { useNavigate, useLocation } from 'react-router';
 import { signInAdmin } from '../services/authService';
 import { useAuth } from '../context/AuthContext';
 import { Lock, Mail, Eye, EyeOff, AlertCircle, ArrowRight } from 'lucide-react';
+import logo from '@/assets/images/Logo.jpg';
 
 const NAVY = '#0A1628';
 const GOLD = '#C9963C';
@@ -68,16 +69,8 @@ export function AdminLogin() {
 
       <div className="admin-login__container">
         {/* Logo */}
-        <div className="admin-login__logo">
-          <div
-            className="admin-login__logo-icon"
-            style={{ background: `linear-gradient(135deg, ${GOLD}, #E8B85E)` }}
-          >
-            <span style={{ color: NAVY, fontWeight: 800, fontSize: '22px' }}>DN</span>
-          </div>
-          <h1 className="admin-login__brand">
-            DNex <span style={{ color: GOLD }}>Admin</span>
-          </h1>
+        <div className="admin-login__logo" style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', marginBottom: '2rem' }}>
+          <img src={logo} alt="DNex Admin" style={{ height: '72px', width: 'auto', objectFit: 'contain', marginBottom: '1rem' }} />
         </div>
 
         {/* Card */}

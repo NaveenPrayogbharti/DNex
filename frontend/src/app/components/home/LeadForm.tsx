@@ -5,14 +5,6 @@ const GOLD = '#C9963C';
 const NAVY = '#0D2137';
 
 export function LeadForm() {
-      console.error('Lead submit error:', err);
-      alert('Could not connect to the server. Please try again later.');
-    }
-  };
-
-
-
-
   return (
     <section className="pt-40 pb-24 min-h-screen" style={{ backgroundColor: NAVY }}>
       <div className="max-w-7xl mx-auto px-4 sm:px-6">

@@ -1,6 +1,6 @@
 # DNex Project — Living Feature Document
 > **Auto-generated** — Do not edit manually. Regenerated on every `npm run dev` save and `npm run build`.
-> Last updated: **Sunday, 9 August 2026 at 10:21 pm**
+> Last updated: **Tuesday, 11 August 2026 at 12:20 pm**
 
 ---
 
@@ -75,7 +75,7 @@
 | **AdminDashboard** | `src/app/admin/pages/AdminDashboard.tsx` | 81 |
 | **AdminInquiries** | `src/app/admin/pages/AdminInquiries.tsx` | 207 |
 | **AdminLayout** | `src/app/admin/pages/AdminLayout.tsx` | 58 |
-| **AdminLogin** | `src/app/admin/pages/AdminLogin.tsx` | 169 |
+| **AdminLogin** | `src/app/admin/pages/AdminLogin.tsx` | 162 |
 | **AdminRedirect** | `src/app/admin/pages/AdminRedirect.tsx` | 6 |
 | **AdminServicesPage** | `src/app/admin/pages/AdminServicesPage.tsx` | 218 |
 | **AdminSettingsPage** | `src/app/admin/pages/AdminSettingsPage.tsx` | 223 |

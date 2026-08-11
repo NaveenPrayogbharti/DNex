@@ -5,7 +5,7 @@ import {
   ArrowRight, Shield, CheckCircle2,
 } from 'lucide-react';
 import { useState } from 'react';
-import logo from '../../assets/images/logo.png';
+import logo from '../../assets/images/Black.png';
 
 const NAVY = '#0D2137';
 const GOLD = '#C9963C';
@@ -113,7 +113,7 @@ export function Footer() {
               <img
                 src={logo}
                 alt="DNex Consulting Logo"
-                className="h-14 w-auto object-contain"
+                className="h-10 w-auto object-contain"
               />
             </Link>
 

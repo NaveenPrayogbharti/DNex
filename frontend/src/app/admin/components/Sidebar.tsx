@@ -14,6 +14,7 @@ import {
 } from 'lucide-react';
 import { signOutAdmin } from '../services/authService';
 import { useAuth } from '../context/AuthContext';
+import logo from '@/assets/images/Logo.jpg';
 
 const NAVY = '#0A1628';
 const GOLD = '#C9963C';
@@ -66,21 +67,10 @@ export function Sidebar({ collapsed, onToggle }: SidebarProps) {
       {/* Logo Area */}
       <div className="admin-sidebar__header">
         <div className="admin-sidebar__logo">
-          <div
-            className="admin-sidebar__logo-icon"
-            style={{ background: `linear-gradient(135deg, ${GOLD}, #E8B85E)` }}
-          >
-            <span style={{ color: NAVY, fontWeight: 800, fontSize: '14px' }}>DN</span>
-          </div>
-          {!collapsed && (
-            <div className="admin-sidebar__logo-text">
-              <span style={{ color: '#fff', fontWeight: 700, fontSize: '16px', letterSpacing: '-0.3px' }}>
-                DNex
-              </span>
-              <span style={{ color: 'rgba(255,255,255,0.4)', fontSize: '11px', fontWeight: 500 }}>
-                Admin Portal
-              </span>
-            </div>
+          {collapsed ? (
+            <img src={logo} alt="DNex" style={{ height: '34px', width: '34px', objectFit: 'contain', borderRadius: 6 }} />
+          ) : (
+            <img src={logo} alt="DNex Admin" style={{ height: '40px', width: 'auto', objectFit: 'contain', maxWidth: '160px' }} />
           )}
         </div>
         <button
