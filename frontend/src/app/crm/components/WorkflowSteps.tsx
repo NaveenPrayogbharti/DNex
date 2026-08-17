@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef } from 'react';
 import { supabase } from '../../../lib/supabase';
 import { Phone, CheckCircle, XCircle, ChevronRight, ChevronDown, Send, FileText, CreditCard, Package, ArrowLeft, Plus, Paperclip, Image, File } from 'lucide-react';
+import logo from '@/assets/images/website_logo.png';
 import { updateCaseStatus, updateCase, updateCaseWorkflowField } from '../services/caseService';
 import type { CRMCase, CaseStatus } from '../services/caseService';
 import { logCall, fetchCalls } from '../services/callService';
@@ -822,25 +823,117 @@ export function QuotationStep({ crmCase, onRefresh, onBack, isViewOnly, isCaseLo
 
       {/* Preview card */}
       {showPreview && (
-        <div style={{ border: '2px solid rgba(201,150,60,0.3)', borderRadius: 12, padding: 20, background: '#fff', fontSize: 13 }}>
-          <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 12 }}>
-            <div><div style={{ fontWeight: 800, fontSize: 16, color: '#0A1628' }}>DNex Consulting</div><div style={{ fontSize: 11, color: '#64748b' }}>Dubai, UAE</div></div>
-            <div style={{ textAlign: 'right' }}><div style={{ fontWeight: 700, color: GOLD, fontSize: 14 }}>QUOTATION</div><div style={{ fontSize: 11, color: '#64748b' }}>Date: {new Date().toLocaleDateString()}</div><div style={{ fontSize: 11, color: '#64748b' }}>Valid: {validity} days</div></div>
+        <div style={{ border: '1px solid #e2e8f0', borderRadius: 8, padding: 30, background: '#fff', fontSize: 13, boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)' }}>
+          {/* Header */}
+          <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 20, borderBottom: '1px solid #e2e8f0', paddingBottom: 20 }}>
+            <div>
+              <img src={logo} alt="DNex Logo" style={{ height: 40 }} />
+            </div>
+            <div style={{ textAlign: 'right', fontSize: 11, color: '#475569' }}>
+              <div style={{ fontWeight: 600, color: '#0A1628', fontSize: 12 }}>DNex Consulting</div>
+              <div>Business Centre, Sharjah Publishing City Free Zone</div>
+              <div>Sharjah, United Arab Emirates</div>
+              <div>TRN: 100123456789012</div>
+              <div>Phone: +971 4 123 4567 | Email: info@dnex.ae</div>
+            </div>
           </div>
-          <div style={{ marginBottom: 12, padding: 10, background: '#f8fafc', borderRadius: 8, fontSize: 12 }}>
-            <strong>{crmCase.full_name}</strong> · {crmCase.email} · {crmCase.phone}
+          
+          {/* Title & Meta */}
+          <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 20 }}>
+            <div style={{ fontWeight: 700, fontSize: 16, color: '#0A1628' }}>PROPOSAL FOR PROFESSIONAL SERVICES</div>
+            <div style={{ textAlign: 'right', fontSize: 12 }}>
+              <div style={{ display: 'flex', justifyContent: 'flex-end', gap: 10 }}>
+                <span style={{ color: '#475569' }}>Reference No:</span>
+                <span style={{ fontWeight: 600 }}>DNX-QT-XXXX</span>
+              </div>
+              <div style={{ display: 'flex', justifyContent: 'flex-end', gap: 10 }}>
+                <span style={{ color: '#475569' }}>Date:</span>
+                <span style={{ fontWeight: 600 }}>{new Date().toLocaleDateString()}</span>
+              </div>
+              <div style={{ display: 'flex', justifyContent: 'flex-end', gap: 10 }}>
+                <span style={{ color: '#475569' }}>Valid Until:</span>
+                <span style={{ fontWeight: 600 }}>{new Date(Date.now() + validity * 86400000).toLocaleDateString()}</span>
+              </div>
+            </div>
           </div>
-          <table style={{ width: '100%', borderCollapse: 'collapse', marginBottom: 12 }}>
-            <thead><tr style={{ background: '#0A1628', color: '#fff' }}>{['Description', 'Qty', 'Rate', 'Amount'].map(h => <th key={h} style={{ padding: '6px 8px', textAlign: 'left', fontSize: 11 }}>{h}</th>)}</tr></thead>
-            <tbody>{items.map((it, i) => <tr key={i} style={{ borderBottom: '1px solid #e2e8f0' }}><td style={{ padding: '6px 8px' }}>{it.description}</td><td style={{ padding: '6px 8px' }}>{it.qty}</td><td style={{ padding: '6px 8px' }}>{currency} {it.rate.toFixed(2)}</td><td style={{ padding: '6px 8px', fontWeight: 600 }}>{currency} {it.amount.toFixed(2)}</td></tr>)}</tbody>
+          
+          {/* TO block */}
+          <div style={{ marginBottom: 20 }}>
+            <div style={{ fontWeight: 700, color: '#475569', fontSize: 12, marginBottom: 4 }}>TO:</div>
+            <div style={{ fontSize: 13, color: '#000' }}>
+              <div>{crmCase.full_name}</div>
+              <div>{crmCase.email}</div>
+              {crmCase.phone && <div>{crmCase.phone}</div>}
+              <div>{crmCase.country || 'United Arab Emirates'}</div>
+            </div>
+          </div>
+
+          <div style={{ marginBottom: 20, color: '#000', lineHeight: 1.5 }}>
+            Dear {crmCase.full_name.split(' ')[0]},<br/><br/>
+            Thank you for choosing DNex Consulting. We are pleased to submit the following proposal for professional services in connection with your business requirements. Our scope of services and associated professional fees are detailed below:
+          </div>
+
+          <table style={{ width: '100%', borderCollapse: 'collapse', marginBottom: 20 }}>
+            <thead>
+              <tr style={{ borderBottom: '1px solid #e2e8f0', background: '#f8fafc' }}>
+                <th style={{ padding: '10px 8px', textAlign: 'left', fontSize: 12, color: '#0A1628', fontWeight: 600 }}>Description of Services</th>
+                <th style={{ padding: '10px 8px', textAlign: 'center', fontSize: 12, color: '#0A1628', fontWeight: 600 }}>Qty</th>
+                <th style={{ padding: '10px 8px', textAlign: 'right', fontSize: 12, color: '#0A1628', fontWeight: 600 }}>Unit Rate</th>
+                <th style={{ padding: '10px 8px', textAlign: 'right', fontSize: 12, color: '#0A1628', fontWeight: 600 }}>Amount</th>
+              </tr>
+            </thead>
+            <tbody>
+              {items.map((it, i) => (
+                <tr key={i} style={{ borderBottom: '1px solid #e2e8f0' }}>
+                  <td style={{ padding: '10px 8px' }}>{it.description}</td>
+                  <td style={{ padding: '10px 8px', textAlign: 'center' }}>{it.qty}</td>
+                  <td style={{ padding: '10px 8px', textAlign: 'right' }}>{currency} {it.rate.toFixed(2)}</td>
+                  <td style={{ padding: '10px 8px', textAlign: 'right', fontWeight: 600 }}>{currency} {it.amount.toFixed(2)}</td>
+                </tr>
+              ))}
+            </tbody>
           </table>
-          <div style={{ textAlign: 'right', fontSize: 13 }}>
-            <div style={{ color: '#64748b' }}>Subtotal: {currency} {subtotal.toFixed(2)}</div>
-            {discountPct > 0 && <div style={{ color: '#34d399' }}>Discount ({discountPct}%): -{currency} {discountAmt.toFixed(2)}</div>}
-            <div style={{ color: '#64748b' }}>Tax ({taxRate}%): {currency} {tax.toFixed(2)}</div>
-            <div style={{ fontWeight: 800, fontSize: 16, color: '#0A1628', marginTop: 4 }}>Total: {currency} {total.toFixed(2)}</div>
+          <div style={{ textAlign: 'right', fontSize: 13, marginBottom: 30 }}>
+            <div style={{ display: 'flex', justifyContent: 'flex-end', gap: 20, marginBottom: 4 }}>
+                <span style={{ color: '#475569' }}>Professional Fees:</span>
+                <span style={{ width: 100 }}>{currency} {subtotal.toFixed(2)}</span>
+            </div>
+            {discountPct > 0 && (
+                <div style={{ display: 'flex', justifyContent: 'flex-end', gap: 20, marginBottom: 4 }}>
+                    <span style={{ color: '#475569' }}>Discount ({discountPct}%):</span>
+                    <span style={{ width: 100 }}>-{currency} {discountAmt.toFixed(2)}</span>
+                </div>
+            )}
+            <div style={{ display: 'flex', justifyContent: 'flex-end', gap: 20, marginBottom: 4 }}>
+                <span style={{ color: '#475569' }}>VAT ({taxRate}%):</span>
+                <span style={{ width: 100 }}>{currency} {tax.toFixed(2)}</span>
+            </div>
+            <div style={{ display: 'flex', justifyContent: 'flex-end', gap: 20, marginTop: 8, paddingTop: 8, borderTop: '2px solid #0A1628', fontWeight: 700, fontSize: 15, color: '#0A1628' }}>
+                <span>Total Amount Due:</span>
+                <span style={{ width: 100 }}>{currency} {total.toFixed(2)}</span>
+            </div>
           </div>
-          {notes && <div style={{ marginTop: 10, fontSize: 11, color: '#64748b', borderTop: '1px solid #e2e8f0', paddingTop: 8 }}>Notes: {notes}</div>}
+
+          <div style={{ marginBottom: 30 }}>
+            <div style={{ fontWeight: 700, color: '#0A1628', fontSize: 13, marginBottom: 8 }}>Terms and Conditions</div>
+            <ol style={{ paddingLeft: 16, margin: 0, fontSize: 11, color: '#475569', lineHeight: 1.6 }}>
+                <li>This proposal is valid for the period mentioned above. DNex Consulting reserves the right to revise the fees if not accepted within this timeframe.</li>
+                <li>Payment is due in full prior to the commencement of any services.</li>
+                <li>Professional fees mentioned are exclusive of any government fees, external third-party charges, or out-of-pocket expenses unless explicitly stated otherwise.</li>
+                <li>By signing this document, you acknowledge and accept our terms of engagement.</li>
+            </ol>
+          </div>
+
+          <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: 40 }}>
+            <div style={{ width: '40%' }}>
+                <div style={{ fontWeight: 700, color: '#0A1628', fontSize: 12, marginBottom: 30 }}>For and on behalf of DNex Consulting</div>
+                <div style={{ borderTop: '1px solid #000', paddingTop: 8, fontSize: 11 }}>Authorized Signatory</div>
+            </div>
+            <div style={{ width: '40%' }}>
+                <div style={{ fontWeight: 700, color: '#0A1628', fontSize: 12, marginBottom: 30 }}>Accepted By Client</div>
+                <div style={{ borderTop: '1px solid #000', paddingTop: 8, fontSize: 11 }}>Authorized Signatory / Date</div>
+            </div>
+          </div>
         </div>
       )}
 

@@ -5,7 +5,7 @@ import {
 } from 'lucide-react';
 import { signOutAdmin } from '../../admin/services/authService';
 import { useCRMNotifications } from '../context/CRMNotificationContext';
-import logo from '@/assets/images/Logo.jpg';
+import logo from '@/assets/images/crm_ogo.png';
 
 
 const NAVY = '#0A1628';

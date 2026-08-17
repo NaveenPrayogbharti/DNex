@@ -5,7 +5,7 @@ import {
   ArrowRight, Shield, CheckCircle2,
 } from 'lucide-react';
 import { useState } from 'react';
-import logo from '../../assets/images/Black.png';
+import logo from '../../assets/images/website_logo.png';
 
 const NAVY = '#0D2137';
 const GOLD = '#C9963C';
@@ -113,7 +113,7 @@ export function Footer() {
               <img
                 src={logo}
                 alt="DNex Consulting Logo"
-                className="h-10 w-auto object-contain"
+                className="h-[54px] w-auto object-contain"
               />
             </Link>
 
@@ -136,20 +136,33 @@ export function Footer() {
                 <Mail size={15} style={{ color: GOLD }} />
                 info@dnex.ae
               </a>
-              <div className="flex items-start gap-3 text-sm text-gray-600">
-                <MapPin size={15} style={{ color: GOLD, flexShrink: 0, marginTop: '2px' }} />
-                <span className="text-justify">Business Centre, Sharjah Publishing City Free Zone,
-                  Sharjah, United Arab Emirates</span>
+              <div className="flex flex-col gap-3 text-sm text-gray-600">
+                <div className="flex items-start gap-3">
+                  <MapPin size={15} style={{ color: GOLD, flexShrink: 0, marginTop: '2px' }} />
+                  <span className="text-justify">Business Centre, Sharjah Publishing City Free Zone, Sharjah, UAE</span>
+                </div>
+                <div className="flex items-start gap-3">
+                  <MapPin size={15} style={{ color: GOLD, flexShrink: 0, marginTop: '2px' }} />
+                  <span className="text-justify">116. Al Khaleez Centre. Bur Dubai.</span>
+                </div>
+                <div className="flex items-start gap-3">
+                  <MapPin size={15} style={{ color: GOLD, flexShrink: 0, marginTop: '2px' }} />
+                  <span className="text-justify">B-89, Madinat Al Mataar Dubai South, Dubai UAE.</span>
+                </div>
+                <div className="flex items-start gap-3">
+                  <MapPin size={15} style={{ color: GOLD, flexShrink: 0, marginTop: '2px' }} />
+                  <span className="text-justify">Office No 83 Shaheed Bhagat Singh Apartment, Sector 14 Dwarka, New Delhi</span>
+                </div>
               </div>
             </div>
 
             {/* Social icons */}
             <div className="flex items-center gap-3 mt-6">
               {[
-                { Icon: Linkedin, href: '#' },
+                { Icon: Linkedin, href: 'https://www.linkedin.com/in/jitendra-rajput-6a6bbb426?utm_source=share_via&utm_content=profile&utm_medium=member_ios' },
                 { Icon: Twitter, href: '#' },
                 { Icon: Facebook, href: 'https://www.facebook.com/share/1TLUVEXNWE/' },
-                { Icon: Instagram, href: 'https://www.instagram.com/dnex_ae?utm_source=qr&igsh=MXBhMWc0YmRybDNrYQ==' },
+                { Icon: Instagram, href: 'https://www.instagram.com/dnex.ae?igsh=MXgxd3ltNHQyYXBuYw%3D%3D&utm_source=qr' },
                 { Icon: Youtube, href: '#' },
               ].map(({ Icon, href }, i) => (
                 <a

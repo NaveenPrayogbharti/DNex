@@ -73,7 +73,7 @@ export function Services() {
           >
             Everything You Need to Launch &amp; Grow
           </h2>
-          <p className="text-gray-500 max-w-xl mx-auto text-justify" style={{ lineHeight: 1.7 }}>
+          <p className="text-gray-500 max-w-xl mx-auto text-center" style={{ lineHeight: 1.7 }}>
             From company registration to ongoing compliance  our end-to-end services cover every
             aspect of doing business in the UAE.
           </p>

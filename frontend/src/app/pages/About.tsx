@@ -8,7 +8,7 @@ const GOLD = '#C9963C';
 
 // Mock Data Objects
 const stats = [
-    { value: '15 years', label: ' Experienced Management' },
+    { value: '15 Years', label: ' Experienced Management' },
     { value: '100%', label: 'Timely Completion' },
     { value: 'UAE', label: 'Mainland and Free Zones Covered' },
     { value: '100%', label: 'Client Satisfaction' },
@@ -108,7 +108,7 @@ export function About() {
                             <h1
                                 className="text-white mb-6"
                                 style={{
-                                    fontSize: 'clamp(2.2rem, 4.5vw, 3.5rem)',
+                                    fontSize: 'clamp(2rem, 4vw, 3.1rem)',
                                     fontWeight: 800,
                                     lineHeight: 1.08,
                                     letterSpacing: '-1px',

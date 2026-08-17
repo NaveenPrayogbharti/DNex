@@ -1,6 +1,6 @@
 import { useState, useRef, useEffect } from "react";
 import { Link, useLocation } from "react-router";
-import logo from "@/assets/images/Black.png";
+import logo from "@/assets/images/website_logo.png";
 import {
   Menu,
   X,
@@ -81,14 +81,14 @@ interface MegaMenuConfig {
 const megaMenuConfig: Record<string, MegaMenuConfig> = {
   "Business Setup": {
     items: [
-      { icon: Building2, label: "Mainland Company Formation",  desc: "A main land company in UAE is an onshore business entity registered with D.E.D, allowed to operate anywhere within in UAE and internationally.", href: "/our-services#business-setup" },
-      { icon: Anchor,    label: "Offshore Company Formation",   desc: "An offshore company in UAE is incorporated to conduct business outside UAE, mainly used for international business or asset holding.",        href: "/our-services#business-setup" },
-      { icon: Lightbulb, label: "Holding Company Formation",    desc: "A holding company owns sufficient voting stock in other companies to exercise control over their management and policies.",                   href: "/our-services#business-setup" },
-      { icon: Globe,     label: "Free Zone Company Setup",      desc: "Allows 100% foreign ownership with simplified setup and modern infrastructure. A flexible, cost-effective way to start.",                    href: "/our-services#business-setup" },
-      { icon: GitBranch, label: "Branch Office Setup",          desc: "Allows international companies to expand their presence and operate under their parent company's brand with direct market access.",           href: "/our-services#business-setup" },
-      { icon: UserCog,   label: "Civil Companies",              desc: "A professional partnership formed by individuals to provide professional and intellectual services.",                                          href: "/our-services#business-setup" },
-      { icon: UserCog,   label: "Real Estate Business",         desc: "Engaged in activities related to the buying, selling, leasing, management, or development of real properties.",                             href: "/our-services#business-setup" },
-      { icon: UserCog,   label: "Office Setup Services",        desc: "Professional services to assist in establishing a functional office space, including infrastructure and compliance.",                        href: "/our-services#business-setup" },
+      { icon: Building2, label: "Mainland Company Formation", desc: "A main land company in UAE is an onshore business entity registered with D.E.D, allowed to operate anywhere within in UAE and internationally.", href: "/our-services#business-setup" },
+      { icon: Anchor, label: "Offshore Company Formation", desc: "An offshore company in UAE is incorporated to conduct business outside UAE, mainly used for international business or asset holding.", href: "/our-services#business-setup" },
+      { icon: Lightbulb, label: "Holding Company Formation", desc: "A holding company owns sufficient voting stock in other companies to exercise control over their management and policies.", href: "/our-services#business-setup" },
+      { icon: Globe, label: "Free Zone Company Setup", desc: "Allows 100% foreign ownership with simplified setup and modern infrastructure. A flexible, cost-effective way to start.", href: "/our-services#business-setup" },
+      { icon: GitBranch, label: "Branch Office Setup", desc: "Allows international companies to expand their presence and operate under their parent company's brand with direct market access.", href: "/our-services#business-setup" },
+      { icon: UserCog, label: "Civil Companies", desc: "A professional partnership formed by individuals to provide professional and intellectual services.", href: "/our-services#business-setup" },
+      { icon: UserCog, label: "Real Estate Business", desc: "Engaged in activities related to the buying, selling, leasing, management, or development of real properties.", href: "/our-services#business-setup" },
+      { icon: UserCog, label: "Office Setup Services", desc: "Professional services to assist in establishing a functional office space, including infrastructure and compliance.", href: "/our-services#business-setup" },
     ],
     featured: {
       title: "Start in a Free Zone",
@@ -99,10 +99,10 @@ const megaMenuConfig: Record<string, MegaMenuConfig> = {
   },
   "Banking Support": {
     items: [
-      { icon: Briefcase,  label: "Corporate Banking Assistance",        desc: "Assist businesses in opening corporate bank accounts in the UAE with the required documentation and compliance support.", href: "/our-services#corporate-banking" },
-      { icon: Users,      label: "Mortgage Banking",                     desc: "Guidance and support for securing property financing in the UAE, helping obtain suitable mortgage solutions.",         href: "/our-services#mortgage" },
-      { icon: UserCheck,  label: "NRO Account Assistance",               desc: "Professional support services provided to Non-resident Indian (NRIs) for opening and managing an NRO bank account.",    href: "/our-services#nro" },
-      { icon: Laptop,     label: "Overseas Direct Investment (ODI)",      desc: "Comprehensive assistance for ODI including RBI regulations guidance, documentation, and authorized dealer coordination.",href: "/our-services#odi" },
+      { icon: Briefcase, label: "Corporate Banking Assistance", desc: "Assist businesses in opening corporate bank accounts in the UAE with the required documentation and compliance support.", href: "/our-services#corporate-banking" },
+      { icon: Users, label: "Mortgage Banking", desc: "Guidance and support for securing property financing in the UAE, helping obtain suitable mortgage solutions.", href: "/our-services#mortgage" },
+      { icon: UserCheck, label: "NRO Account Assistance", desc: "Professional support services provided to Non-resident Indian (NRIs) for opening and managing an NRO bank account.", href: "/our-services#nro" },
+      { icon: Laptop, label: "Overseas Direct Investment (ODI)", desc: "Comprehensive assistance for ODI including RBI regulations guidance, documentation, and authorized dealer coordination.", href: "/our-services#odi" },
     ],
     featured: {
       title: "Banking Support",
@@ -113,20 +113,20 @@ const megaMenuConfig: Record<string, MegaMenuConfig> = {
   },
   "PRO Services": {
     items: [
-      { icon: FileCheck,   label: "Visa Processing",        desc: "Expert handling of all visa processing requirements.",           href: "/our-services#pro-services" },
-      { icon: Briefcase,   label: "Employment Visa",        desc: "Seamless employment visa issuance for your staff.",              href: "/our-services#pro-services" },
-      { icon: Landmark,    label: "Investor Visa",          desc: "Secure your UAE residency through investments.",                 href: "/our-services#pro-services" },
-      { icon: Handshake,   label: "Partner Visa",           desc: "Business partner and shareholder visa services.",               href: "/our-services#pro-services" },
-      { icon: Users,       label: "Family Visa",            desc: "Sponsor your family members with ease.",                        href: "/our-services#pro-services" },
-      { icon: Globe,       label: "Labour & Immigration",   desc: "Full support for labour and immigration quotas.",               href: "/our-services#pro-services" },
-      { icon: ClipboardCheck, label: "Work permits",        desc: "Fast-track work permit processing.",                           href: "/our-services#pro-services" },
-      { icon: IdCard,      label: "Labour cards",           desc: "Issuance and renewal of corporate labour cards.",               href: "/our-services#pro-services" },
-      { icon: Stamp,       label: "Immigration approvals",  desc: "Clearing complex immigration hurdles quickly.",                 href: "/our-services#pro-services" },
-      { icon: Building2,   label: "Trade License Services", desc: "New issuance and amendments to trade licenses.",               href: "/our-services#pro-services" },
-      { icon: RefreshCw,   label: "License renewal",        desc: "Timely reminders and processing for renewals.",                href: "/our-services#pro-services" },
-      { icon: Edit3,       label: "Company Amendments",     desc: "Updating MOAs, shares, and partnerships.",                    href: "/our-services#pro-services" },
-      { icon: FolderOpen,  label: "Document Clearing",      desc: "Dedicated PROs for fast document clearing.",                  href: "/our-services#pro-services" },
-      { icon: ShieldCheck, label: "Govt. Approvals",        desc: "End-to-end representation at government bodies.",              href: "/our-services#pro-services" },
+      { icon: FileCheck, label: "Visa Processing", desc: "Expert handling of all visa processing requirements.", href: "/our-services#pro-services" },
+      { icon: Briefcase, label: "Employment Visa", desc: "Seamless employment visa issuance for your staff.", href: "/our-services#pro-services" },
+      { icon: Landmark, label: "Investor Visa", desc: "Secure your UAE residency through investments.", href: "/our-services#pro-services" },
+      { icon: Handshake, label: "Partner Visa", desc: "Business partner and shareholder visa services.", href: "/our-services#pro-services" },
+      { icon: Users, label: "Family Visa", desc: "Sponsor your family members with ease.", href: "/our-services#pro-services" },
+      { icon: Globe, label: "Labour & Immigration", desc: "Full support for labour and immigration quotas.", href: "/our-services#pro-services" },
+      { icon: ClipboardCheck, label: "Work permits", desc: "Fast-track work permit processing.", href: "/our-services#pro-services" },
+      { icon: IdCard, label: "Labour cards", desc: "Issuance and renewal of corporate labour cards.", href: "/our-services#pro-services" },
+      { icon: Stamp, label: "Immigration approvals", desc: "Clearing complex immigration hurdles quickly.", href: "/our-services#pro-services" },
+      { icon: Building2, label: "Trade License Services", desc: "New issuance and amendments to trade licenses.", href: "/our-services#pro-services" },
+      { icon: RefreshCw, label: "License renewal", desc: "Timely reminders and processing for renewals.", href: "/our-services#pro-services" },
+      { icon: Edit3, label: "Company Amendments", desc: "Updating MOAs, shares, and partnerships.", href: "/our-services#pro-services" },
+      { icon: FolderOpen, label: "Document Clearing", desc: "Dedicated PROs for fast document clearing.", href: "/our-services#pro-services" },
+      { icon: ShieldCheck, label: "Govt. Approvals", desc: "End-to-end representation at government bodies.", href: "/our-services#pro-services" },
     ],
     featured: {
       title: "Full PRO Support",
@@ -141,25 +141,25 @@ const megaMenuConfig: Record<string, MegaMenuConfig> = {
       {
         title: "Taxation Services",
         items: [
-          { icon: Receipt,        label: "Corporate Tax Registration", desc: "Expert registration services for UAE Corporate Tax compliance.",   href: "/our-services#taxation" },
-          { icon: FileText,       label: "VAT Registration",            desc: "Complete support for standard VAT registration and compliance.",   href: "/our-services#taxation" },
-          { icon: ClipboardCheck, label: "CT Filing",                   desc: "Timely and accurate Corporate Tax return filing.",                  href: "/our-services#taxation" },
-          { icon: BookOpen,       label: "VAT Filing",                  desc: "Quarterly and monthly VAT return preparation and filings.",         href: "/our-services#taxation" },
+          { icon: Receipt, label: "Corporate Tax Registration", desc: "Expert registration services for UAE Corporate Tax compliance.", href: "/our-services#taxation" },
+          { icon: FileText, label: "VAT Registration", desc: "Complete support for standard VAT registration and compliance.", href: "/our-services#taxation" },
+          { icon: ClipboardCheck, label: "CT Filing", desc: "Timely and accurate Corporate Tax return filing.", href: "/our-services#taxation" },
+          { icon: BookOpen, label: "VAT Filing", desc: "Quarterly and monthly VAT return preparation and filings.", href: "/our-services#taxation" },
         ],
       },
       {
         title: "Accounting & Audit",
         items: [
-          { icon: BookOpen,       label: "Accounting & Bookkeeping",    desc: "Comprehensive financial tracking, reporting, and book management.", href: "/our-services#accounting" },
-          { icon: ClipboardCheck, label: "Audit Services",              desc: "Independent auditing to ensure complete financial accuracy.",       href: "/our-services#accounting" },
+          { icon: BookOpen, label: "Accounting & Bookkeeping", desc: "Comprehensive financial tracking, reporting, and book management.", href: "/our-services#accounting" },
+          { icon: ClipboardCheck, label: "Audit Services", desc: "Independent auditing to ensure complete financial accuracy.", href: "/our-services#accounting" },
         ],
       },
       {
         title: "Compliance & Regulatory",
         items: [
-          { icon: Building,       label: "GoAML Registration",          desc: "Anti-Money Laundering compliance setup and registration.",          href: "/our-services#compliance" },
-          { icon: ClipboardCheck, label: "APR Filing",                   desc: "Annual Performance Report regulatory filings and compliance.",       href: "/our-services#compliance" },
-          { icon: BookOpen,       label: "FEMA Compliances",             desc: "Foreign Exchange Management Act advisory and legal support.",        href: "/our-services#compliance" },
+          { icon: Building, label: "GoAML Registration", desc: "Anti-Money Laundering compliance setup and registration.", href: "/our-services#compliance" },
+          { icon: ClipboardCheck, label: "APR Filing", desc: "Annual Performance Report regulatory filings and compliance.", href: "/our-services#compliance" },
+          { icon: BookOpen, label: "FEMA Compliances", desc: "Foreign Exchange Management Act advisory and legal support.", href: "/our-services#compliance" },
         ],
       },
     ],
@@ -176,68 +176,68 @@ const megaMenuConfig: Record<string, MegaMenuConfig> = {
       {
         title: "Company & ROC",
         items: [
-          { icon: Building2,      label: "Company Incorporation",     desc: "End-to-end company incorporation in India — Private, Public, LLP, OPC, Branch Office, and more.", href: "/our-services#india-services" },
-          { icon: FileText,       label: "ROC & Corporate Compliance", desc: "Annual ROC filings, event-based compliances, Director KYC, strike-off, and corporate secretarial services.", href: "/our-services#india-services" },
+          { icon: Building2, label: "Company Incorporation", desc: "End-to-end company incorporation in India — Private, Public, LLP, OPC, Branch Office, and more.", href: "/our-services#india-services" },
+          { icon: FileText, label: "ROC & Corporate Compliance", desc: "Annual ROC filings, event-based compliances, Director KYC, strike-off, and corporate secretarial services.", href: "/our-services#india-services" },
         ],
       },
       {
         title: "GST Compliances",
         items: [
-          { icon: Receipt,        label: "GST Registration",           desc: "New GST registration for businesses with complete documentation support.",                         href: "/our-services#india-services" },
-          { icon: ClipboardCheck, label: "GSTR Filing",                desc: "Monthly, quarterly and annual GST returns (GSTR-1, GSTR-3B, GSTR-9 and 9C and many more).",        href: "/our-services#india-services" },
-          { icon: BookOpen,       label: "GST Reconciliation & Audit", desc: "GSTR-2A/2B matching, ITC reconciliation, and GSTR-9C preparation for audit.",                    href: "/our-services#india-services" },
+          { icon: Receipt, label: "GST Registration", desc: "New GST registration for businesses with complete documentation support.", href: "/our-services#india-services" },
+          { icon: ClipboardCheck, label: "GSTR Filing", desc: "Monthly, quarterly and annual GST returns (GSTR-1, GSTR-3B, GSTR-9 and 9C and many more).", href: "/our-services#india-services" },
+          { icon: BookOpen, label: "GST Reconciliation & Audit", desc: "GSTR-2A/2B matching, ITC reconciliation, and GSTR-9C preparation for audit.", href: "/our-services#india-services" },
         ],
       },
       {
         title: "Income Tax Services",
         items: [
-          { icon: Receipt,        label: "ITR Filing",                  desc: "Income Tax Return filing for individuals, NRIs, HUFs, partnership firms, LLPs, trusts, and companies, ensuring accurate reporting and timely compliance.",                                                  href: "/our-services#india-services" },
-          { icon: ClipboardCheck, label: "TDS & TCS Compliance",        desc: "TDS and TCS registration, deduction, challan payment, quarterly return filing, correction statements, lower deduction certificates, and end-to-end compliance management.",                             href: "/our-services#india-services" },
-          { icon: TrendingUp,     label: "Advance Tax Planning",        desc: "Strategic tax planning, advance tax computation, tax optimization, and payment advisory to minimize interest and penalty exposure.",                                                                    href: "/our-services#india-services" },
-          { icon: AlertCircle,    label: "Tax Notice & Assessment",     desc: "Professional representation for income tax notices, scrutiny assessments, reassessments, faceless proceedings, rectifications, and appeals.",                                                          href: "/our-services#india-services" },
-          { icon: BookMarked,     label: "Tax Audit & Compliance",      desc: "Assistance with Tax Audit under Section 44AB, compliance reviews, documentation support, and reporting requirements.",                                                                                  href: "/our-services#india-services" },
-          { icon: BarChart3,      label: "Capital Gains Advisory",      desc: "Expert guidance on capital gains tax arising from property transactions, securities, mutual funds, ESOPs, and other investments.",                                                                         href: "/our-services#india-services" },
-          { icon: Globe,          label: "NRI Taxation Services",       desc: "Specialized advisory on residential status, DTAA benefits, foreign income reporting, property transactions, and NRI return filing.",                                                                      href: "/our-services#india-services" },
-          { icon: IdCard,         label: "PAN, TAN & Tax Registrations",desc: "PAN, TAN, lower withholding applications, tax registrations, and compliance-related documentation support.",                                                                                          href: "/our-services#india-services" },
-          { icon: Gavel,          label: "Appeals & Litigation Support",desc: "Representation before Income Tax Authorities, CIT(A), ITAT, and assistance in tax disputes and litigation matters.",                                                                                     href: "/our-services#india-services" },
-          { icon: PiggyBank,      label: "Tax Planning & Structuring",  desc: "Business and personal tax planning, entity structuring, succession planning, and tax-efficient transaction advisory.",                                                                                    href: "/our-services#india-services" },
+          { icon: Receipt, label: "ITR Filing", desc: "Income Tax Return filing for individuals, NRIs, HUFs, partnership firms, LLPs, trusts, and companies, ensuring accurate reporting and timely compliance.", href: "/our-services#india-services" },
+          { icon: ClipboardCheck, label: "TDS & TCS Compliance", desc: "TDS and TCS registration, deduction, challan payment, quarterly return filing, correction statements, lower deduction certificates, and end-to-end compliance management.", href: "/our-services#india-services" },
+          { icon: TrendingUp, label: "Advance Tax Planning", desc: "Strategic tax planning, advance tax computation, tax optimization, and payment advisory to minimize interest and penalty exposure.", href: "/our-services#india-services" },
+          { icon: AlertCircle, label: "Tax Notice & Assessment", desc: "Professional representation for income tax notices, scrutiny assessments, reassessments, faceless proceedings, rectifications, and appeals.", href: "/our-services#india-services" },
+          { icon: BookMarked, label: "Tax Audit & Compliance", desc: "Assistance with Tax Audit under Section 44AB, compliance reviews, documentation support, and reporting requirements.", href: "/our-services#india-services" },
+          { icon: BarChart3, label: "Capital Gains Advisory", desc: "Expert guidance on capital gains tax arising from property transactions, securities, mutual funds, ESOPs, and other investments.", href: "/our-services#india-services" },
+          { icon: Globe, label: "NRI Taxation Services", desc: "Specialized advisory on residential status, DTAA benefits, foreign income reporting, property transactions, and NRI return filing.", href: "/our-services#india-services" },
+          { icon: IdCard, label: "PAN, TAN & Tax Registrations", desc: "PAN, TAN, lower withholding applications, tax registrations, and compliance-related documentation support.", href: "/our-services#india-services" },
+          { icon: Gavel, label: "Appeals & Litigation Support", desc: "Representation before Income Tax Authorities, CIT(A), ITAT, and assistance in tax disputes and litigation matters.", href: "/our-services#india-services" },
+          { icon: PiggyBank, label: "Tax Planning & Structuring", desc: "Business and personal tax planning, entity structuring, succession planning, and tax-efficient transaction advisory.", href: "/our-services#india-services" },
         ],
       },
       {
         title: "ROC & Corporate Compliance",
         items: [
-          { icon: CalendarCheck,  label: "Annual ROC Filings",          desc: "Timely filing of AOC-4, MGT-7/MGT-7A, DPT-3, MSME Form-I, DIR-3 KYC, LLP Form-11, LLP Form-8, and other mandatory annual compliances.",                                                                   href: "/our-services#india-services" },
-          { icon: FileText,       label: "Event-Based Filings",         desc: "Filing and compliance support for director appointments and resignations, share transfers, change in registered office, increase in authorized capital, allotment of shares, and other corporate events.",   href: "/our-services#india-services" },
-          { icon: ClipboardCheck, label: "Compliance Calendar",         desc: "Proactive compliance monitoring, reminders, and tracking of statutory deadlines to avoid penalties and non-compliance.",                                                                                     href: "/our-services#india-services" },
-          { icon: UserCog,        label: "Director & KMP Compliance",   desc: "DIR-3 KYC, DIN-related filings, appointment and resignation of directors, and compliance for Key Managerial Personnel (KMP).",                                                                             href: "/our-services#india-services" },
-          { icon: UserX,          label: "Strike-Off & Closure",        desc: "Assistance with voluntary strike-off of companies and LLPs, closure compliances, and regulatory filings.",                                                                                                 href: "/our-services#india-services" },
-          { icon: Layers,         label: "Corporate Advisory",          desc: "Advisory on Companies Act matters, shareholder rights, corporate restructuring, mergers, acquisitions, and governance issues.",                                                                               href: "/our-services#india-services" },
+          { icon: CalendarCheck, label: "Annual ROC Filings", desc: "Timely filing of AOC-4, MGT-7/MGT-7A, DPT-3, MSME Form-I, DIR-3 KYC, LLP Form-11, LLP Form-8, and other mandatory annual compliances.", href: "/our-services#india-services" },
+          { icon: FileText, label: "Event-Based Filings", desc: "Filing and compliance support for director appointments and resignations, share transfers, change in registered office, increase in authorized capital, allotment of shares, and other corporate events.", href: "/our-services#india-services" },
+          { icon: ClipboardCheck, label: "Compliance Calendar", desc: "Proactive compliance monitoring, reminders, and tracking of statutory deadlines to avoid penalties and non-compliance.", href: "/our-services#india-services" },
+          { icon: UserCog, label: "Director & KMP Compliance", desc: "DIR-3 KYC, DIN-related filings, appointment and resignation of directors, and compliance for Key Managerial Personnel (KMP).", href: "/our-services#india-services" },
+          { icon: UserX, label: "Strike-Off & Closure", desc: "Assistance with voluntary strike-off of companies and LLPs, closure compliances, and regulatory filings.", href: "/our-services#india-services" },
+          { icon: Layers, label: "Corporate Advisory", desc: "Advisory on Companies Act matters, shareholder rights, corporate restructuring, mergers, acquisitions, and governance issues.", href: "/our-services#india-services" },
         ],
       },
       {
         title: "Advisory & Cross-Border",
         items: [
-          { icon: Briefcase,      label: "Business Advisory",           desc: "Strategic business advisory for startups and established enterprises in India.",                      href: "/our-services#india-services" },
-          { icon: Globe,          label: "Cross-Border Services",       desc: "UAE–India business structuring, FEMA/ODI compliance, and investment advisory.",                      href: "/our-services#india-services" },
+          { icon: Briefcase, label: "Business Advisory", desc: "Strategic business advisory for startups and established enterprises in India.", href: "/our-services#india-services" },
+          { icon: Globe, label: "Cross-Border Services", desc: "UAE–India business structuring, FEMA/ODI compliance, and investment advisory.", href: "/our-services#india-services" },
         ],
       },
       {
         title: "Legal Services",
         items: [
-          { icon: Scale,          label: "Litigation & Dispute Resolution", desc: "Expert legal representation in civil, criminal, commercial, and regulatory matters, including court proceedings, arbitration, dispute resolution, and legal risk management.",            href: "/our-services#india-services" },
-          { icon: FileText,       label: "Contract Drafting & Vetting",    desc: "Professional drafting, review, and vetting of commercial contracts, agreements, MOUs, partnership deeds, employment contracts, and other legal documents.",                              href: "/our-services#india-services" },
-          { icon: ShieldCheck,    label: "Regulatory Compliance",          desc: "Comprehensive compliance support for UAE and Indian businesses, including corporate filings, ROC compliances, FEMA regulations, tax obligations, AML, ESR, and UBO reporting.",           href: "/our-services#india-services" },
-          { icon: Search,         label: "Legal Advisory",                 desc: "Expert legal advice on corporate, commercial, contractual, and regulatory matters, helping businesses make informed decisions and ensure legal compliance.",                             href: "/our-services#india-services" },
-          { icon: BookOpen,       label: "Legal Documentation",            desc: "Preparation and management of all legal documents including board resolutions, shareholder agreements, powers of attorney, and statutory registers.",                                    href: "/our-services#india-services" },
-          { icon: AlertCircle,    label: "Tax Notice & Legal Response",    desc: "Expert handling of income tax notices, show-cause notices, scrutiny assessments, faceless proceedings, and regulatory queries with professional representation.",                     href: "/our-services#india-services" },
+          { icon: Scale, label: "Litigation & Dispute Resolution", desc: "Expert legal representation in civil, criminal, commercial, and regulatory matters, including court proceedings, arbitration, dispute resolution, and legal risk management.", href: "/our-services#india-services" },
+          { icon: FileText, label: "Contract Drafting & Vetting", desc: "Professional drafting, review, and vetting of commercial contracts, agreements, MOUs, partnership deeds, employment contracts, and other legal documents.", href: "/our-services#india-services" },
+          { icon: ShieldCheck, label: "Regulatory Compliance", desc: "Comprehensive compliance support for UAE and Indian businesses, including corporate filings, ROC compliances, FEMA regulations, tax obligations, AML, ESR, and UBO reporting.", href: "/our-services#india-services" },
+          { icon: Search, label: "Legal Advisory", desc: "Expert legal advice on corporate, commercial, contractual, and regulatory matters, helping businesses make informed decisions and ensure legal compliance.", href: "/our-services#india-services" },
+          { icon: BookOpen, label: "Legal Documentation", desc: "Preparation and management of all legal documents including board resolutions, shareholder agreements, powers of attorney, and statutory registers.", href: "/our-services#india-services" },
+          { icon: AlertCircle, label: "Tax Notice & Legal Response", desc: "Expert handling of income tax notices, show-cause notices, scrutiny assessments, faceless proceedings, and regulatory queries with professional representation.", href: "/our-services#india-services" },
         ],
       },
       {
         title: "NRI Services",
         items: [
-          { icon: Globe,          label: "NRI Taxation",                   desc: "Residential status advisory, DTAA benefits, NRI ITR filing, and property transaction guidance.",    href: "/our-services#india-services" },
-          { icon: UserCheck,      label: "NRO / NRE Account",              desc: "NRO/NRE account setup, repatriation advisory, and NRI banking compliance.",                         href: "/our-services#india-services" },
-          { icon: Briefcase,      label: "FEMA & ODI Advisory",            desc: "FEMA compliances, ODI filings, FCTRS reporting, and cross-border investment advisory.",             href: "/our-services#india-services" },
+          { icon: Globe, label: "NRI Taxation", desc: "Residential status advisory, DTAA benefits, NRI ITR filing, and property transaction guidance.", href: "/our-services#india-services" },
+          { icon: UserCheck, label: "NRO / NRE Account", desc: "NRO/NRE account setup, repatriation advisory, and NRI banking compliance.", href: "/our-services#india-services" },
+          { icon: Briefcase, label: "FEMA & ODI Advisory", desc: "FEMA compliances, ODI filings, FCTRS reporting, and cross-border investment advisory.", href: "/our-services#india-services" },
         ],
       },
     ],
@@ -253,12 +253,12 @@ const megaMenuConfig: Record<string, MegaMenuConfig> = {
 // ─── Scroll-Spy Tabs (Our Services page only) ──────────────────────────────
 const SCROLL_TABS = [
   { id: 'business-setup', label: 'Business Setup' },
-  { id: 'banking',        label: 'Banking Support' },
-  { id: 'pro-services',  label: 'PRO Services' },
-  { id: 'taxation',      label: 'Taxation Services' },
-  { id: 'accounting',    label: 'Accounting & Audit' },
-  { id: 'compliance',    label: 'Compliance & Regulatory' },
-  { id: 'india-services',label: '🇮🇳 India Services' },
+  { id: 'banking', label: 'Banking Support' },
+  { id: 'pro-services', label: 'PRO Services' },
+  { id: 'taxation', label: 'Taxation Services' },
+  { id: 'accounting', label: 'Accounting & Audit' },
+  { id: 'compliance', label: 'Compliance & Regulatory' },
+  { id: 'india-services', label: '🇮🇳 India Services' },
 ];
 
 export function Navbar() {
@@ -271,8 +271,8 @@ export function Navbar() {
   const isServicesPage = location.pathname === '/our-services';
 
   const closeTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
-  const tabBarRef  = useRef<HTMLDivElement>(null);
-  const tabRefs    = useRef<Record<string, HTMLButtonElement | null>>({});
+  const tabBarRef = useRef<HTMLDivElement>(null);
+  const tabRefs = useRef<Record<string, HTMLButtonElement | null>>({});
 
   // Close mobile menu on route change
   useEffect(() => {
@@ -456,7 +456,7 @@ export function Navbar() {
                 <img
                   src={logo}
                   alt="Logo"
-                  className="h-[48px] w-auto object-contain"
+                  className="h-[65px] w-auto object-contain"
                 />
               </Link>
 
@@ -464,7 +464,7 @@ export function Navbar() {
               <nav className="hidden lg:flex items-center gap-1">
                 <Link
                   to="/"
-                  className="px-4 py-2 text-sm font-medium text-gray-600 hover:text-[#0D2137] transition-colors"
+                  className="px-4 py-2 text-sm font-bold text-[#102748] hover:text-[#C9963C] transition-colors"
                 >
                   Home
                 </Link>
@@ -481,9 +481,9 @@ export function Navbar() {
                       {config.href ? (
                         <Link
                           to={config.href}
-                          className="flex items-center gap-1 px-3 py-2 text-sm font-medium transition-colors"
+                          className="flex items-center gap-1 px-3 py-2 text-sm font-bold transition-colors"
                           style={{
-                            color: activeMenu === menuName ? GOLD : "#374151",
+                            color: activeMenu === menuName ? GOLD : "#102748",
                           }}
                         >
                           {menuName}
@@ -494,9 +494,9 @@ export function Navbar() {
                         </Link>
                       ) : (
                         <button
-                          className="flex items-center gap-1 px-3 py-2 text-sm font-medium transition-colors"
+                          className="flex items-center gap-1 px-3 py-2 text-sm font-bold transition-colors"
                           style={{
-                            color: activeMenu === menuName ? GOLD : "#374151",
+                            color: activeMenu === menuName ? GOLD : "#102748",
                           }}
                         >
                           {menuName}
@@ -512,7 +512,7 @@ export function Navbar() {
 
                 <Link
                   to="/about"
-                  className="px-3 py-2 text-sm font-medium text-gray-600 hover:text-[#0D2137] transition-colors"
+                  className="px-3 py-2 text-sm font-bold text-[#102748] hover:text-[#C9963C] transition-colors"
                 >
                   About
                 </Link>
@@ -557,9 +557,9 @@ export function Navbar() {
                     className="shrink-0 px-4 py-1.5 rounded-full text-xs font-semibold transition-all duration-200 whitespace-nowrap"
                     style={{
                       backgroundColor: activeTab === tab.id ? NAVY : 'transparent',
-                      color:           activeTab === tab.id ? '#fff' : '#6b7280',
-                      border:          activeTab === tab.id ? 'none' : '1px solid #e5e7eb',
-                      transform:       activeTab === tab.id ? 'scale(1.04)' : 'scale(1)',
+                      color: activeTab === tab.id ? '#fff' : '#6b7280',
+                      border: activeTab === tab.id ? 'none' : '1px solid #e5e7eb',
+                      transform: activeTab === tab.id ? 'scale(1.04)' : 'scale(1)',
                     }}
                   >
                     {tab.label}
@@ -610,11 +610,10 @@ export function Navbar() {
                             key={category.title}
                             onMouseEnter={() => setActiveCategoryIndex(idx)}
                             onClick={() => setActiveCategoryIndex(idx)}
-                            className={`text-left px-4 py-3 rounded-xl font-semibold text-sm transition-all ${
-                              activeCategoryIndex === idx
-                                ? 'bg-slate-50 text-[#0D2137]'
-                                : 'text-gray-500 hover:text-gray-800 hover:bg-slate-50/50'
-                            }`}
+                            className={`text-left px-4 py-3 rounded-xl font-semibold text-sm transition-all ${activeCategoryIndex === idx
+                              ? 'bg-slate-50 text-[#0D2137]'
+                              : 'text-gray-500 hover:text-gray-800 hover:bg-slate-50/50'
+                              }`}
                           >
                             {category.title}
                           </button>
@@ -773,18 +772,16 @@ export function Navbar() {
                         </Link>
                       )}
                       <button
-                        className={`flex items-center gap-2 px-4 py-3.5 text-sm font-semibold text-gray-800 hover:bg-slate-50 active:bg-slate-100 transition-colors ${
-                          config.href ? 'border-l border-gray-100' : 'w-full justify-between'
-                        }`}
+                        className={`flex items-center gap-2 px-4 py-3.5 text-sm font-semibold text-gray-800 hover:bg-slate-50 active:bg-slate-100 transition-colors ${config.href ? 'border-l border-gray-100' : 'w-full justify-between'
+                          }`}
                         onClick={() => setMobileExpanded(isExpanded ? null : menuName)}
                         aria-expanded={isExpanded}
                       >
                         {!config.href && <span>{menuName}</span>}
                         <ChevronDown
                           size={16}
-                          className={`transition-transform duration-200 shrink-0 ${
-                            isExpanded ? 'rotate-180' : ''
-                          }`}
+                          className={`transition-transform duration-200 shrink-0 ${isExpanded ? 'rotate-180' : ''
+                            }`}
                           style={{ color: isExpanded ? GOLD : '#6b7280' }}
                         />
                       </button>

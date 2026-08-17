@@ -8,7 +8,7 @@ import {
 } from 'lucide-react';
 import {
   ResponsiveContainer, BarChart, Bar, XAxis, YAxis, Tooltip,
-  PieChart, Pie, Cell, LineChart, Line, CartesianGrid,
+  PieChart, Pie, Cell, LineChart, Line, CartesianGrid, Legend,
 } from 'recharts';
 import { useNavigate } from 'react-router';
 
@@ -176,12 +176,24 @@ export function CRMDashboard() {
             ) : (
               <ResponsiveContainer width="100%" height={220}>
                 <PieChart>
-                  <Pie data={serviceData} cx="50%" cy="50%" outerRadius={80} dataKey="count" nameKey="name" label={({ name, percent }) => `${name} (${(percent * 100).toFixed(0)}%)`}>
+                  <Pie 
+                    data={serviceData} 
+                    cx="35%" 
+                    cy="50%" 
+                    innerRadius={50}
+                    outerRadius={80} 
+                    paddingAngle={2}
+                    dataKey="count" 
+                    nameKey="name"
+                  >
                     {serviceData.map((_, idx) => (
                       <Cell key={idx} fill={COLORS[idx % COLORS.length]} />
                     ))}
                   </Pie>
-                  <Tooltip contentStyle={{ background: '#fff', border: '1px solid rgba(0,0,0,0.1)', borderRadius: '8px', boxShadow: '0 4px 12px rgba(0,0,0,0.1)' }} />
+                  <Tooltip 
+                    contentStyle={{ background: '#fff', border: '1px solid rgba(0,0,0,0.1)', borderRadius: '8px', boxShadow: '0 4px 12px rgba(0,0,0,0.1)' }} 
+                    itemStyle={{ color: '#1e293b' }}
+                  />
                 </PieChart>
               </ResponsiveContainer>
             )}

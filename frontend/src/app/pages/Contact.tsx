@@ -60,18 +60,27 @@ export function Contact() {
                             </div>
                         </div>
 
-                        {/* Office Address */}
+                        {/* Office Addresses */}
                         <div className="flex items-start gap-5">
                             <div className="w-14 h-14 rounded-2xl flex items-center justify-center shrink-0" style={{ backgroundColor: 'rgba(201,150,60,0.15)' }}>
                                 <MapPin style={{ color: GOLD }} size={28} />
                             </div>
                             <div>
-                                <p className="text-sm text-gray-400 mb-2 uppercase tracking-wider font-semibold">Visit Our Office</p>
-                                <p className="text-xl font-medium leading-relaxed">
-                                    Business Centre,<br />
-                                    Sharjah Publishing City Free Zone,<br />
-                                    Sharjah, United Arab Emirates
-                                </p>
+                                <p className="text-sm text-gray-400 mb-2 uppercase tracking-wider font-semibold">Visit Our Offices</p>
+                                <ul className="text-lg font-medium leading-relaxed space-y-4">
+                                    <li>
+                                        <strong>Sharjah:</strong> Business Centre, Sharjah Publishing City Free Zone, Sharjah, UAE
+                                    </li>
+                                    <li>
+                                        <strong>Bur Dubai:</strong> 116. Al Khaleez Centre. Bur Dubai.
+                                    </li>
+                                    <li>
+                                        <strong>Dubai South:</strong> B-89, Madinat Al Mataar Dubai South, Dubai UAE.
+                                    </li>
+                                    <li>
+                                        <strong>New Delhi:</strong> Office No 83 Shaheed Bhagat Singh Apartment, Sector 14 Dwarka, New Delhi
+                                    </li>
+                                </ul>
                             </div>
                         </div>
 

@@ -14,7 +14,7 @@ import {
 } from 'lucide-react';
 import { signOutAdmin } from '../services/authService';
 import { useAuth } from '../context/AuthContext';
-import logo from '@/assets/images/Logo.jpg';
+import logo from '@/assets/images/crm_ogo.png';
 
 const NAVY = '#0A1628';
 const GOLD = '#C9963C';

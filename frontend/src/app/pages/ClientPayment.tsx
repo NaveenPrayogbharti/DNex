@@ -3,6 +3,8 @@ import { useParams } from 'react-router';
 import { CreditCard, CheckCircle, ShieldCheck } from 'lucide-react';
 import { fetchPaymentById } from '../crm/services/paymentService';
 import type { CRMPayment } from '../crm/services/paymentService';
+import crmLogo from '../../assets/images/crm_ogo.png';
+import websiteLogo from '../../assets/images/website_logo.png';
 
 export function ClientPayment() {
   const { id } = useParams<{ id: string }>();
@@ -58,12 +60,13 @@ export function ClientPayment() {
 
     setPaying(true);
 
-    const options = {
-      key: import.meta.env.VITE_RAZORPAY_KEY_ID || 'rzp_test_TKMzRZ167Z70fw',
-      amount: payment.amount * 100,
-      currency: payment.currency,
-      name: 'DNex Consulting',
-      description: payment.description || 'Service Payment',
+    try {
+      const options = {
+        key: import.meta.env.VITE_RAZORPAY_KEY_ID || 'rzp_test_TKMzRZ167Z70fw',
+        amount: payment.amount * 100,
+        currency: payment.currency,
+        name: 'DNex Consulting',
+        description: payment.description || 'Service Payment',
       order_id: payment.razorpay_id, 
       handler: async function (response: any) {
         try {
@@ -105,17 +108,22 @@ export function ClientPayment() {
       }
     };
     
-    const rzp1 = new (window as any).Razorpay(options);
-    rzp1.on('payment.failed', function (response: any){
-      alert(response.error.description);
+      const rzp1 = new (window as any).Razorpay(options);
+      rzp1.on('payment.failed', function (response: any){
+        alert(response.error.description);
+        setPaying(false);
+      });
+      rzp1.open();
+    } catch (err) {
+      console.error('Failed to initialize Razorpay:', err);
+      alert('Failed to initialize payment gateway.');
       setPaying(false);
-    });
-    rzp1.open();
+    }
   };
 
   if (loading) {
     return (
-      <div className="min-h-[60vh] flex items-center justify-center">
+      <div className="min-h-[80vh] flex items-center justify-center pt-32">
         <div className="animate-spin h-8 w-8 border-4 border-[#C9963C] border-t-transparent rounded-full"></div>
       </div>
     );
@@ -123,8 +131,8 @@ export function ClientPayment() {
 
   if (error || !payment) {
     return (
-      <div className="min-h-[60vh] flex flex-col items-center justify-center p-6 text-center">
-        <div className="bg-red-50 text-red-600 p-6 rounded-2xl max-w-md w-full border border-red-100 shadow-sm">
+      <div className="min-h-[80vh] flex flex-col items-center justify-center p-6 pt-32 text-center">
+        <div className="bg-red-50 text-red-600 p-8 rounded-3xl max-w-md w-full border border-red-100 shadow-sm">
           <ShieldCheck className="w-12 h-12 mx-auto mb-4 text-red-400" />
           <h2 className="text-xl font-bold mb-2">Invalid Link</h2>
           <p className="text-sm">{error}</p>
@@ -135,20 +143,30 @@ export function ClientPayment() {
 
   if (payment.status === 'paid') {
     return (
-      <div className="min-h-[60vh] flex flex-col items-center justify-center p-6 bg-slate-50">
-        <div className="bg-white p-8 rounded-2xl max-w-md w-full text-center shadow-lg border border-slate-100">
-          <CheckCircle className="w-16 h-16 mx-auto mb-6 text-green-500" />
-          <h2 className="text-2xl font-bold text-slate-800 mb-2">Payment Complete</h2>
-          <p className="text-slate-500 mb-6 text-sm">Thank you for your payment. Your receipt has been sent to your email.</p>
-          <div className="bg-slate-50 p-4 rounded-xl text-left border border-slate-100">
-            <div className="flex justify-between mb-2">
-              <span className="text-slate-500 text-sm">Amount Paid</span>
-              <span className="font-bold text-slate-800">{payment.currency} {payment.amount.toLocaleString()}</span>
+      <div className="min-h-[80vh] flex flex-col items-center justify-center p-6 pt-32 bg-slate-50">
+        <div className="bg-white p-8 rounded-3xl max-w-md w-full text-center shadow-xl border border-slate-100">
+          <div className="flex justify-center mb-6">
+            <img src={websiteLogo} alt="DNex Logo" className="h-10 w-auto object-contain" />
+          </div>
+          <div className="mx-auto w-20 h-20 bg-green-50 rounded-full flex items-center justify-center mb-6">
+            <CheckCircle className="w-10 h-10 text-green-500" />
+          </div>
+          <h2 className="text-3xl font-bold text-slate-800 mb-3 tracking-tight">Payment Complete</h2>
+          <p className="text-slate-500 mb-8 text-sm">Thank you for your payment. Your receipt has been sent to your email.</p>
+          <div className="bg-slate-50 p-5 rounded-2xl text-left border border-slate-100 space-y-4">
+            <div className="flex justify-between items-center">
+              <span className="text-slate-500 text-xs font-semibold uppercase tracking-wider">Amount Paid</span>
+              <span className="font-bold text-slate-800 text-lg">{payment.currency} {payment.amount.toLocaleString(undefined, { minimumFractionDigits: 2 })}</span>
             </div>
-            <div className="flex justify-between mb-2">
-              <span className="text-slate-500 text-sm">Description</span>
-              <span className="font-medium text-slate-700 text-sm">{payment.description}</span>
+            <div className="flex justify-between items-center">
+              <span className="text-slate-500 text-xs font-semibold uppercase tracking-wider">Description</span>
+              <span className="font-medium text-slate-700 text-sm max-w-[200px] text-right truncate">{payment.description}</span>
             </div>
+          </div>
+          <div className="mt-8">
+            <a href="/" className="inline-block text-[#C9963C] hover:text-[#b08030] font-semibold text-sm transition-colors">
+              Return to Homepage &rarr;
+            </a>
           </div>
         </div>
       </div>
@@ -156,13 +174,14 @@ export function ClientPayment() {
   }
 
   return (
-    <div className="min-h-[70vh] flex flex-col items-center justify-center p-6 bg-slate-50">
+    <div className="min-h-[80vh] flex flex-col items-center justify-center p-6 pt-32 bg-slate-50">
       <div className="max-w-md w-full bg-white rounded-3xl shadow-xl overflow-hidden border border-slate-100">
         <div className="bg-[#0A1628] p-8 text-center text-white relative">
           <div className="absolute top-0 right-0 p-4 opacity-10">
             <ShieldCheck size={64} />
           </div>
-          <h2 className="text-xl text-slate-300 mb-1">DNex Checkout</h2>
+          <div className="flex justify-center mb-4"><img src={crmLogo} alt="DNex Logo" className="h-10 w-auto object-contain" /></div>
+          <h2 className="text-lg text-slate-300 mb-1">Secure Checkout</h2>
           <div className="text-4xl font-bold text-white tracking-tight mb-2">
             {payment.currency} {payment.amount.toLocaleString(undefined, { minimumFractionDigits: 2 })}
           </div>
