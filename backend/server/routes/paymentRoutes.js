@@ -98,7 +98,7 @@ const generateReceiptPDF = async (paymentDetails, caseData) => {
          .text('Business Centre, Sharjah Publishing City Free Zone', 200, 58, { align: 'right' })
          .text('Sharjah, United Arab Emirates', 200, 71, { align: 'right' })
          .text('TRN: 100123456789012', 200, 84, { align: 'right' })
-         .text('Phone: +971 4 123 4567 | Email: info@dnex.ae', 200, 97, { align: 'right' });
+         .text('Phone: +971 551251185 | Email: info@dnex.ae', 200, 97, { align: 'right' });
 
       doc.moveTo(40, 130).lineTo(555, 130).strokeColor('#e2e8f0').lineWidth(1).stroke();
 

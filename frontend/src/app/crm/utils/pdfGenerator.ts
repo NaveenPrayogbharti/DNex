@@ -42,7 +42,7 @@ export function generateQuotationPDFBase64(data: PDFData): string {
   doc.text('Business Centre, Sharjah Publishing City Free Zone', pageWidth - 40, 58, { align: 'right' });
   doc.text('Sharjah, United Arab Emirates', pageWidth - 40, 71, { align: 'right' });
   doc.text('TRN: 100123456789012', pageWidth - 40, 84, { align: 'right' });
-  doc.text('Phone: +971 4 123 4567 | Email: info@dnex.ae', pageWidth - 40, 97, { align: 'right' });
+  doc.text('Phone: +971 551251185 | Email: info@dnex.ae', pageWidth - 40, 97, { align: 'right' });
   
   // Line separator
   doc.setDrawColor(200, 200, 200);
@@ -119,7 +119,7 @@ export function generateQuotationPDFBase64(data: PDFData): string {
     theme: 'plain',
     styles: { fontSize: 10, cellPadding: 8, textColor: black },
     headStyles: { fillColor: '#f8fafc', textColor: navy, fontStyle: 'bold', lineWidth: 0.5, lineColor: '#e2e8f0' },
-    bodyStyles: { borderBottomWidth: 0.5, lineColor: '#e2e8f0' },
+    bodyStyles: { lineWidth: 0.5, lineColor: '#e2e8f0' },
     columnStyles: {
       0: { cellWidth: 260 },
       1: { cellWidth: 40, halign: 'center' },

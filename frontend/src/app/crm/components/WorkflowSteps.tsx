@@ -834,7 +834,7 @@ export function QuotationStep({ crmCase, onRefresh, onBack, isViewOnly, isCaseLo
               <div>Business Centre, Sharjah Publishing City Free Zone</div>
               <div>Sharjah, United Arab Emirates</div>
               <div>TRN: 100123456789012</div>
-              <div>Phone: +971 4 123 4567 | Email: info@dnex.ae</div>
+              <div>Phone: +971 551251185 | Email: info@dnex.ae</div>
             </div>
           </div>
           

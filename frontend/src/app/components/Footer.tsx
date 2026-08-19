@@ -117,64 +117,10 @@ export function Footer() {
               />
             </Link>
 
-            <p className="text-gray-500 text-sm leading-relaxed mb-6 max-w-xs text-justify">
+            <p className="text-gray-500 text-sm leading-relaxed max-w-xs text-justify">
               UAE's one of the most trusted business setup and legal services platform. We help entrepreneurs,
               startups, and investors establish and grow their business in the UAE with confidence.
             </p>
-
-            {/* Contact */}
-            <div className="space-y-3">
-              <a href="tel:+971555542841" className="flex items-center gap-3 text-sm text-gray-600 hover:text-[#0D2137] transition-colors">
-                <Phone size={15} style={{ color: GOLD }} />
-                +971 555542841
-              </a>
-              <a href="tel:+918851742425" className="flex items-center gap-3 text-sm text-gray-600 hover:text-[#0D2137] transition-colors">
-                <Phone size={15} style={{ color: GOLD }} />
-                +91 8851742425
-              </a>
-              <a href="mailto:info@dnex.ae" className="flex items-center gap-3 text-sm text-gray-600 hover:text-[#0D2137] transition-colors">
-                <Mail size={15} style={{ color: GOLD }} />
-                info@dnex.ae
-              </a>
-              <div className="flex flex-col gap-3 text-sm text-gray-600">
-                <div className="flex items-start gap-3">
-                  <MapPin size={15} style={{ color: GOLD, flexShrink: 0, marginTop: '2px' }} />
-                  <span className="text-justify">Business Centre, Sharjah Publishing City Free Zone, Sharjah, UAE</span>
-                </div>
-                <div className="flex items-start gap-3">
-                  <MapPin size={15} style={{ color: GOLD, flexShrink: 0, marginTop: '2px' }} />
-                  <span className="text-justify">116. Al Khaleez Centre. Bur Dubai.</span>
-                </div>
-                <div className="flex items-start gap-3">
-                  <MapPin size={15} style={{ color: GOLD, flexShrink: 0, marginTop: '2px' }} />
-                  <span className="text-justify">B-89, Madinat Al Mataar Dubai South, Dubai UAE.</span>
-                </div>
-                <div className="flex items-start gap-3">
-                  <MapPin size={15} style={{ color: GOLD, flexShrink: 0, marginTop: '2px' }} />
-                  <span className="text-justify">Office No 83 Shaheed Bhagat Singh Apartment, Sector 14 Dwarka, New Delhi</span>
-                </div>
-              </div>
-            </div>
-
-            {/* Social icons */}
-            <div className="flex items-center gap-3 mt-6">
-              {[
-                { Icon: Linkedin, href: 'https://www.linkedin.com/in/jitendra-rajput-6a6bbb426?utm_source=share_via&utm_content=profile&utm_medium=member_ios' },
-                { Icon: Twitter, href: '#' },
-                { Icon: Facebook, href: 'https://www.facebook.com/share/1TLUVEXNWE/' },
-                { Icon: Instagram, href: 'https://www.instagram.com/dnex.ae?igsh=MXgxd3ltNHQyYXBuYw%3D%3D&utm_source=qr' },
-                { Icon: Youtube, href: '#' },
-              ].map(({ Icon, href }, i) => (
-                <a
-                  key={i}
-                  href={href}
-                  className="w-9 h-9 rounded-lg flex items-center justify-center transition-all hover:opacity-90"
-                  style={{ backgroundColor: 'rgba(13,33,55,0.08)' }}
-                >
-                  <Icon size={16} style={{ color: NAVY }} />
-                </a>
-              ))}
-            </div>
           </div>
 
           {/* Links columns */}
@@ -205,6 +151,56 @@ export function Footer() {
               </ul>
             </div>
           ))}
+        </div>
+        
+        {/* Full-width Contact & Social Section */}
+        <div className="mt-12">
+          <div className="flex flex-col xl:flex-row items-center justify-between gap-8 bg-slate-50 border border-slate-200 rounded-2xl p-6 lg:p-8 shadow-sm">
+            
+            {/* Contact */}
+            <div className="flex flex-wrap items-center justify-center xl:justify-start gap-x-8 gap-y-4 flex-1">
+              <a href="tel:+971551251185" className="flex items-center gap-2 text-sm text-gray-600 hover:text-[#0D2137] transition-colors">
+                <Phone size={15} style={{ color: GOLD }} />
+                <span>+971 551251185</span>
+              </a>
+              <a href="mailto:info@dnex.ae" className="flex items-center gap-2 text-sm text-gray-600 hover:text-[#0D2137] transition-colors">
+                <Mail size={15} style={{ color: GOLD }} />
+                <span>info@dnex.ae</span>
+              </a>
+              <div className="flex items-start gap-2 text-sm text-gray-600 max-w-full">
+                <MapPin size={15} style={{ color: GOLD, flexShrink: 0, marginTop: '2px' }} />
+                <span>Business Centre, Sharjah Publishing City Free Zone, Sharjah, UAE</span>
+              </div>
+              <div className="flex items-start gap-2 text-sm text-gray-600 max-w-full">
+                <MapPin size={15} style={{ color: GOLD, flexShrink: 0, marginTop: '2px' }} />
+                <span>116. Al Khaleez Centre. Bur Dubai.</span>
+              </div>
+              <div className="flex items-start gap-2 text-sm text-gray-600 max-w-full">
+                <MapPin size={15} style={{ color: GOLD, flexShrink: 0, marginTop: '2px' }} />
+                <span>B-89, Madinat Al Mataar Dubai South, Dubai UAE.</span>
+              </div>
+            </div>
+
+            {/* Social icons */}
+            <div className="flex items-center gap-3 shrink-0">
+              {[
+                { Icon: Linkedin, href: 'https://www.linkedin.com/company/dnex-ae/' },
+                { Icon: Twitter, href: '#' },
+                { Icon: Facebook, href: 'https://www.facebook.com/share/1TLUVEXNWE/' },
+                { Icon: Instagram, href: 'https://www.instagram.com/dnex.ae?igsh=MXgxd3ltNHQyYXBuYw%3D%3D&utm_source=qr' },
+                { Icon: Youtube, href: '#' },
+              ].map(({ Icon, href }, i) => (
+                <a
+                  key={i}
+                  href={href}
+                  className="w-9 h-9 rounded-lg flex items-center justify-center transition-all hover:opacity-90"
+                  style={{ backgroundColor: 'rgba(13,33,55,0.08)' }}
+                >
+                  <Icon size={16} style={{ color: NAVY }} />
+                </a>
+              ))}
+            </div>
+          </div>
         </div>
       </div>
 

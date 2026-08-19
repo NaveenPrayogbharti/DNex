@@ -3,7 +3,7 @@ import { useState } from 'react';
 export function WhatsAppButton() {
   const [isHovered, setIsHovered] = useState(false);
   // Phone number without '+' or spaces. Can be updated later with actual API/number.
-  const phoneNumber = "971555542841"; 
+  const phoneNumber = "971551251185"; 
   const message = encodeURIComponent("Hello! I'm interested in DNex business setup services.");
 
   return (

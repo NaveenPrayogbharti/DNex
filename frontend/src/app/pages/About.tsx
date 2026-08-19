@@ -67,7 +67,41 @@ const whyDnex = [
 
 export function About() {
     const [submitted, setSubmitted] = useState(false);
+    const [loading, setLoading] = useState(false);
     const [form, setForm] = useState({ name: '', email: '', phone: '', message: '' });
+
+    const handleSubmit = async (e: React.FormEvent) => {
+        e.preventDefault();
+        setLoading(true);
+        const apiBase = import.meta.env.VITE_BACKEND_API_URL || 'http://localhost:3006';
+        try {
+            const res = await fetch(`${apiBase}/api/leads`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    full_name: form.name,
+                    email: form.email,
+                    phone: form.phone,
+                    country: 'Not Specified',
+                    service_needed: 'General Inquiry',
+                    message: form.message,
+                    source: 'website'
+                })
+            });
+            if (!res.ok) {
+                const err = await res.json();
+                alert(err.error ?? 'Something went wrong. Please try again.');
+                return;
+            }
+            setSubmitted(true);
+            setForm({ name: '', email: '', phone: '', message: '' });
+        } catch (error) {
+            console.error('Failed to submit form:', error);
+            alert('Could not connect to the server. Please try again.');
+        } finally {
+            setLoading(false);
+        }
+    };
 
     return (
         <div className="min-h-screen bg-white" style={{ fontFamily: "'Inter', sans-serif" }}>
@@ -163,7 +197,7 @@ export function About() {
                                         </button>
                                     </div>
                                 ) : (
-                                    <form onSubmit={(e) => { e.preventDefault(); setSubmitted(true); }} className="space-y-3.5">
+                                    <form onSubmit={handleSubmit} className="space-y-3.5">
                                         <div>
                                             <label className="block text-xs font-semibold text-gray-600 mb-1">Full Name *</label>
                                             <input
@@ -198,11 +232,12 @@ export function About() {
                                         </div>
                                         <button
                                             type="submit"
-                                            className="w-full py-3 rounded-xl font-semibold text-white text-sm flex items-center justify-center gap-2 transition-all hover:opacity-90"
+                                            disabled={loading}
+                                            className={`w-full py-3 rounded-xl font-semibold text-white text-sm flex items-center justify-center gap-2 transition-all hover:opacity-90 ${loading ? 'opacity-70 cursor-not-allowed' : ''}`}
                                             style={{ backgroundColor: GOLD }}
                                         >
                                             <Send size={15} />
-                                            Start Now
+                                            {loading ? 'Submitting...' : 'Start Now'}
                                         </button>
                                     </form>
                                 )}

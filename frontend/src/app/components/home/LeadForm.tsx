@@ -36,9 +36,8 @@ export function LeadForm() {
             {/* Contact options */}
             <div className="space-y-4 mb-10">
               {[
-                { icon: Phone, label: 'Call Us', value: '+971 555542841', href: 'tel:+971 555542841' },
-                { icon: Phone, label: 'Call Us', value: '+91 8851742425', href: 'tel:+91 8851742425' },
-                { icon: MessageCircle, label: 'WhatsApp', value: '+971 555542841', href: 'https://wa.me/971555542841' },
+                { icon: Phone, label: 'Call Us', value: '+971 551251185', href: 'tel:+971 551251185' },
+                { icon: MessageCircle, label: 'WhatsApp', value: '+971 551251185', href: 'https://wa.me/971551251185' },
                 { icon: Mail, label: 'Email', value: 'info@dnex.ae', href: 'mailto:info@dnex.ae' },
               ].map((c) => (
                 <a

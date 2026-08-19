@@ -11,6 +11,7 @@ import { X, Send, Mail, ChevronDown, Paperclip, FileText, Image, File } from 'lu
 import { supabase } from '../../../lib/supabase';
 import { sendCustomEmail } from '../services/emailNotificationService';
 import type { CRMCase } from '../services/caseService';
+import { LOGO_BASE64 } from '../utils/logoBase64';
 
 const GOLD = '#C9963C';
 
@@ -463,9 +464,9 @@ function wrapHtml(subject: string, rawBody: string): string {
   <style>
     body { font-family: 'Helvetica Neue', Arial, sans-serif; background: #f8fafc; margin: 0; padding: 0; }
     .wrapper { max-width: 620px; margin: 32px auto; background: #fff; border-radius: 12px; overflow: hidden; border: 1px solid #e2e8f0; }
-    .header { background: linear-gradient(135deg, #0A1628, #1a2a48); padding: 28px 32px; }
+    .header { background: #ffffff; padding: 28px 32px; border-bottom: 1px solid #e2e8f0; }
     .header h1 { color: #C9963C; margin: 0 0 4px; font-size: 20px; letter-spacing: -0.5px; }
-    .header p { color: rgba(255,255,255,0.5); font-size: 12px; margin: 0; }
+    .header p { color: #64748b; font-size: 12px; margin: 0; }
     .body { padding: 28px 32px; }
     .footer { background: #f8fafc; border-top: 1px solid #e2e8f0; padding: 16px 32px; font-size: 12px; color: #94a3b8; text-align: center; }
     b, strong { color: #1e293b; }
@@ -477,13 +478,13 @@ function wrapHtml(subject: string, rawBody: string): string {
 <body>
   <div class="wrapper">
     <div class="header">
-      <h1>DNex Business Setup</h1>
+      <img src="cid:dnex-logo" alt="DNex Logo" style="height: 48px; object-fit: contain; margin-bottom: 8px;" />
       <p>Official Communication — ${subject}</p>
     </div>
     <div class="body">${htmlBody}</div>
     <div class="footer">
       DNex Business Setup Consulting &bull; Dubai, UAE<br/>
-      📞 +971 55 554 2841 &bull; consultant@dnex.ae
+      📞 +971 551251185 &bull; consultant@dnex.ae
     </div>
   </div>
 </body>

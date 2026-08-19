@@ -2,7 +2,6 @@ import { useRef, useState } from 'react';
 import { ChevronLeft, ChevronRight, Mail } from 'lucide-react';
 
 // Image imports
-import jitendraImg from '../../assets/images/Jitendra rajput.jpeg';
 import nitinImg from '../../assets/images/Nitin Bhardwaj.jpeg';
 import harishImg from '../../assets/images/harish verma.jpeg';
 import spSinghImg from '../../assets/images/SP Singh.jpeg';
@@ -31,15 +30,6 @@ const CAT_COLORS: Record<string, string> = {
 // ── Team data ─────────────────────────────────────────────────────────────────
 const teamMembers = [
   // ── Leadership ──────────────────────────────────────────────────────────────
-  {
-    name: 'Jitendra Rajput',
-    role: 'Principal Consultant (India & UAE)',
-    category: 'Leadership',
-    expertise: 'Legal Advisory · Taxation · Business Consulting · Compliance',
-    bio: 'With over a decade of experience in legal advisory, taxation, and business consulting, Mr. Rajput leads DNex with a strong focus on practical solutions and client-centric strategies. He specializes in handling complex compliance matters, litigation support, and cross-border business structuring.',
-    initials: 'JR',
-    image: jitendraImg,
-  },
   {
     name: 'Nitin Bhardwaj',
     role: 'Associate Partner, Business Operations',
@@ -171,12 +161,14 @@ export function TeamCarousel() {
     ? teamMembers
     : teamMembers.filter(m => m.category === activeCategory);
 
-  // For seamless CSS loop we duplicate the card list
-  const cards = [...filtered, ...filtered];
-
   // Card width + gap in px (matches w-[340px] + gap-6=24px)
   const CARD_W = 364;
-  // Total width of one set
+
+  // Ensure we have enough copies to fill large screens seamlessly
+  const copies = Math.max(2, Math.ceil(12 / (filtered.length || 1)));
+  const cards = Array(copies).fill(filtered).flat();
+
+  // Total width of ONE original set (this is how far we translate before looping)
   const trackWidth = filtered.length * CARD_W;
 
   const scroll = (direction: 'left' | 'right') => {
@@ -269,81 +261,81 @@ export function TeamCarousel() {
             return (
               <div
                 key={i}
-              className="shrink-0 w-[85vw] sm:w-[340px] rounded-3xl overflow-hidden border border-slate-100 hover:shadow-2xl transition-all duration-300 group"
-              style={{ background: '#fff' }}
-            >
-              {/* Card Header */}
-              <div
-                className="flex flex-col items-center justify-center pt-10 pb-8 px-8 text-center relative"
-                style={{ backgroundColor: cardColor }}
+                className="shrink-0 w-[85vw] sm:w-[340px] rounded-3xl overflow-hidden border border-slate-100 hover:shadow-2xl transition-all duration-300 group flex flex-col h-full"
+                style={{ background: '#fff' }}
               >
-                {/* Category pill */}
+                {/* Card Header */}
                 <div
-                  className="absolute top-4 right-4 px-3 py-1 rounded-full text-[10px] font-bold tracking-wide uppercase"
-                  style={{ background: 'rgba(201,150,60,0.2)', color: GOLD }}
+                  className="flex flex-col items-center justify-center pt-10 pb-8 px-8 text-center relative h-[300px] shrink-0"
+                  style={{ backgroundColor: cardColor }}
                 >
-                  {member.category}
-                </div>
-
-                {/* Avatar */}
-                <div
-                  className="w-20 h-20 rounded-full flex items-center justify-center text-2xl font-extrabold text-white mb-4 border-4 border-white/20 shadow-lg overflow-hidden"
-                  style={{ backgroundColor: GOLD }}
-                >
-                  {member.image ? (
-                    <img src={member.image} alt={member.name} className="w-full h-full object-cover" />
-                  ) : (
-                    member.initials
-                  )}
-                </div>
-                <h3 className="text-lg font-bold text-white mb-1 leading-tight">
-                  {member.name}
-                </h3>
-                <p
-                  className="text-xs font-semibold tracking-wide text-center leading-snug"
-                  style={{ color: GOLD }}
-                >
-                  {member.role}
-                </p>
-              </div>
-
-              {/* Card Body */}
-              <div className="p-6">
-                {/* Expertise Tags */}
-                <div className="flex flex-wrap gap-1.5 mb-4">
-                  {member.expertise.split(' · ').map((tag, j) => (
-                    <span
-                      key={j}
-                      className="text-[11px] font-semibold px-2.5 py-1 rounded-full"
-                      style={{ backgroundColor: 'rgba(201,150,60,0.1)', color: GOLD }}
-                    >
-                      {tag}
-                    </span>
-                  ))}
-                </div>
-
-                {/* Bio */}
-                <p
-                  className="text-sm text-gray-500 leading-relaxed"
-                  style={{ textAlign: 'justify' }}
-                >
-                  {member.bio}
-                </p>
-
-                {/* Contact */}
-                <div className="flex items-center gap-4 mt-5 pt-4 border-t border-slate-100">
-                  <a
-                    href="mailto:info@dnexbusiness.com"
-                    className="flex items-center gap-1.5 text-xs font-medium text-gray-400 hover:text-[#C9963C] transition-colors"
+                  {/* Category pill */}
+                  <div
+                    className="absolute top-4 right-4 px-3 py-1 rounded-full text-[10px] font-bold tracking-wide uppercase"
+                    style={{ background: 'rgba(201,150,60,0.2)', color: GOLD }}
                   >
-                    <Mail size={13} />
-                    Contact
-                  </a>
+                    {member.category}
+                  </div>
+
+                  {/* Avatar */}
+                  <div
+                    className="w-20 h-20 rounded-full flex items-center justify-center text-2xl font-extrabold text-white mb-4 border-4 border-white/20 shadow-lg overflow-hidden"
+                    style={{ backgroundColor: GOLD }}
+                  >
+                    {member.image ? (
+                      <img src={member.image} alt={member.name} className="w-full h-full object-cover" />
+                    ) : (
+                      member.initials
+                    )}
+                  </div>
+                  <h3 className="text-lg font-bold text-white mb-1 leading-tight">
+                    {member.name}
+                  </h3>
+                  <p
+                    className="text-xs font-semibold tracking-wide text-center leading-snug"
+                    style={{ color: GOLD }}
+                  >
+                    {member.role}
+                  </p>
+                </div>
+
+                {/* Card Body */}
+                <div className="p-6 flex flex-col flex-grow">
+                  {/* Expertise Tags */}
+                  <div className="flex flex-wrap gap-1.5 mb-4">
+                    {member.expertise.split(' · ').map((tag: string, j: number) => (
+                      <span
+                        key={j}
+                        className="text-[11px] font-semibold px-2.5 py-1 rounded-full"
+                        style={{ backgroundColor: 'rgba(201,150,60,0.1)', color: GOLD }}
+                      >
+                        {tag}
+                      </span>
+                    ))}
+                  </div>
+
+                  {/* Bio */}
+                  <p
+                    className="text-sm text-gray-500 leading-relaxed"
+                    style={{ textAlign: 'justify' }}
+                  >
+                    {member.bio}
+                  </p>
+
+                  {/* Contact */}
+                  <div className="flex items-center gap-4 mt-auto pt-4 border-t border-slate-100">
+                    <a
+                      href="mailto:info@dnexbusiness.com"
+                      className="flex items-center gap-1.5 text-xs font-medium text-gray-400 hover:text-[#C9963C] transition-colors"
+                    >
+                      <Mail size={13} />
+                      Contact
+                    </a>
+                  </div>
                 </div>
               </div>
-            </div>
-          );
-        })}
+            );
+          })}
         </div>
       </div>
 

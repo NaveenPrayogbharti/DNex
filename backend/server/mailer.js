@@ -18,6 +18,7 @@ require('dotenv').config({ path: require('path').resolve(__dirname, '../.env') }
 const express    = require('express');
 const nodemailer = require('nodemailer');
 const cors       = require('cors');
+const path       = require('path');
 const { PrismaClient } = require('@prisma/client');
 const { createClient } = require('@supabase/supabase-js');
 const paymentRoutes = require('./routes/paymentRoutes');
@@ -141,14 +142,30 @@ app.post('/api/leads', async (req, res) => {
       });
     }
 
+    const logoPath = path.resolve(__dirname, '../../frontend/src/assets/images/website_logo.png');
     for (const { label, to, subject, html, replyTo } of emailPayloads) {
-      transporter.sendMail({
+      const mailOptions = {
         from:    process.env.MAIL_USER,
         to,
         subject,
         html,
         replyTo,
-      }).then(info => {
+        attachments: [{
+          filename: 'website_logo.png',
+          path: logoPath,
+          cid: 'dnex-logo',
+          contentDisposition: 'inline'
+        }]
+      };
+      
+      if (label === 'client confirmation') {
+        mailOptions.attachments.push({
+          filename: 'DNex Company Profile A4.pdf',
+          path: path.resolve(__dirname, '../../frontend/src/assets/Company Profile A4.pdf')
+        });
+      }
+
+      transporter.sendMail(mailOptions).then(info => {
         console.log(`📧 ${label} email sent: ${info.messageId} → ${to}`);
       }).catch(err => {
         console.error(`❌ ${label} email failed (lead still saved):`, err.message);
@@ -262,13 +279,29 @@ app.post('/api/notify/email', async (req, res) => {
   }
 
   try {
+    const logoPath = path.resolve(__dirname, '../../frontend/src/assets/images/website_logo.png');
+    const emailAttachments = attachments ? [...attachments] : [];
+    emailAttachments.push({
+      filename: 'website_logo.png',
+      path: logoPath,
+      cid: 'dnex-logo',
+      contentDisposition: 'inline'
+    });
+    
+    if (subject && (subject.toLowerCase().includes('quotation') || subject.toLowerCase().includes('welcome'))) {
+      emailAttachments.push({
+        filename: 'DNex Company Profile A4.pdf',
+        path: path.resolve(__dirname, '../../frontend/src/assets/Company Profile A4.pdf')
+      });
+    }
+    
     const info = await transporter.sendMail({
       from:    process.env.MAIL_USER,
       to:      Array.isArray(to) ? to.join(', ') : to,
       subject,
       html:    body,
       replyTo: replyTo ?? process.env.MAIL_REPLY_TO ?? process.env.MAIL_USER,
-      attachments: attachments ?? [],
+      attachments: emailAttachments,
     });
 
     console.log(`📧 Email sent: ${info.messageId} → ${to}`);
@@ -304,7 +337,6 @@ process.on('SIGTERM', async () => { await prisma.$disconnect(); process.exit(0);
 // START
 // ═════════════════════════════════════════════════════════════════════════════
 
-const path = require('path');
 // Serve static assets from the frontend build
 app.use(express.static(path.resolve(__dirname, '../../frontend/dist')));
 // Fallback for client‑side routing (React Router)

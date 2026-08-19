@@ -281,13 +281,10 @@ function ConsultationSidebar() {
 
         {/* Or contact directly */}
         <div className="mt-5 pt-5 border-t border-gray-100 space-y-2.5">
-          <a href="tel:+971555542841" className="flex items-center gap-2.5 text-xs font-medium text-gray-600 hover:text-[#0D2137] transition-colors">
-            <Phone size={13} style={{ color: GOLD }} /> +971 555542841
+          <a href="tel:+971551251185" className="flex items-center gap-2.5 text-xs font-medium text-gray-600 hover:text-[#0D2137] transition-colors">
+            <Phone size={13} style={{ color: GOLD }} /> +971 551251185
           </a>
-          <a href="tel:+918851742425" className="flex items-center gap-2.5 text-xs font-medium text-gray-600 hover:text-[#0D2137] transition-colors">
-            <Phone size={13} style={{ color: GOLD }} /> +91 8851742425
-          </a>
-          <a href="https://wa.me/971555542841" className="flex items-center gap-2.5 text-xs font-medium text-gray-600 hover:text-[#0D2137] transition-colors">
+          <a href="https://wa.me/971551251185" className="flex items-center gap-2.5 text-xs font-medium text-gray-600 hover:text-[#0D2137] transition-colors">
             <MessageCircle size={13} style={{ color: GOLD }} /> WhatsApp Chat
           </a>
           <div className="flex items-center gap-2.5 text-xs text-gray-500">
@@ -665,7 +662,7 @@ export function FreeZone() {
               >
                 <h4 className="text-white font-semibold text-sm mb-3">Prefer to talk directly?</h4>
                 <a
-                  href="https://wa.me/971555542841"
+                  href="https://wa.me/971551251185"
                   className="flex items-center gap-2 py-3 px-4 rounded-lg text-sm font-semibold text-white transition-all hover:opacity-90 mb-2"
                   style={{ backgroundColor: '#25D366' }}
                 >
@@ -678,7 +675,7 @@ export function FreeZone() {
                   style={{ backgroundColor: 'rgba(255,255,255,0.1)', color: '#fff' }}
                 >
                   <Phone size={16} />
-                  Call +971 555542841
+                  Call +971 551251185
                 </a>
               </div>
             </div>

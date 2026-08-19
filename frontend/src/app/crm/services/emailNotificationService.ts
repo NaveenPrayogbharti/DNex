@@ -24,6 +24,8 @@ export interface EmailPayload {
   attachments?: { filename: string; content: string; encoding?: string; contentType?: string }[];
 }
 
+import { LOGO_BASE64 } from '../utils/logoBase64';
+
 export type NotificationTrigger =
   | 'case_opened'
   | 'quotation_sent'
@@ -76,9 +78,9 @@ function baseTemplate(title: string, body: string): string {
   <style>
     body { font-family: 'Helvetica Neue', Arial, sans-serif; background: #f8fafc; margin: 0; padding: 0; color: #1e293b; }
     .wrapper { max-width: 600px; margin: 32px auto; background: #fff; border-radius: 12px; overflow: hidden; border: 1px solid #e2e8f0; }
-    .header { background: linear-gradient(135deg, #0A1628, #1a2a48); padding: 28px 32px; }
+    .header { background: #ffffff; padding: 28px 32px; border-bottom: 1px solid #e2e8f0; }
     .header h1 { color: #C9963C; margin: 0; font-size: 22px; letter-spacing: -0.5px; }
-    .header p { color: rgba(255,255,255,0.55); font-size: 13px; margin: 4px 0 0; }
+    .header p { color: #64748b; font-size: 13px; margin: 4px 0 0; }
     .body { padding: 28px 32px; }
     .body h2 { color: #0A1628; font-size: 17px; margin: 0 0 12px; }
     .body p { color: #475569; line-height: 1.7; margin: 8px 0; font-size: 14px; }
@@ -94,7 +96,7 @@ function baseTemplate(title: string, body: string): string {
 <body>
   <div class="wrapper">
     <div class="header">
-      <h1>DNex Business Setup</h1>
+      <img src="cid:dnex-logo" alt="DNex Logo" style="height: 48px; object-fit: contain; margin-bottom: 8px;" />
       <p>Official Communication</p>
     </div>
     <div class="body">
