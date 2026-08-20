@@ -4,18 +4,12 @@ const Razorpay = require('razorpay');
 const crypto = require('crypto');
 const PDFDocument = require('pdfkit');
 const { PrismaClient } = require('@prisma/client');
-const { createClient } = require('@supabase/supabase-js');
 const fs = require('fs');
 const path = require('path');
 const nodemailer = require('nodemailer');
 
 const router = express.Router();
 const prisma = new PrismaClient();
-
-// Supabase client for storage
-const supabaseUrl = process.env.VITE_SUPABASE_URL || 'https://lowydgfaskuytfqinmhd.supabase.co';
-const supabaseKey = process.env.VITE_SUPABASE_ANON_KEY || process.env.SUPABASE_SERVICE_KEY; // Fallback to anon key for simplicity if service key not set
-const supabase = createClient(supabaseUrl, supabaseKey);
 
 const razorpay = new Razorpay({
   key_id: process.env.RAZORPAY_KEY_ID,
