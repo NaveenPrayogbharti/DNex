@@ -11,10 +11,18 @@ const nodemailer = require('nodemailer');
 const router = express.Router();
 const prisma = new PrismaClient();
 
-const razorpay = new Razorpay({
-  key_id: process.env.RAZORPAY_KEY_ID,
-  key_secret: process.env.RAZORPAY_KEY_SECRET,
-});
+let razorpay = null;
+const getRazorpay = () => {
+  if (!razorpay) {
+    const keyId = process.env.RAZORPAY_KEY_ID;
+    const keySecret = process.env.RAZORPAY_KEY_SECRET;
+    if (!keyId || !keySecret) {
+      throw new Error('Razorpay keys (RAZORPAY_KEY_ID, RAZORPAY_KEY_SECRET) are missing from .env!');
+    }
+    razorpay = new Razorpay({ key_id: keyId, key_secret: keySecret });
+  }
+  return razorpay;
+};
 
 
 
@@ -36,7 +44,7 @@ router.post('/create-order', async (req, res) => {
       receipt: receipt || `rcpt_${Date.now()}`
     };
 
-    const order = await razorpay.orders.create(options);
+    const order = await getRazorpay().orders.create(options);
     res.json(order);
   } catch (error) {
     console.error('Error creating Razorpay order:', error);
@@ -168,7 +176,11 @@ router.post('/verify-payment', async (req, res) => {
     }
 
     // Verify signature
-    const hmac = crypto.createHmac('sha256', process.env.RAZORPAY_KEY_SECRET);
+    const razorpaySecret = process.env.RAZORPAY_KEY_SECRET;
+    if (!razorpaySecret) {
+      return res.status(500).json({ error: 'Razorpay secret key is not configured on this server.' });
+    }
+    const hmac = crypto.createHmac('sha256', razorpaySecret);
     hmac.update(razorpay_order_id + '|' + razorpay_payment_id);
     const generated_signature = hmac.digest('hex');
 

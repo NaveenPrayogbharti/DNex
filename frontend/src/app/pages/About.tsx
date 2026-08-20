@@ -73,7 +73,9 @@ export function About() {
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         setLoading(true);
-        const apiBase = import.meta.env.VITE_BACKEND_API_URL || 'http://localhost:3006';
+        const apiBase = import.meta.env.VITE_BACKEND_API_URL !== undefined
+            ? import.meta.env.VITE_BACKEND_API_URL
+            : 'http://localhost:3006';
         try {
             const res = await fetch(`${apiBase}/api/leads`, {
                 method: 'POST',

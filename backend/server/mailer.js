@@ -28,10 +28,16 @@ const paymentRoutes = require('./routes/paymentRoutes');
 const app    = express();
 const prisma = new PrismaClient();
 
-const supabaseAdmin = createClient(
-  process.env.VITE_SUPABASE_URL,
-  process.env.SUPABASE_SERVICE_ROLE_KEY
-);
+const supabaseUrl = process.env.VITE_SUPABASE_URL || process.env.SUPABASE_URL;
+const supabaseKey = process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.SUPABASE_ANON_KEY;
+
+const supabaseAdmin = (supabaseUrl && supabaseKey) 
+  ? createClient(supabaseUrl, supabaseKey) 
+  : null;
+
+if (!supabaseAdmin) {
+  console.warn("⚠️ Supabase URL or Key is missing from .env! Admin user creation will be disabled.");
+}
 
 // Increase body size limit to 50 MB to support base64-encoded file attachments
 app.use(express.json({ limit: '50mb' }));
@@ -142,6 +148,7 @@ app.post('/api/leads', async (req, res) => {
       });
     }
 
+    const fs = require('fs');
     const logoPath = path.resolve(__dirname, '../../frontend/src/assets/images/website_logo.png');
     for (const { label, to, subject, html, replyTo } of emailPayloads) {
       const mailOptions = {
@@ -150,19 +157,26 @@ app.post('/api/leads', async (req, res) => {
         subject,
         html,
         replyTo,
-        attachments: [{
+        attachments: []
+      };
+
+      if (fs.existsSync(logoPath)) {
+        mailOptions.attachments.push({
           filename: 'website_logo.png',
           path: logoPath,
           cid: 'dnex-logo',
           contentDisposition: 'inline'
-        }]
-      };
+        });
+      }
       
       if (label === 'client confirmation') {
-        mailOptions.attachments.push({
-          filename: 'DNex Company Profile A4.pdf',
-          path: path.resolve(__dirname, '../../frontend/src/assets/Company Profile A4.pdf')
-        });
+        const pdfPath = path.resolve(__dirname, '../../frontend/src/assets/Company Profile A4.pdf');
+        if (fs.existsSync(pdfPath)) {
+          mailOptions.attachments.push({
+            filename: 'DNex Company Profile A4.pdf',
+            path: pdfPath
+          });
+        }
       }
 
       transporter.sendMail(mailOptions).then(info => {
@@ -206,6 +220,10 @@ app.post('/api/admin/create-user', async (req, res) => {
 
   if (!name || !email || !role || !password) {
     return res.status(400).json({ error: 'Missing required fields' });
+  }
+
+  if (!supabaseAdmin) {
+    return res.status(500).json({ error: 'Supabase admin client is not configured on this server.' });
   }
 
   try {
@@ -279,20 +297,27 @@ app.post('/api/notify/email', async (req, res) => {
   }
 
   try {
+    const fs = require('fs');
     const logoPath = path.resolve(__dirname, '../../frontend/src/assets/images/website_logo.png');
     const emailAttachments = attachments ? [...attachments] : [];
-    emailAttachments.push({
-      filename: 'website_logo.png',
-      path: logoPath,
-      cid: 'dnex-logo',
-      contentDisposition: 'inline'
-    });
+
+    if (fs.existsSync(logoPath)) {
+      emailAttachments.push({
+        filename: 'website_logo.png',
+        path: logoPath,
+        cid: 'dnex-logo',
+        contentDisposition: 'inline'
+      });
+    }
     
     if (subject && (subject.toLowerCase().includes('quotation') || subject.toLowerCase().includes('welcome'))) {
-      emailAttachments.push({
-        filename: 'DNex Company Profile A4.pdf',
-        path: path.resolve(__dirname, '../../frontend/src/assets/Company Profile A4.pdf')
-      });
+      const pdfPath = path.resolve(__dirname, '../../frontend/src/assets/Company Profile A4.pdf');
+      if (fs.existsSync(pdfPath)) {
+        emailAttachments.push({
+          filename: 'DNex Company Profile A4.pdf',
+          path: pdfPath
+        });
+      }
     }
     
     const info = await transporter.sendMail({
