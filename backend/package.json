@@ -18,7 +18,8 @@
     "express": "^4.21.2",
     "nodemailer": "^9.0.3",
     "pdfkit": "^0.19.1",
-    "razorpay": "^2.9.8"
+    "razorpay": "^2.9.8",
+    "ws": "^8.21.3"
   },
   "devDependencies": {
     "nodemon": "^3.1.10",
