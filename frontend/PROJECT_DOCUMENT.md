@@ -1,6 +1,6 @@
 # DNex Project — Living Feature Document
 > **Auto-generated** — Do not edit manually. Regenerated on every `npm run dev` save and `npm run build`.
-> Last updated: **Wednesday, 19 August 2026 at 3:29 pm**
+> Last updated: **Sunday, 23 August 2026 at 1:02 am**
 
 ---
 
@@ -8,7 +8,7 @@
 
 | Metric | Count |
 |--------|-------|
-| TypeScript/TSX files | 127 |
+| TypeScript/TSX files | 129 |
 | CSS stylesheets | 6 |
 | SQL schema files | 0 |
 | Registered routes | 0 |
@@ -19,18 +19,20 @@
 
 ## 🌐 Public Website
 
-### Pages (9)
+### Pages (11)
 
 | Page | File | Lines |
 |------|------|-------|
-| **About** | `src/app/pages/About.tsx` | 456 |
-| **ClientPayment** | `src/app/pages/ClientPayment.tsx` | 230 |
+| **About** | `src/app/pages/About.tsx` | 458 |
+| **ClientPayment** | `src/app/pages/ClientPayment.tsx` | 226 |
+| **ClientUploadPortal** | `src/app/pages/ClientUploadPortal.tsx` | 239 |
 | **Contact** | `src/app/pages/Contact.tsx` | 110 |
 | **FreeZone** | `src/app/pages/FreeZone.tsx` | 876 |
 | **Home** | `src/app/pages/Home.tsx` | 24 |
 | **IndiaServices** | `src/app/pages/IndiaServices.tsx` | 553 |
 | **NotFound** | `src/app/pages/NotFound.tsx` | 106 |
-| **OurServices** | `src/app/pages/OurServices.tsx` | 1027 |
+| **OurServices** | `src/app/pages/OurServices.tsx` | 1082 |
+| **PrivacyPolicy** | `src/app/pages/PrivacyPolicy.tsx` | 239 |
 | **Root** | `src/app/pages/Root.tsx` | 48 |
 
 ### Home Section Components (9)
@@ -137,7 +139,7 @@ New → Contacted → In Progress → Closed
 | Page | File | Lines |
 |------|------|-------|
 | **AnalyticsPage** | `src/app/crm/pages/AnalyticsPage.tsx` | 138 |
-| **CaseDetailPage** | `src/app/crm/pages/CaseDetailPage.tsx` | 872 |
+| **CaseDetailPage** | `src/app/crm/pages/CaseDetailPage.tsx` | 960 |
 | **CasesPage** | `src/app/crm/pages/CasesPage.tsx` | 211 |
 | **CRMDashboard** | `src/app/crm/pages/CRMDashboard.tsx` | 256 |
 | **CRMLayout** | `src/app/crm/pages/CRMLayout.tsx` | 44 |
@@ -344,7 +346,7 @@ src/
 │   │   ├── Navbar.tsx
 │   │   ├── Footer.tsx
 │   │   └── TeamCarousel.tsx
-│   ├── pages/              # 9 public pages
+│   ├── pages/              # 11 public pages
 │   ├── admin/              # Admin Portal
 │   │   ├── pages/          # 9 admin pages
 │   │   ├── components/     # 6 admin components

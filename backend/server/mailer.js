@@ -294,6 +294,91 @@ app.post('/api/subscribe', async (req, res) => {
 });
 
 // ═════════════════════════════════════════════════════════════════════════════
+// PUBLIC PORTAL API (Bypasses RLS)
+// ═════════════════════════════════════════════════════════════════════════════
+
+app.get('/api/public/cases/:id', async (req, res) => {
+  try {
+    const crmCase = await prisma.crm_cases.findUnique({
+      where: { id: req.params.id }
+    });
+    if (!crmCase) return res.status(404).json({ error: 'Case not found' });
+    res.json(crmCase);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+app.get('/api/public/documents/:caseId', async (req, res) => {
+  try {
+    const docs = await prisma.crm_documents.findMany({
+      where: { case_id: req.params.caseId },
+      orderBy: { created_at: 'desc' }
+    });
+    res.json(docs);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+app.post('/api/public/documents/upload', async (req, res) => {
+  const { caseId, docName, fileName, fileBase64, uploadedByName } = req.body;
+  if (!caseId || !docName || !fileBase64 || !fileName) {
+    return res.status(400).json({ error: 'Missing required fields' });
+  }
+  
+  if (!supabaseAdmin) {
+    return res.status(500).json({ error: 'Supabase admin client missing' });
+  }
+
+  try {
+    // 1. Get next version
+    const existing = await prisma.crm_documents.findFirst({
+      where: { case_id: caseId, name: docName },
+      orderBy: { version: 'desc' }
+    });
+    const nextVersion = existing ? existing.version + 1 : 1;
+
+    // 2. Decode base64
+    const buffer = Buffer.from(fileBase64.split(',')[1] || fileBase64, 'base64');
+    const storagePath = `${caseId}/${docName}_v${nextVersion}_${Date.now()}_${fileName}`;
+
+    // 3. Upload to supabase
+    const { data: uploadData, error: uploadError } = await supabaseAdmin.storage
+      .from('crm-documents')
+      .upload(storagePath, buffer, {
+        contentType: fileName.endsWith('.pdf') ? 'application/pdf' : 'image/jpeg',
+        upsert: false
+      });
+
+    if (uploadError) throw uploadError;
+
+    // 4. Get public URL
+    const { data: urlData } = supabaseAdmin.storage
+      .from('crm-documents')
+      .getPublicUrl(storagePath);
+    
+    // 5. Insert into DB using Prisma
+    const newDoc = await prisma.crm_documents.create({
+      data: {
+        case_id: caseId,
+        name: docName,
+        file_name: fileName,
+        url: urlData.publicUrl,
+        version: nextVersion,
+        status: 'pending',
+        uploaded_by_name: uploadedByName || 'Client'
+      }
+    });
+
+    res.json(newDoc);
+  } catch (err) {
+    console.error('Upload Error:', err);
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// ═════════════════════════════════════════════════════════════════════════════
 // EMAIL API
 // ═════════════════════════════════════════════════════════════════════════════
 
@@ -307,7 +392,13 @@ app.post('/api/notify/email', async (req, res) => {
   try {
     const fs = require('fs');
     const logoPath = path.resolve(__dirname, '../../frontend/src/assets/images/website_logo.png');
-    const emailAttachments = attachments ? [...attachments] : [];
+    const emailAttachments = attachments && Array.isArray(attachments) 
+      ? attachments.map(a => ({
+          filename: a.filename,
+          content: a.encoding === 'base64' ? Buffer.from(a.content, 'base64') : a.content,
+          contentType: a.contentType
+        }))
+      : [];
 
     if (fs.existsSync(logoPath)) {
       emailAttachments.push({
@@ -351,6 +442,74 @@ app.post('/api/notify/email', async (req, res) => {
 
 app.get('/api/health', (_req, res) => {
   res.json({ status: 'ok', service: 'dnex-backend', db: 'prisma', ts: new Date().toISOString() });
+});
+
+// ═════════════════════════════════════════════════════════════════════════════
+// QUOTATION CLIENT ACTIONS
+// ═════════════════════════════════════════════════════════════════════════════
+
+const renderHtml = (title, message, color) => `
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>${title} — DNex Consulting</title>
+  <style>
+    body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: #f8fafc; display: flex; justify-content: center; align-items: center; height: 100vh; margin: 0; }
+    .card { background: white; padding: 40px; border-radius: 12px; box-shadow: 0 10px 25px rgba(0,0,0,0.05); text-align: center; max-width: 450px; width: 90%; border-top: 4px solid ${color}; }
+    h1 { color: #1e293b; margin-top: 0; font-size: 24px; }
+    p { color: #64748b; line-height: 1.6; font-size: 15px; }
+  </style>
+</head>
+<body>
+  <div class="card">
+    <h1>${title}</h1>
+    <p>${message}</p>
+  </div>
+</body>
+</html>
+`;
+
+app.get('/api/quotation/accept', async (req, res) => {
+  const { case_id } = req.query;
+  if (!case_id) return res.status(400).send('Missing case_id');
+  try {
+    const c = await prisma.crm_cases.findUnique({ where: { id: case_id } });
+    if (!c) return res.status(404).send('Case not found');
+    
+    // Only update if it's currently Quotation Sent, to avoid overwriting a case that's already processed
+    if (c.status === 'Quotation Sent') {
+      await prisma.crm_cases.update({
+        where: { id: case_id },
+        data: { status: 'Payment Pending', updated_at: new Date() }
+      });
+    }
+    res.send(renderHtml('Quotation Accepted', 'Thank you! You have successfully accepted the quotation. Our team will contact you shortly regarding the next steps for payment.', '#10b981'));
+  } catch (err) {
+    console.error(err);
+    res.status(500).send('Internal Server Error');
+  }
+});
+
+app.get('/api/quotation/reject', async (req, res) => {
+  const { case_id } = req.query;
+  if (!case_id) return res.status(400).send('Missing case_id');
+  try {
+    const c = await prisma.crm_cases.findUnique({ where: { id: case_id } });
+    if (!c) return res.status(404).send('Case not found');
+    
+    if (c.status === 'Quotation Sent') {
+      await prisma.crm_cases.update({
+        where: { id: case_id },
+        data: { status: 'Not Interested', not_interested_reason: 'Client rejected the quotation via email link.', updated_at: new Date() }
+      });
+    }
+    res.send(renderHtml('Quotation Rejected', 'We have received your response. If you have any further questions or require a revised quotation, please reach out to us.', '#ef4444'));
+  } catch (err) {
+    console.error(err);
+    res.status(500).send('Internal Server Error');
+  }
 });
 
 // ═════════════════════════════════════════════════════════════════════════════

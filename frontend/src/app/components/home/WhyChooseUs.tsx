@@ -51,22 +51,7 @@ export function WhyChooseUs() {
               />
             </div>
 
-            {/* Floating stat card */}
-            <div
-              className="absolute -bottom-6 -right-4 bg-white rounded-2xl shadow-xl p-5 flex items-center gap-4"
-              style={{ border: `1px solid #e8edf2` }}
-            >
-              <div
-                className="w-12 h-12 rounded-xl flex items-center justify-center"
-                style={{ backgroundColor: 'rgba(201,150,60,0.12)' }}
-              >
-                <Shield size={22} style={{ color: GOLD }} />
-              </div>
-              <div>
-                <div className="text-xs font-bold" style={{ color: NAVY }}>ISO 9001</div>
-                <div className="text-xs text-gray-500">Certified Partner</div>
-              </div>
-            </div>
+            {/* Floating stat card removed */}
 
             {/* Floating trust card */}
             <div
@@ -126,20 +111,7 @@ export function WhyChooseUs() {
               ))}
             </div>
 
-            {/* Certifications - ISO only */}
-            <div className="mt-8 pt-8 border-t border-gray-200">
-              <p className="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-3">
-                Certifications &amp; Approvals
-              </p>
-              <div className="flex flex-wrap gap-2">
-                <div
-                  className="px-3 py-1.5 rounded-lg border text-xs font-medium"
-                  style={{ borderColor: '#dde3ea', color: '#374151', backgroundColor: '#fff' }}
-                >
-                  ISO 9001
-                </div>
-              </div>
-            </div>
+            {/* Certifications removed */}
 
             <Link
               to="/about"

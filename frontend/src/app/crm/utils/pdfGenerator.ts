@@ -67,9 +67,9 @@ export function generateQuotationPDFBase64(data: PDFData): string {
   const refNo = `DNX-QT-${Math.floor(1000 + Math.random() * 9000)}`;
 
   // Metadata block (Right aligned)
-  doc.text(`Reference No:`, pageWidth - 160, 150);
-  doc.text(`Date:`, pageWidth - 160, 165);
-  doc.text(`Valid Until:`, pageWidth - 160, 180);
+  doc.text(`Reference No:`, pageWidth - 180, 150);
+  doc.text(`Date:`, pageWidth - 180, 165);
+  doc.text(`Valid Until:`, pageWidth - 180, 180);
 
   doc.setFont('helvetica', 'bold');
   doc.text(refNo, pageWidth - 40, 150, { align: 'right' });

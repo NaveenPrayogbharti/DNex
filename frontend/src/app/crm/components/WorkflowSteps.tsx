@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef } from 'react';
 import { supabase } from '../../../lib/supabase';
-import { Phone, CheckCircle, XCircle, ChevronRight, ChevronDown, Send, FileText, CreditCard, Package, ArrowLeft, Plus, Paperclip, Image, File } from 'lucide-react';
+import { Phone, CheckCircle, XCircle, ChevronRight, ChevronDown, Send, FileText, CreditCard, Package, ArrowLeft, Plus, Paperclip, Image, File, UploadCloud } from 'lucide-react';
 import logo from '@/assets/images/website_logo.png';
 import { updateCaseStatus, updateCase, updateCaseWorkflowField } from '../services/caseService';
 import type { CRMCase, CaseStatus } from '../services/caseService';
@@ -29,7 +29,7 @@ interface AttachmentFile {
   encoding: 'base64';
   sizeKb: number;        // for display
 }
-const MAX_ATTACH_MB = 5;
+const MAX_ATTACH_MB = 10;
 function getAttachIcon(contentType: string) {
   if (contentType.startsWith('image/')) return <Image size={13} color='#94a3b8' />;
   if (contentType === 'application/pdf' || contentType.includes('text')) return <FileText size={13} color='#94a3b8' />;
@@ -193,19 +193,26 @@ export function RequirementStep({ crmCase, onRefresh, onBack, isViewOnly, isCase
   const [saving, setSaving] = useState(false);
   const [natSearch, setNatSearch] = useState('');
   const [natOpen, setNatOpen] = useState(false);
+  const [serviceOpen, setServiceOpen] = useState(false);
   const [historicalEditMode, setHistoricalEditMode] = useState(false);
+  const [services, setServices] = useState<ServiceItem[]>([]);
   const effectivelyViewOnly = isViewOnly && !historicalEditMode;
+
+  useEffect(() => {
+    fetchServicesForCRM().then(setServices).catch(console.error);
+  }, []);
 
   const updateHistory = async () => {
     setSaving(true);
     try {
       await updateCaseWorkflowField(crmCase.id, 'requirement_data', fields);
+      await updateCase(crmCase.id, { service_type: fields.service_title });
+      await updateCaseWorkflowField(crmCase.id, 'selected_service', fields.service_title);
       onRefresh();
       setHistoricalEditMode(false);
       if (onReturnToCurrent) onReturnToCurrent();
     } finally { setSaving(false); }
   };
-
 
   const businessTypes = [
     'Trading / E-Commerce',
@@ -264,7 +271,9 @@ export function RequirementStep({ crmCase, onRefresh, onBack, isViewOnly, isCase
     setSaving(true);
     try {
       await updateCaseWorkflowField(crmCase.id, 'requirement_data', fields);
-      await updateCaseStatus(crmCase.id, 'Interested');
+      await updateCase(crmCase.id, { service_type: fields.service_title });
+      await updateCaseWorkflowField(crmCase.id, 'selected_service', fields.service_title);
+      await updateCaseStatus(crmCase.id, 'Service Assigned');
       onRefresh();
     } finally { setSaving(false); }
   };
@@ -314,11 +323,94 @@ export function RequirementStep({ crmCase, onRefresh, onBack, isViewOnly, isCase
       </div>
 
       {/* Service Requirement Title */}
-      <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
+      <div style={{ display: 'flex', flexDirection: 'column', gap: 6, position: 'relative' }}>
         <label style={{ fontSize: 12, color: '#94a3b8', fontWeight: 600 }}>Service Requirement Title *</label>
-        <input className="crm-input" placeholder="e.g. Free Zone Company Setup — IFZA"
-          value={fields.service_title} disabled={effectivelyViewOnly}
-          onChange={e => setFields(f => ({ ...f, service_title: e.target.value }))} />
+        
+        <div 
+          className="crm-input" 
+          style={{ minHeight: 38, cursor: effectivelyViewOnly ? 'default' : 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '6px 12px' }}
+          onClick={() => !effectivelyViewOnly && setServiceOpen(!serviceOpen)}
+        >
+          <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6, flex: 1 }}>
+            {fields.service_title ? fields.service_title.split(', ').map(s => (
+              <span key={s} style={{ background: 'rgba(201,150,60,0.1)', color: '#C9963C', padding: '2px 8px', borderRadius: 4, fontSize: 12, fontWeight: 500, display: 'inline-flex', alignItems: 'center', gap: 4 }}>
+                {s}
+                {!effectivelyViewOnly && (
+                  <span 
+                    style={{ cursor: 'pointer', opacity: 0.6 }}
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      const next = fields.service_title.split(', ').filter(x => x !== s);
+                      setFields(f => ({ ...f, service_title: next.join(', ') }));
+                    }}
+                  >
+                    ×
+                  </span>
+                )}
+              </span>
+            )) : <span style={{ color: '#94a3b8' }}>Select services...</span>}
+          </div>
+          <ChevronDown size={14} style={{ color: '#94a3b8', flexShrink: 0 }} />
+        </div>
+
+        {serviceOpen && !effectivelyViewOnly && (
+          <div style={{ position: 'absolute', top: '100%', left: 0, right: 0, background: '#fff', border: '1px solid #e2e8f0', borderRadius: 6, zIndex: 10, maxHeight: 220, overflowY: 'auto', boxShadow: '0 4px 12px rgba(0,0,0,0.1)', marginTop: 4 }}>
+            {services.map(svc => {
+              const service = svc.title;
+              const selected = (fields.service_title || '').split(', ').includes(service);
+              return (
+                <div 
+                  key={svc.id}
+                  style={{ padding: '8px 12px', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 8, background: selected ? '#f8fafc' : '#fff', borderBottom: '1px solid #f1f5f9' }}
+                  onClick={() => {
+                    const current = (fields.service_title || '').split(', ').filter(Boolean);
+                    let next;
+                    if (current.includes(service)) next = current.filter(s => s !== service);
+                    else next = [...current, service];
+                    setFields(f => ({ ...f, service_title: next.join(', ') }));
+                  }}
+                  onMouseEnter={e => (e.currentTarget.style.background = '#f1f5f9')}
+                  onMouseLeave={e => (e.currentTarget.style.background = selected ? '#f8fafc' : '#fff')}
+                >
+                  <input type="checkbox" checked={selected} readOnly style={{ accentColor: '#C9963C' }} />
+                  <span style={{ fontSize: 13, color: '#1e293b' }}>{service}</span>
+                </div>
+              );
+            })}
+            <div style={{ padding: '8px 12px', borderBottom: '1px solid #f1f5f9' }}>
+              <input 
+                className="crm-input" 
+                placeholder="Other custom service..." 
+                style={{ fontSize: 13, padding: '4px 8px' }}
+                onKeyDown={e => {
+                  if (e.key === 'Enter') {
+                    e.preventDefault();
+                    const val = e.currentTarget.value.trim();
+                    if (val) {
+                      const current = (fields.service_title || '').split(', ').filter(Boolean);
+                      if (!current.includes(val)) {
+                        setFields(f => ({ ...f, service_title: [...current, val].join(', ') }));
+                      }
+                      e.currentTarget.value = '';
+                    }
+                  }
+                }}
+              />
+            </div>
+            <div style={{ position: 'sticky', bottom: 0, background: '#fff', padding: '8px 12px', borderTop: '1px solid #e2e8f0', display: 'flex', justifyContent: 'flex-start' }}>
+              <button 
+                onClick={(e) => {
+                  e.stopPropagation();
+                  setServiceOpen(false);
+                }}
+                className="crm-btn crm-btn--primary" 
+                style={{ fontSize: 12, padding: '4px 16px' }}
+              >
+                Done
+              </button>
+            </div>
+          </div>
+        )}
       </div>
 
       <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12 }}>
@@ -429,161 +521,6 @@ export function RequirementStep({ crmCase, onRefresh, onBack, isViewOnly, isCase
   );
 }
 
-// ── Step: Service Assignment (Multi-Select) ───────────────────────────────────
-export function ServiceStep({ crmCase, onRefresh, onBack, isViewOnly, isCaseLocked, onReturnToCurrent }: Props) {
-  const [services, setServices] = useState<ServiceItem[]>([]);
-  const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
-  const [customService, setCustomService] = useState('');
-  const [showCustom, setShowCustom] = useState(false);
-  const [saving, setSaving] = useState(false);
-  const [historicalEditMode, setHistoricalEditMode] = useState(false);
-  const effectivelyViewOnly = isViewOnly && !historicalEditMode;
-
-  const updateHistory = async () => {
-    if (!effectiveTitle) return;
-    setSaving(true);
-    try {
-      await updateCaseWorkflowField(crmCase.id, 'selected_service', effectiveTitle);
-      await updateCase(crmCase.id, { service_type: effectiveTitle });
-      onRefresh();
-      setHistoricalEditMode(false);
-      if (onReturnToCurrent) onReturnToCurrent();
-    } finally { setSaving(false); }
-  };
-
-  useEffect(() => {
-    fetchServicesForCRM().then(setServices).catch(console.error);
-  }, []);
-
-  const toggleService = (id: string) => {
-    setSelectedIds(prev => {
-      const next = new Set(prev);
-      if (next.has(id)) next.delete(id); else next.add(id);
-      return next;
-    });
-    setShowCustom(false);
-  };
-
-  const selectedServices = services.filter(s => selectedIds.has(s.id));
-  const effectiveTitles = showCustom
-    ? (customService ? [customService] : [])
-    : selectedServices.map(s => s.title);
-  const effectiveTitle = effectiveTitles.join(', ');
-
-  const allRequiredDocs = Array.from(new Set(
-    selectedServices.flatMap(s => s.required_docs ?? [])
-  ));
-
-  const confirm = async () => {
-    if (!effectiveTitle) return;
-    setSaving(true);
-    try {
-      await updateCaseWorkflowField(crmCase.id, 'selected_service', effectiveTitle);
-      await updateCase(crmCase.id, { service_type: effectiveTitle });
-      await updateCaseStatus(crmCase.id, 'Service Assigned');
-      onRefresh();
-    } finally { setSaving(false); }
-  };
-
-  return (
-    <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
-      {onBack && (
-        <button className="crm-btn crm-btn--ghost" style={{ alignSelf: 'flex-start' }} onClick={onBack}>
-          <ArrowLeft size={14} /> Back
-        </button>
-      )}
-      <div style={{ display:'flex', justifyContent:'space-between', alignItems:'center' }}>
-        <div style={{ color:GOLD, fontWeight:700, fontSize:15 }}><Package size={18} style={{ display:'inline', marginRight:6 }}/>Select Services <span style={{ fontSize:12, color:'#94a3b8', fontWeight:400 }}>(select all that apply)</span></div>
-        {isViewOnly && !historicalEditMode && !isCaseLocked && (
-          <button className="crm-btn crm-btn--ghost" style={{ fontSize:12, padding:'4px 10px' }} onClick={() => setHistoricalEditMode(true)}>
-            ✏️ Edit Data
-          </button>
-        )}
-        {historicalEditMode && (
-          <div style={{ display:'flex', gap:8 }}>
-            <button className="crm-btn crm-btn--ghost" style={{ fontSize:12, padding:'4px 10px' }} onClick={() => setHistoricalEditMode(false)}>Cancel</button>
-            <button className="crm-btn crm-btn--primary" style={{ fontSize:12, padding:'4px 10px', background:'#eab308' }} disabled={saving} onClick={updateHistory}>{saving ? 'Updating...' : 'Save Updates'}</button>
-          </div>
-        )}
-      </div>
-
-      {/* Selected summary badge */}
-      {effectiveTitles.length > 0 && (
-        <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6 }}>
-          {effectiveTitles.map(t => (
-            <span key={t} style={{ background: 'rgba(201,150,60,0.15)', color: GOLD, padding: '3px 10px', borderRadius: 20, fontSize: 12, fontWeight: 600 }}>{t}</span>
-          ))}
-        </div>
-      )}
-
-      {services.length === 0 ? (
-        <div style={{ padding: 20, textAlign: 'center', color: '#64748b', fontSize: 14 }}>Loading services...</div>
-      ) : (
-        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10 }}>
-          {services.map(svc => {
-            const isChecked = selectedIds.has(svc.id);
-            return (
-              <div key={svc.id}
-                onClick={() => { if (!effectivelyViewOnly) { toggleService(svc.id); } }}
-                style={{
-                  padding: 14, border: `2px solid ${isChecked ? GOLD : 'rgba(0,0,0,0.1)'}`,
-                  borderRadius: 10, cursor: effectivelyViewOnly ? 'default' : 'pointer',
-                  background: isChecked ? 'rgba(201,150,60,0.08)' : 'rgba(0,0,0,0.02)',
-                  transition: 'all 0.2s', display: 'flex', gap: 10, alignItems: 'flex-start',
-                }}>
-                <div style={{ marginTop: 2, flexShrink: 0, width: 18, height: 18, border: `2px solid ${isChecked ? GOLD : '#cbd5e1'}`, borderRadius: 4, background: isChecked ? GOLD : 'transparent', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                  {isChecked && <span style={{ color: '#fff', fontSize: 12, fontWeight: 700 }}>✓</span>}
-                </div>
-                <div style={{ flex: 1 }}>
-                  <div style={{ fontWeight: 700, color: '#1e293b', fontSize: 14 }}>{svc.title}</div>
-                  <div style={{ fontSize: 12, color: '#64748b', marginTop: 4 }}>{svc.description}</div>
-                </div>
-              </div>
-            );
-          })}
-          {/* Custom/Other option */}
-          <div
-            onClick={() => { if (!effectivelyViewOnly) { setShowCustom(true); setSelectedIds(new Set()); } }}
-            style={{
-              padding: 14, border: `2px solid ${showCustom ? GOLD : 'rgba(0,0,0,0.1)'}`,
-              borderRadius: 10, cursor: effectivelyViewOnly ? 'default' : 'pointer',
-              background: showCustom ? 'rgba(201,150,60,0.08)' : 'rgba(0,0,0,0.02)',
-              transition: 'all 0.2s',
-            }}>
-            <div style={{ fontWeight: 700, color: '#1e293b', fontSize: 14 }}>➕ Other / Not Listed</div>
-            <div style={{ fontSize: 12, color: '#64748b', marginTop: 4 }}>Add a custom service not in our catalog</div>
-          </div>
-        </div>
-      )}
-      {showCustom && (
-        <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
-          <label style={{ fontSize: 12, color: '#94a3b8', fontWeight: 600 }}>Custom Service Name</label>
-          <input className="crm-input" placeholder="Enter service name..." value={customService} disabled={effectivelyViewOnly}
-            onChange={e => setCustomService(e.target.value)} />
-        </div>
-      )}
-      {!showCustom && selectedServices.length > 0 && (
-        <div style={{ padding: 14, background: 'rgba(79,70,229,0.06)', border: '1px solid rgba(79,70,229,0.2)', borderRadius: 10 }}>
-          <div style={{ fontWeight: 700, color: '#4f46e5', marginBottom: 8 }}>📄 Required Documents ({selectedServices.length} service{selectedServices.length > 1 ? 's' : ''})</div>
-          <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6 }}>
-            {allRequiredDocs.length > 0
-              ? allRequiredDocs.map(d => (
-                <span key={d} style={{ background: 'rgba(79,70,229,0.1)', padding: '4px 10px', borderRadius: 20, fontSize: 12, color: '#4f46e5' }}>{d}</span>
-              ))
-              : <span style={{ fontSize: 13, color: '#64748b' }}>No specific documents listed.</span>
-            }
-          </div>
-        </div>
-      )}
-      {!isViewOnly && (
-        <button className="crm-btn crm-btn--primary" disabled={!effectiveTitle || saving} onClick={confirm} style={{ alignSelf: 'flex-start' }}>
-          {saving ? 'Saving...' : `Confirm Service${effectiveTitles.length > 1 ? 's' : ''}`}
-        </button>
-      )}
-    </div>
-  );
-}
-
 
 export function QuotationStep({ crmCase, onRefresh, onBack, isViewOnly, isCaseLocked, onReturnToCurrent }: Props) {
   const [services, setServices] = useState<ServiceItem[]>([]);
@@ -670,10 +607,11 @@ export function QuotationStep({ crmCase, onRefresh, onBack, isViewOnly, isCaseLo
         await saveQuotation();
       }
       const pdfBase64 = generateQuotationPDFBase64({ crmCase, items, subtotal, tax, taxRate, discountAmt, discountPct, total, validity, currency });
+      const BACKEND_URL = import.meta.env.VITE_API_URL || 'http://localhost:3006';
       await sendCustomEmail({
         to: crmCase.email,
         subject: `Quotation — ${crmCase.service_type} | DNex Consulting`,
-        body: `<p>Dear <strong>${crmCase.full_name}</strong>,</p><p>Please find your quotation attached below.</p><table style="border-collapse:collapse;width:100%;font-family:sans-serif"><tr><td style="padding:6px 0;color:#64748b">Service</td><td><strong>${crmCase.service_type}</strong></td></tr><tr><td style="padding:6px 0;color:#64748b">Subtotal</td><td>${currency} ${subtotal.toFixed(2)}</td></tr>${discountPct > 0 ? `<tr><td style="padding:6px 0;color:#34d399">Discount (${discountPct}%)</td><td>-${currency} ${discountAmt.toFixed(2)}</td></tr>` : ''}<tr><td style="padding:6px 0;color:#64748b">Tax (${taxRate}%)</td><td>${currency} ${tax.toFixed(2)}</td></tr><tr style="font-weight:700;font-size:16px"><td style="padding:8px 0;border-top:2px solid #e2e8f0">Total</td><td>${currency} ${total.toFixed(2)}</td></tr></table><p>Validity: ${validity} days</p>${notes ? `<p>Notes: ${notes}</p>` : ''}<p>Please reply to confirm acceptance.</p>`,
+        body: `<p>Dear <strong>${crmCase.full_name}</strong>,</p><p>Please find your quotation attached below.</p><table style="border-collapse:collapse;width:100%;font-family:sans-serif"><tr><td style="padding:6px 0;color:#64748b">Service</td><td><strong>${crmCase.service_type}</strong></td></tr><tr><td style="padding:6px 0;color:#64748b">Subtotal</td><td>${currency} ${subtotal.toFixed(2)}</td></tr>${discountPct > 0 ? `<tr><td style="padding:6px 0;color:#34d399">Discount (${discountPct}%)</td><td>-${currency} ${discountAmt.toFixed(2)}</td></tr>` : ''}<tr><td style="padding:6px 0;color:#64748b">Tax (${taxRate}%)</td><td>${currency} ${tax.toFixed(2)}</td></tr><tr style="font-weight:700;font-size:16px"><td style="padding:8px 0;border-top:2px solid #e2e8f0">Total</td><td>${currency} ${total.toFixed(2)}</td></tr></table><p>Validity: ${validity} days</p>${notes ? `<p>Notes: ${notes}</p>` : ''}<div style="margin-top:30px;margin-bottom:30px;"><p style="margin-bottom:15px;font-weight:600;">Please click one of the options below to respond:</p><a href="${BACKEND_URL}/api/quotation/accept?case_id=${crmCase.id}" style="background-color:#10b981;color:white;padding:12px 24px;text-decoration:none;border-radius:6px;font-weight:bold;margin-right:15px;display:inline-block;">✓ Accept Quotation</a><a href="${BACKEND_URL}/api/quotation/reject?case_id=${crmCase.id}" style="background-color:#ef4444;color:white;padding:12px 24px;text-decoration:none;border-radius:6px;font-weight:bold;display:inline-block;">✗ Reject Quotation</a></div>`,
         attachments: [{
           filename: `Quotation_DNX_${crmCase.case_id}.pdf`,
           content: pdfBase64,
@@ -1161,13 +1099,19 @@ export function PaymentStep({ crmCase, onRefresh, onBack, isViewOnly, effectiveS
           Please capture the client's response to the sent quotation before initiating the payment phase.
         </div>
 
-        <div style={{ display: 'flex', gap: 10, flexWrap: 'wrap' }}>
-          <button className="crm-btn crm-btn--success" disabled={saving} onClick={() => handleInterestSelect(true)}>
-            <CheckCircle size={14} /> Interested &amp; Accept Quotation
+        <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 12, padding: 30, background: 'rgba(255,255,255,0.03)', border: '1px dashed var(--crm-border)', borderRadius: 12 }}>
+          <div className="crm-spinner" style={{ width: 30, height: 30, borderColor: `${GOLD} transparent transparent transparent` }} />
+          <div style={{ fontSize: 14, color: GOLD, fontWeight: 600 }}>Waiting for Client's Approval...</div>
+          <div style={{ fontSize: 12, color: '#94a3b8', textAlign: 'center' }}>
+            We've sent the quotation via email with Accept/Reject links.<br/>
+            When the client clicks a link, this case will automatically update.
+          </div>
+          <button className="crm-btn crm-btn--ghost" onClick={onRefresh} style={{ marginTop: 10 }}>
+            🔄 Refresh Status
           </button>
-          <button className="crm-btn crm-btn--danger" disabled={saving} onClick={() => setShowNotInterested(true)}>
-            <XCircle size={14} /> Not Interested / Reject
-          </button>
+        </div>
+        
+        <div style={{ display: 'flex', gap: 10, marginTop: 16 }}>
           <button className="crm-btn crm-btn--primary" disabled={saving} onClick={handleNewQuotation} style={{ background: '#0ea5e9' }}>
             <FileText size={14} /> Re-issue New Quotation
           </button>
@@ -1403,7 +1347,7 @@ export function PreviewStep({ crmCase, onRefresh, onBack, isViewOnly, onReturnTo
 }
 
 // ── Step: Processing ─────────────────────────────────────────────────────────
-export function ProcessingStep({ crmCase, onRefresh, onBack, isViewOnly, onReturnToCurrent }: Props) {
+export function ProcessingStep({ crmCase, onRefresh, onBack, isViewOnly, onReturnToCurrent, isCompletedStage }: Props & { isCompletedStage?: boolean }) {
   const [procNotes, setProcNotes] = useState(crmCase.processing_notes || '');
   const [saving, setSaving] = useState(false);
   const [closing, setClosing] = useState(false);
@@ -1438,13 +1382,25 @@ export function ProcessingStep({ crmCase, onRefresh, onBack, isViewOnly, onRetur
     setAttachments(prev => prev.filter((_, i) => i !== idx));
 
   // Email form state
-  const [emailSubject, setEmailSubject] = useState(`Update regarding your application - ${crmCase.case_id}`);
-  const [emailBody, setEmailBody] = useState(`Dear ${crmCase.full_name},\n\nWe are pleased to inform you that your case (${crmCase.case_id}) for ${crmCase.service_type || 'business setup'} is currently in processing. We are making great progress and will share further milestones soon.\n\nBest regards,\nDNex Consulting Team`);
+  const [emailSubject, setEmailSubject] = useState(
+    isCompletedStage 
+      ? `Congratulations! Your Case is Completed - ${crmCase.case_id}`
+      : `Update regarding your application - ${crmCase.case_id}`
+  );
+  const [emailBody, setEmailBody] = useState(
+    isCompletedStage
+      ? `Dear ${crmCase.full_name},\n\nCongratulations! We are thrilled to inform you that your process for ${crmCase.service_type || 'business setup'} is now fully completed.\n\nPlease find your final documents attached to this email. We are officially closing your case on our end.\n\nThank you for choosing DNex Consulting. We wish you immense success in your business endeavors!\n\nBest regards,\nDNex Consulting Team`
+      : `Dear ${crmCase.full_name},\n\nWe are pleased to inform you that your case (${crmCase.case_id}) for ${crmCase.service_type || 'business setup'} is currently in processing. We are making great progress and will share further milestones soon.\n\nBest regards,\nDNex Consulting Team`
+  );
   const [sendingEmail, setSendingEmail] = useState(false);
   const [emailStatus, setEmailStatus] = useState<'idle' | 'success' | 'error'>('idle');
 
   // WhatsApp state
-  const [waText, setWaText] = useState(`Hello ${crmCase.full_name}, we have an update regarding your ${crmCase.service_type || 'business setup'} application with DNex Consulting. We have processed the files and submitted them to the department.`);
+  const [waText, setWaText] = useState(
+    isCompletedStage
+      ? `Congratulations ${crmCase.full_name}! 🎉 Your ${crmCase.service_type || 'business setup'} process is fully completed. Your final documents have been issued. We are now closing your case. Thank you for choosing DNex Consulting!`
+      : `Hello ${crmCase.full_name}, we have an update regarding your ${crmCase.service_type || 'business setup'} application with DNex Consulting. We have processed the files and submitted them to the department.`
+  );
   const [waTemplates, setWaTemplates] = useState<any[]>([]);
   const [showWaTemplates, setShowWaTemplates] = useState(false);
 
@@ -1481,9 +1437,28 @@ export function ProcessingStep({ crmCase, onRefresh, onBack, isViewOnly, onRetur
     setClosing(true);
     try {
       await updateCaseWorkflowField(crmCase.id, 'processing_notes', procNotes);
-      await updateCaseStatus(crmCase.id, 'Completed');
+      await updateCaseStatus(crmCase.id, isCompletedStage ? 'Closed' : 'Completed');
       onRefresh();
     } finally { setClosing(false); }
+  };
+  
+  const [uploadingFinalDoc, setUploadingFinalDoc] = useState(false);
+  const finalDocInputRef = useRef<HTMLInputElement>(null);
+  const handleFinalDocUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    setUploadingFinalDoc(true);
+    try {
+      const { uploadDocument } = await import('../services/documentService');
+      await uploadDocument(crmCase.case_id, file, 'Final Generated Document', 'Admin', crmCase.assigned_to || undefined);
+      alert('Final document uploaded successfully!');
+    } catch (err) {
+      console.error(err);
+      alert('Failed to upload final document');
+    } finally {
+      setUploadingFinalDoc(false);
+      if (finalDocInputRef.current) finalDocInputRef.current.value = '';
+    }
   };
 
   const handleSendEmail = async () => {
@@ -1528,9 +1503,13 @@ export function ProcessingStep({ crmCase, onRefresh, onBack, isViewOnly, onRetur
           <ArrowLeft size={14} /> Back
         </button>
       )}
-      <div style={{ color: GOLD, fontWeight: 700, fontSize: 15 }}>⚙️ Processing &amp; Operations</div>
-      <div style={{ padding: 12, background: 'rgba(99,102,241,0.08)', border: '1px solid rgba(99,102,241,0.2)', borderRadius: 10, fontSize: 13, color: '#4f46e5' }}>
-        Use verified documents to process the requested service. Update notes regularly — client receives periodic notifications.
+      <div style={{ color: isCompletedStage ? '#10b981' : GOLD, fontWeight: 700, fontSize: 15 }}>
+        {isCompletedStage ? '🎉 Completed & Final Handover' : '⚙️ Processing & Operations'}
+      </div>
+      <div style={{ padding: 12, background: isCompletedStage ? 'rgba(16,185,129,0.08)' : 'rgba(99,102,241,0.08)', border: isCompletedStage ? '1px solid rgba(16,185,129,0.2)' : '1px solid rgba(99,102,241,0.2)', borderRadius: 10, fontSize: 13, color: isCompletedStage ? '#059669' : '#4f46e5' }}>
+        {isCompletedStage 
+          ? 'Service is complete! Send final handover documents to the client, upload the generated license/document, and close the case.'
+          : 'Use verified documents to process the requested service. Update notes regularly — client receives periodic notifications.'}
       </div>
 
       {!isViewOnly && (
@@ -1608,9 +1587,9 @@ export function ProcessingStep({ crmCase, onRefresh, onBack, isViewOnly, onRetur
       {/* Attachment upload — before Processing Notes */}
       <div style={{ display: 'flex', flexDirection: 'column', gap: 8, borderTop: '1px solid var(--crm-border)', paddingTop: 16 }}>
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-          <label style={{ fontSize: 12, color: '#94a3b8', fontWeight: 600 }}>
-            <Paperclip size={12} style={{ marginRight: 5, verticalAlign: 'middle' }} />
-            ATTACH DOCUMENTS TO EMAIL
+          <label style={{ fontSize: 12, color: '#94a3b8', fontWeight: 600, display: 'flex', alignItems: 'center' }}>
+            <Paperclip size={12} style={{ marginRight: 5 }} />
+            {isCompletedStage ? 'UPLOAD FINAL DOCUMENTS' : 'ATTACH DOCUMENTS TO EMAIL'}
             <span style={{ fontWeight: 400, color: '#475569', marginLeft: 6 }}>(optional · max {MAX_ATTACH_MB} MB each)</span>
           </label>
           {attachments.length > 0 && (
@@ -1677,21 +1656,26 @@ export function ProcessingStep({ crmCase, onRefresh, onBack, isViewOnly, onRetur
         ))}
       </div>
 
-      <div style={{ display: 'flex', flexDirection: 'column', gap: 6, borderTop: '1px solid var(--crm-border)', paddingTop: 16 }}>
-        <label style={{ fontSize: 12, color: '#94a3b8', fontWeight: 600 }}>Processing Notes (internal)</label>
-        <textarea className="crm-textarea" rows={5} value={procNotes}
-          onChange={e => setProcNotes(e.target.value)}
-          disabled={isViewOnly}
-          placeholder="Log processing progress, steps completed, issues encountered..." />
-      </div>
+      {!isCompletedStage && (
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 6, borderTop: '1px solid var(--crm-border)', paddingTop: 16 }}>
+          <label style={{ fontSize: 12, color: '#94a3b8', fontWeight: 600 }}>Processing Notes (internal)</label>
+          <textarea className="crm-textarea" rows={5} value={procNotes}
+            onChange={e => setProcNotes(e.target.value)}
+            disabled={isViewOnly}
+            placeholder="Log processing progress, steps completed, issues encountered..." />
+        </div>
+      )}
+
 
       {!isViewOnly && (
-        <div style={{ display: 'flex', gap: 10 }}>
-          <button className="crm-btn crm-btn--ghost" disabled={saving} onClick={saveNotes}>
-            {saving ? 'Saving...' : '💾 Save Notes'}
-          </button>
+        <div style={{ display: 'flex', gap: 10, marginTop: 10 }}>
+          {!isCompletedStage && (
+            <button className="crm-btn crm-btn--ghost" disabled={saving} onClick={saveNotes}>
+              {saving ? 'Saving...' : '💾 Save Notes'}
+            </button>
+          )}
           <button className="crm-btn crm-btn--success" disabled={closing} onClick={closeCase}>
-            {closing ? '...' : '✅ Mark Service Complete & Close Case'}
+            {closing ? '...' : (isCompletedStage ? '🔒 Close Case' : '✅ Mark Service Complete')}
           </button>
         </div>
       )}

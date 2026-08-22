@@ -1,7 +1,7 @@
 import { Link } from 'react-router';
 import {
   Phone, Mail, MapPin,
-  Linkedin, Twitter, Facebook, Instagram, Youtube,
+  Linkedin, Facebook, Instagram, Youtube,
   ArrowRight, Shield, CheckCircle2,
 } from 'lucide-react';
 import { useState } from 'react';
@@ -9,6 +9,12 @@ import logo from '../../assets/images/website_logo.png';
 
 const NAVY = '#0D2137';
 const GOLD = '#C9963C';
+
+const XIcon = ({ size = 24, color = "currentColor", ...props }: any) => (
+  <svg width={size} height={size} viewBox="0 0 24 24" fill={color} {...props}>
+    <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z" />
+  </svg>
+);
 
 const footerLinks = {
   'Business Setup': [
@@ -185,10 +191,10 @@ export function Footer() {
             <div className="flex items-center gap-3 shrink-0">
               {[
                 { Icon: Linkedin, href: 'https://www.linkedin.com/company/dnex-ae/' },
-                { Icon: Twitter, href: '#' },
+                { Icon: XIcon, href: 'https://x.com/DnexAe' },
                 { Icon: Facebook, href: 'https://www.facebook.com/share/1TLUVEXNWE/' },
                 { Icon: Instagram, href: 'https://www.instagram.com/dnex.ae?igsh=MXgxd3ltNHQyYXBuYw%3D%3D&utm_source=qr' },
-                { Icon: Youtube, href: '#' },
+                { Icon: Youtube, href: 'https://www.youtube.com/channel/UCJuqp6PBtCYOxcqLjYJ8j0g' },
               ].map(({ Icon, href }, i) => (
                 <a
                   key={i}
@@ -209,17 +215,11 @@ export function Footer() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 py-5">
           <div className="flex flex-col md:flex-row items-center justify-between gap-4">
             <div className="flex items-center gap-6 flex-wrap justify-center md:justify-start">
-              <div className="flex items-center gap-2">
-                <Shield size={13} style={{ color: GOLD }} />
-                <span className="text-xs text-slate-300">ISO 9001 Certified</span>
-              </div>
             </div>
 
             <div className="flex items-center gap-5 text-xs text-slate-400">
               <Link to="/privacy" className="hover:text-white transition-colors">Privacy Policy</Link>
               <Link to="/terms" className="hover:text-white transition-colors">Terms of Service</Link>
-              <Link to="/careers" className="hover:text-white transition-colors">Careers</Link>
-              <Link to="/sitemap" className="hover:text-white transition-colors">Sitemap</Link>
             </div>
           </div>
         </div>

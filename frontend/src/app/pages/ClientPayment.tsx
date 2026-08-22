@@ -65,7 +65,6 @@ export function ClientPayment() {
         key: import.meta.env.VITE_RAZORPAY_KEY_ID || 'rzp_test_TKMzRZ167Z70fw',
         amount: payment.amount * 100,
         currency: payment.currency,
-        name: 'DNex Consulting',
         description: payment.description || 'Service Payment',
       order_id: payment.razorpay_id, 
       handler: async function (response: any) {
@@ -102,9 +101,6 @@ export function ClientPayment() {
       },
       prefill: {
         name: 'Client', // Normally we'd prefill from case data, but skipping case fetch for simplicity
-      },
-      theme: {
-        color: '#C9963C'
       }
     };
     

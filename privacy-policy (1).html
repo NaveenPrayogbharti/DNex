@@ -1,0 +1,519 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Privacy Policy | DNEX Consulting</title>
+<style>
+  :root{
+    --navy:#0d1f3c;
+    --navy-2:#132a4f;
+    --gold:#c99a3c;
+    --gold-light:#e6c579;
+    --paper:#fbfaf7;
+    --ink:#1c2430;
+    --ink-soft:#5b6472;
+    --line:#e6e2d8;
+    --max:1040px;
+  }
+  *{box-sizing:border-box;}
+  html{scroll-behavior:smooth;}
+  body{
+    margin:0;
+    font-family:'Segoe UI', -apple-system, BlinkMacSystemFont, Arial, sans-serif;
+    color:var(--ink);
+    background:var(--paper);
+    line-height:1.65;
+  }
+  a{color:var(--navy-2);}
+
+  /* ---- Top bar ---- */
+  .topbar{
+    background:var(--navy);
+    color:#dfe6f0;
+    font-size:13px;
+  }
+  .topbar-inner{
+    max-width:var(--max);
+    margin:0 auto;
+    padding:10px 24px;
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    flex-wrap:wrap;
+    gap:8px;
+  }
+  .topbar-inner span{opacity:.85;}
+
+  /* ---- Header / masthead ---- */
+  header.masthead{
+    background:linear-gradient(135deg, var(--navy) 0%, var(--navy-2) 100%);
+    color:#fff;
+    padding:56px 24px 64px;
+  }
+  .masthead-inner{
+    max-width:var(--max);
+    margin:0 auto;
+  }
+  .brand{
+    display:flex;
+    align-items:center;
+    gap:14px;
+    margin-bottom:34px;
+  }
+  .brand .logo-mark{
+    flex-shrink:0;
+    display:block;
+  }
+  .brand .wordmark{
+    font-weight:800;
+    letter-spacing:.5px;
+    font-size:24px;
+    line-height:1.1;
+    color:#fff;
+  }
+  .brand .x-mark{color:var(--gold-light);}
+  .brand small{
+    display:block;
+    font-size:9.5px;
+    font-weight:600;
+    letter-spacing:2.8px;
+    color:var(--gold-light);
+    margin-top:3px;
+  }
+  .eyebrow{
+    text-transform:uppercase;
+    letter-spacing:2.5px;
+    font-size:12px;
+    color:var(--gold-light);
+    font-weight:700;
+    margin-bottom:14px;
+  }
+  h1.title{
+    font-size:clamp(30px, 4.5vw, 46px);
+    margin:0 0 14px;
+    font-weight:800;
+    letter-spacing:-0.5px;
+  }
+  .subtitle{
+    color:#c7d1e0;
+    font-size:16px;
+    max-width:640px;
+    margin:0 0 18px;
+  }
+  .meta-row{
+    display:flex;
+    gap:22px;
+    flex-wrap:wrap;
+    font-size:13px;
+    color:#aeb9cc;
+    border-top:1px solid rgba(255,255,255,0.15);
+    padding-top:18px;
+    margin-top:22px;
+  }
+  .meta-row b{color:#e9edf3;}
+
+  /* ---- Layout ---- */
+  .layout{
+    max-width:var(--max);
+    margin:0 auto;
+    padding:48px 24px 90px;
+    display:grid;
+    grid-template-columns:250px 1fr;
+    gap:52px;
+    align-items:start;
+  }
+  @media (max-width:820px){
+    .layout{grid-template-columns:1fr;}
+  }
+
+  /* ---- TOC ---- */
+  nav.toc{
+    position:sticky;
+    top:24px;
+    border-left:2px solid var(--line);
+    padding-left:20px;
+  }
+  nav.toc .toc-label{
+    font-size:11px;
+    letter-spacing:2px;
+    text-transform:uppercase;
+    color:var(--ink-soft);
+    font-weight:700;
+    margin-bottom:14px;
+  }
+  nav.toc ol{
+    list-style:none;
+    margin:0;
+    padding:0;
+    counter-reset:toc;
+  }
+  nav.toc li{counter-increment:toc;margin-bottom:10px;}
+  nav.toc a{
+    text-decoration:none;
+    color:var(--ink-soft);
+    font-size:13.5px;
+    display:flex;
+    gap:8px;
+    transition:color .15s ease;
+  }
+  nav.toc a::before{
+    content:counter(toc, decimal-leading-zero);
+    color:var(--gold);
+    font-weight:700;
+    font-size:12px;
+    flex-shrink:0;
+  }
+  nav.toc a:hover{color:var(--navy);}
+
+  /* ---- Content ---- */
+  main.content section{
+    margin-bottom:38px;
+    scroll-margin-top:24px;
+  }
+  main.content h2{
+    font-size:20px;
+    color:var(--navy);
+    margin:0 0 14px;
+    padding-bottom:10px;
+    border-bottom:1px solid var(--line);
+    display:flex;
+    align-items:baseline;
+    gap:10px;
+  }
+  main.content h2 .num{
+    color:var(--gold);
+    font-size:14px;
+    font-weight:800;
+  }
+  main.content h3{
+    font-size:15px;
+    color:var(--navy-2);
+    margin:20px 0 8px;
+  }
+  main.content p{
+    margin:0 0 12px;
+    color:var(--ink);
+    font-size:15px;
+  }
+  main.content ul{
+    margin:0 0 14px;
+    padding-left:20px;
+  }
+  main.content li{
+    margin-bottom:7px;
+    font-size:15px;
+  }
+  .note-box{
+    background:#f4ede0;
+    border-left:3px solid var(--gold);
+    padding:14px 18px;
+    font-size:13.5px;
+    color:#5a4a26;
+    border-radius:0 6px 6px 0;
+    margin:14px 0;
+  }
+  .service-grid{
+    display:grid;
+    grid-template-columns:repeat(auto-fit, minmax(200px,1fr));
+    gap:10px;
+    margin:12px 0 16px;
+  }
+  .service-chip{
+    background:#fff;
+    border:1px solid var(--line);
+    border-radius:8px;
+    padding:10px 14px;
+    font-size:13.5px;
+    color:var(--navy-2);
+    font-weight:600;
+  }
+
+  /* ---- Contact card ---- */
+  .contact-card{
+    background:var(--navy);
+    color:#fff;
+    border-radius:12px;
+    padding:30px 32px;
+    margin-top:10px;
+  }
+  .contact-card h2{
+    color:#fff;
+    border-bottom-color:rgba(255,255,255,.15);
+  }
+  .contact-card h2 .num{color:var(--gold-light);}
+  .contact-grid{
+    display:grid;
+    grid-template-columns:repeat(auto-fit,minmax(180px,1fr));
+    gap:16px;
+    margin-top:16px;
+  }
+  .contact-item{font-size:14px;}
+  .contact-item .label{
+    color:var(--gold-light);
+    font-size:11px;
+    letter-spacing:1.5px;
+    text-transform:uppercase;
+    font-weight:700;
+    margin-bottom:5px;
+  }
+  .contact-item a{color:#fff;text-decoration:none;}
+  .contact-item a:hover{text-decoration:underline;}
+
+  footer{
+    text-align:center;
+    padding:26px 24px 40px;
+    font-size:12.5px;
+    color:var(--ink-soft);
+  }
+
+  /* Back to top */
+  .top-link{
+    display:inline-block;
+    margin-top:6px;
+    font-size:12px;
+    color:var(--ink-soft);
+    text-decoration:none;
+  }
+  .top-link:hover{color:var(--navy);}
+
+  @media print{
+    .topbar, nav.toc{display:none;}
+    .layout{grid-template-columns:1fr;}
+    header.masthead{background:#fff;color:#000;}
+    h1.title, .brand, .eyebrow{color:#000 !important;}
+    .subtitle,.meta-row,.meta-row b{color:#333 !important;}
+  }
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <div class="topbar-inner">
+    <span>+971 55 125 1185 &nbsp;|&nbsp; info@dnex.ae</span>
+    <span>Setup to Compliance</span>
+  </div>
+</div>
+
+<header class="masthead">
+  <div class="masthead-inner">
+    <div class="brand">
+      <svg class="logo-mark" width="46" height="46" viewBox="0 0 46 46" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="DNEX logo">
+        <rect x="0.5" y="0.5" width="45" height="45" rx="10" fill="#0a1830" stroke="#c99a3c" stroke-width="1"/>
+        <path d="M13 13 L23 23 L13 33" stroke="#c99a3c" stroke-width="3.4" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+        <path d="M23 13 L33 23 L23 33" stroke="#ffffff" stroke-width="3.4" fill="none" stroke-linecap="round" stroke-linejoin="round" opacity="0.9"/>
+      </svg>
+      <span>
+        <span class="wordmark">DNE<span class="x-mark">X</span></span>
+        <small>SETUP&nbsp;TO&nbsp;COMPLIANCE</small>
+      </span>
+    </div>
+    <div class="eyebrow">Legal &amp; Compliance</div>
+    <h1 class="title">Privacy Policy</h1>
+    <p class="subtitle">How DNEX Consulting collects, uses, and protects your personal information across our business setup, banking, PRO, taxation, accounting, compliance, and India advisory services.</p>
+    <div class="meta-row">
+      <span><b>Effective date:</b> August 22, 2026</span>
+      <span><b>Applies to:</b> dnex.ae and all related services</span>
+      <span><b>Jurisdiction:</b> United Arab Emirates</span>
+    </div>
+  </div>
+</header>
+
+<div class="layout">
+
+  <nav class="toc" aria-label="Table of contents">
+    <div class="toc-label">On this page</div>
+    <ol>
+      <li><a href="#info-we-collect">Information We Collect</a></li>
+      <li><a href="#how-we-use">How We Use Your Information</a></li>
+      <li><a href="#legal-basis">Legal Basis for Processing</a></li>
+      <li><a href="#sharing">Sharing of Information</a></li>
+      <li><a href="#payments">Online Payments</a></li>
+      <li><a href="#cookies">Cookies &amp; Tracking</a></li>
+      <li><a href="#retention">Data Retention</a></li>
+      <li><a href="#security">Data Security</a></li>
+      <li><a href="#rights">Your Rights</a></li>
+      <li><a href="#third-party">Third-Party Links</a></li>
+      <li><a href="#children">Children's Privacy</a></li>
+      <li><a href="#changes">Changes to This Policy</a></li>
+      <li><a href="#contact">Contact Us</a></li>
+    </ol>
+  </nav>
+
+  <main class="content">
+
+    <section>
+      <p>DNEX Consulting ("DNEX", "we", "us", "our") provides business setup, banking support, PRO services, taxation, accounting, compliance, and India-related corporate services in the United Arab Emirates. This Privacy Policy explains how we collect, use, store, share, and protect your personal information when you visit our website, use our services, communicate with us, or make payments to us.</p>
+      <p>By using our website or engaging our services, you agree to the terms of this Privacy Policy. If you do not agree, please do not use our website or services.</p>
+    </section>
+
+    <section id="info-we-collect">
+      <h2><span class="num">01</span> Information We Collect</h2>
+      <p>We collect information online through our website forms, WhatsApp, email, phone, and during the course of delivering our services.</p>
+
+      <h3>Personal Information You Provide</h3>
+      <ul>
+        <li>Full name, email address, phone number, and WhatsApp number</li>
+        <li>Company name, trade license details, and business activity information</li>
+        <li>Passport, Emirates ID, visa, and immigration-related documents (for PRO and visa services)</li>
+        <li>Financial and banking information required for Banking Support services</li>
+        <li>Tax registration numbers, VAT details, and financial records (Taxation, Corporate Tax, and Accounting &amp; Audit)</li>
+        <li>Company incorporation, ROC, GST, PAN, and KYC documents (India Services)</li>
+        <li>Information submitted through contact forms, consultation requests, or the "Contact Us" page</li>
+      </ul>
+
+      <h3>Information Collected Automatically</h3>
+      <ul>
+        <li>IP address, browser type, device type, and operating system</li>
+        <li>Pages visited, time spent on the website, and referring website</li>
+        <li>Cookies and similar tracking technologies</li>
+      </ul>
+
+      <h3>Payment Information</h3>
+      <p>When you make payments to us online, we (or our third-party payment processors) collect cardholder name, billing address, payment/bank transfer details, and transaction reference information.</p>
+      <div class="note-box">DNEX does not permanently store full payment card numbers or CVV codes on its own servers. Card payments are processed through secure, PCI-DSS-compliant third-party payment gateways.</div>
+    </section>
+
+    <section id="how-we-use">
+      <h2><span class="num">02</span> How We Use Your Information</h2>
+      <p>We use the information we collect to provide and manage our services, including:</p>
+      <div class="service-grid">
+        <div class="service-chip">Business Setup</div>
+        <div class="service-chip">Banking Support</div>
+        <div class="service-chip">PRO &amp; Visa Services</div>
+        <div class="service-chip">Corporate Tax &amp; VAT</div>
+        <div class="service-chip">Accounting &amp; Audit</div>
+        <div class="service-chip">Compliance &amp; Regulatory</div>
+        <div class="service-chip">India Company Incorporation</div>
+        <div class="service-chip">ROC &amp; GST Compliance</div>
+      </div>
+      <ul>
+        <li>Process and confirm online payments and issue invoices/receipts</li>
+        <li>Communicate with you regarding service updates and support (email, phone, WhatsApp)</li>
+        <li>Submit required documents to UAE government departments, immigration authorities, the Federal Tax Authority, and Indian regulatory bodies (ROC, MCA, GST) strictly to fulfil your requested service</li>
+        <li>Verify your identity and comply with UAE Anti-Money Laundering (AML) and Know Your Customer (KYC) requirements</li>
+        <li>Improve website functionality and user experience</li>
+        <li>Send relevant updates, such as "UAE Law Updates," where you have opted in</li>
+      </ul>
+    </section>
+
+    <section id="legal-basis">
+      <h2><span class="num">03</span> Legal Basis for Processing</h2>
+      <ul>
+        <li>Your consent (e.g., submitting a form, starting a WhatsApp chat, or making a payment)</li>
+        <li>Performance of a contract (delivering the service you engaged us for)</li>
+        <li>Compliance with a legal obligation (AML/KYC checks, tax filings, immigration submissions)</li>
+        <li>Our legitimate business interests (improving services, preventing fraud)</li>
+      </ul>
+    </section>
+
+    <section id="sharing">
+      <h2><span class="num">04</span> Sharing of Information</h2>
+      <p>We do not sell your personal information. We may share it with:</p>
+      <ul>
+        <li><strong>Government &amp; Regulatory Authorities</strong> — UAE immigration authorities, the Federal Tax Authority, Department of Economic Development, and Indian authorities (ROC, MCA, GST, Income Tax) as required to deliver your service</li>
+        <li><strong>Banking Partners</strong> — for Banking Support services, to facilitate account opening or related processes</li>
+        <li><strong>Payment Processors</strong> — third-party, PCI-DSS-compliant gateways to process online payments securely</li>
+        <li><strong>Service Providers</strong> — IT hosting, communication tools (e.g., WhatsApp Business), and administrative vendors, under confidentiality obligations</li>
+        <li><strong>Legal Requirements</strong> — where required by law, court order, or to protect our legal rights</li>
+      </ul>
+      <p>We do not share your documents (passport, Emirates ID, financial records, etc.) with any third party except as necessary to complete the specific service you requested.</p>
+    </section>
+
+    <section id="payments">
+      <h2><span class="num">05</span> Online Payments</h2>
+      <ul>
+        <li>All online payments are processed via secure, encrypted, third-party payment gateways</li>
+        <li>Industry-standard SSL/TLS encryption protects payment data in transit</li>
+        <li>DNEX does not store your full card number, expiry date, or CVV on its own servers</li>
+        <li>You will receive an invoice/receipt via email upon successful payment</li>
+      </ul>
+      <p>For payment disputes, refunds (where applicable), or failed transactions, contact us at <a href="mailto:info@dnex.ae">info@dnex.ae</a> or <a href="tel:+971551251185">+971 55 125 1185</a>.</p>
+    </section>
+
+    <section id="cookies">
+      <h2><span class="num">06</span> Cookies &amp; Tracking Technologies</h2>
+      <p>Our website uses cookies and similar technologies to enable core functionality, understand website usage, improve user experience, and support the live chat/WhatsApp widget. You can control or disable cookies through your browser settings; disabling cookies may affect certain website features.</p>
+    </section>
+
+    <section id="retention">
+      <h2><span class="num">07</span> Data Retention</h2>
+      <p>We retain your personal information only as long as necessary to fulfil the purpose it was collected for, comply with UAE and Indian legal, tax, and regulatory record-keeping requirements, and resolve disputes or enforce agreements. Once no longer required, data is securely deleted or anonymized.</p>
+    </section>
+
+    <section id="security">
+      <h2><span class="num">08</span> Data Security</h2>
+      <ul>
+        <li>Secure servers and encrypted data transmission (SSL/TLS)</li>
+        <li>Restricted internal access to sensitive documents (passports, financial data, tax records)</li>
+        <li>Secure, PCI-DSS-compliant third-party payment processing</li>
+      </ul>
+      <p>While we take reasonable steps to protect your data, no method of transmission or storage is 100% secure, and we cannot guarantee absolute security.</p>
+    </section>
+
+    <section id="rights">
+      <h2><span class="num">09</span> Your Rights</h2>
+      <p>Subject to the UAE Federal Decree-Law No. 45 of 2021 on the Protection of Personal Data ("PDPL") and applicable Indian data protection laws, you have the right to:</p>
+      <ul>
+        <li>Access the personal data we hold about you</li>
+        <li>Request correction of inaccurate or incomplete data</li>
+        <li>Request deletion of your data, subject to our legal/regulatory retention obligations</li>
+        <li>Withdraw consent for marketing communications at any time</li>
+        <li>Object to certain processing of your data</li>
+      </ul>
+      <p>To exercise any of these rights, contact us at <a href="mailto:info@dnex.ae">info@dnex.ae</a>.</p>
+    </section>
+
+    <section id="third-party">
+      <h2><span class="num">10</span> Third-Party Links</h2>
+      <p>Our website may contain links to third-party websites (e.g., government portals, banking partners). We are not responsible for the privacy practices of these external websites and encourage you to review their privacy policies separately.</p>
+    </section>
+
+    <section id="children">
+      <h2><span class="num">11</span> Children's Privacy</h2>
+      <p>Our services are intended for individuals and businesses engaging in company setup, compliance, and related corporate services. We do not knowingly collect personal information from individuals under the age of 18.</p>
+    </section>
+
+    <section id="changes">
+      <h2><span class="num">12</span> Changes to This Privacy Policy</h2>
+      <p>We may update this Privacy Policy from time to time to reflect changes in our practices, services, or legal requirements. The updated version will be posted on this page with a revised effective date.</p>
+    </section>
+
+    <section id="contact" class="contact-card">
+      <h2><span class="num">13</span> Contact Us</h2>
+      <p style="color:#dfe6f0;">If you have questions or concerns about this Privacy Policy or how we handle your personal information, please reach out:</p>
+      <div class="contact-grid">
+        <div class="contact-item">
+          <div class="label">Phone</div>
+          <a href="tel:+971551251185">+971 55 125 1185</a>
+        </div>
+        <div class="contact-item">
+          <div class="label">Email</div>
+          <a href="mailto:info@dnex.ae">info@dnex.ae</a>
+        </div>
+        <div class="contact-item">
+          <div class="label">WhatsApp</div>
+          <a href="https://wa.me/971551251185" target="_blank" rel="noopener">Chat with us</a>
+        </div>
+        <div class="contact-item">
+          <div class="label">Website</div>
+          <a href="https://dnex.ae" target="_blank" rel="noopener">dnex.ae</a>
+        </div>
+      </div>
+    </section>
+
+    <a class="top-link" href="#">↑ Back to top</a>
+  </main>
+</div>
+
+<footer>
+  <svg width="28" height="28" viewBox="0 0 46 46" xmlns="http://www.w3.org/2000/svg" style="vertical-align:middle;margin-right:8px;" role="img" aria-label="DNEX logo">
+    <rect x="0.5" y="0.5" width="45" height="45" rx="10" fill="#0d1f3c" stroke="#c99a3c" stroke-width="1"/>
+    <path d="M13 13 L23 23 L13 33" stroke="#c99a3c" stroke-width="3.4" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+    <path d="M23 13 L33 23 L23 33" stroke="#ffffff" stroke-width="3.4" fill="none" stroke-linecap="round" stroke-linejoin="round" opacity="0.9"/>
+  </svg>
+  © 2026 DNEX Consulting — Setup to Compliance. This Privacy Policy is intended to comply with the UAE PDPL and applicable Indian data protection regulations. Review by a licensed legal professional is recommended before final publication.
+</footer>
+
+</body>
+</html>

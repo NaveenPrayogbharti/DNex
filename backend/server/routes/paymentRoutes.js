@@ -75,6 +75,47 @@ router.get('/:id', async (req, res) => {
 });
 
 /**
+ * GET /api/payments/:id/invoice
+ * Serve the Invoice PDF
+ */
+router.get('/:id/invoice', async (req, res) => {
+  try {
+    const payment = await prisma.crm_payments.findUnique({
+      where: { id: req.params.id }
+    });
+    if (!payment) {
+      return res.status(404).json({ error: 'Payment not found' });
+    }
+
+    let caseData = null;
+    let quotationItems = null;
+    if (payment.case_id) {
+      const cases = await prisma.$queryRaw`SELECT "email", "full_name" FROM "crm_cases" WHERE "id" = ${payment.case_id}::uuid`;
+      if (cases.length > 0) caseData = cases[0];
+      
+      const qs = await prisma.$queryRaw`SELECT "items" FROM "crm_quotations" WHERE "case_id" = ${payment.case_id}::uuid ORDER BY "created_at" DESC LIMIT 1`;
+      if (qs.length > 0) quotationItems = qs[0].items;
+    }
+
+    const invoiceBuffer = await generateInvoicePDF({
+      id: payment.id,
+      amount: payment.amount,
+      currency: payment.currency,
+      description: payment.description,
+      razorpay_payment_id: payment.razorpay_id,
+      razorpay_order_id: payment.razorpay_id
+    }, caseData, quotationItems);
+
+    res.setHeader('Content-Type', 'application/pdf');
+    res.setHeader('Content-Disposition', `attachment; filename="Invoice_${payment.id.split('-')[0].toUpperCase()}.pdf"`);
+    res.send(invoiceBuffer);
+  } catch (error) {
+    console.error('Error generating invoice:', error);
+    res.status(500).json({ error: 'Failed to generate invoice' });
+  }
+});
+
+/**
  * Generate Professional PDF receipt
  */
 const generateReceiptPDF = async (paymentDetails, caseData) => {
@@ -89,7 +130,7 @@ const generateReceiptPDF = async (paymentDetails, caseData) => {
       });
 
       // Try to load logo if exists
-      const logoPath = path.join(__dirname, '../../../frontend/src/assets/images/crm_ogo.png');
+      const logoPath = path.join(__dirname, '../../../frontend/src/assets/images/website_logo.png');
       if (fs.existsSync(logoPath)) {
         doc.image(logoPath, 40, 40, { width: 110 });
       }
@@ -110,11 +151,13 @@ const generateReceiptPDF = async (paymentDetails, caseData) => {
 
       // Metadata
       doc.fontSize(10).font('Helvetica').fillColor('#000000')
-         .text(`Receipt No:`, 400, 160)
-         .text(`Date:`, 400, 175)
+         .text(`Receipt No:`, 350, 160)
+         .text(`Date:`, 350, 175)
+         .text(`Transaction No:`, 350, 190)
          .font('Helvetica-Bold')
-         .text(`RCPT-${paymentDetails.id.split('-')[0].toUpperCase()}`, 470, 160)
-         .text(new Date().toLocaleDateString(), 470, 175);
+         .text(`RCPT-${paymentDetails.id.split('-')[0].toUpperCase()}`, 440, 160)
+         .text(new Date().toLocaleDateString(), 440, 175)
+         .text(paymentDetails.razorpay_payment_id || 'N/A', 440, 190);
 
       // Client info
       doc.fontSize(10).fillColor('#334155').font('Helvetica-Bold').text('RECEIVED FROM:', 40, 210);
@@ -132,7 +175,7 @@ const generateReceiptPDF = async (paymentDetails, caseData) => {
       doc.text('Amount', 400, 290, { align: 'right', width: 145 });
       doc.moveTo(40, 310).lineTo(555, 310).strokeColor('#e2e8f0').stroke();
 
-      doc.font('Helvetica').fillColor('#000000').text(`Payment for Professional Services`, 50, 330, { width: 330 });
+      doc.font('Helvetica').fillColor('#000000').text(paymentDetails.description || 'Payment for Professional Services', 50, 330, { width: 330 });
       doc.fontSize(9).fillColor('#64748b').text(`Razorpay ID: ${paymentDetails.razorpay_payment_id}`, 50, 345, { width: 330 });
       doc.fontSize(10).fillColor('#000000').text(`${paymentDetails.currency} ${(paymentDetails.amount).toFixed(2)}`, 400, 330, { align: 'right', width: 145 });
 
@@ -147,6 +190,132 @@ const generateReceiptPDF = async (paymentDetails, caseData) => {
       // Footer
       doc.fontSize(8).font('Helvetica-Oblique').fillColor('#94a3b8')
          .text('Thank you for your business. This is a computer-generated receipt.', 40, 780, { align: 'center' });
+
+      doc.end();
+    } catch (err) {
+      reject(err);
+    }
+  });
+};
+
+/**
+ * Generate Professional Tax Invoice PDF
+ */
+const generateInvoicePDF = async (paymentDetails, caseData, quotationItems) => {
+  return new Promise((resolve, reject) => {
+    try {
+      const doc = new PDFDocument({ margin: 50, size: 'A4' });
+      const buffers = [];
+      doc.on('data', buffers.push.bind(buffers));
+      doc.on('end', () => {
+        const pdfData = Buffer.concat(buffers);
+        resolve(pdfData);
+      });
+
+      const logoPath = path.join(__dirname, '../../../frontend/src/assets/images/website_logo.png');
+      if (fs.existsSync(logoPath)) {
+        doc.image(logoPath, 40, 40, { width: 110 });
+      }
+
+      // Header Text
+      doc.fontSize(9).fillColor('#334155').font('Helvetica')
+         .text('DNex Consulting FZC', 200, 45, { align: 'right' })
+         .text('Business Centre, Sharjah Publishing City Free Zone', 200, 58, { align: 'right' })
+         .text('Sharjah, United Arab Emirates', 200, 71, { align: 'right' })
+         .text('TRN: 100123456789012', 200, 84, { align: 'right' })
+         .text('Phone: +971 551251185 | Email: info@dnex.ae', 200, 97, { align: 'right' });
+
+      doc.moveTo(40, 130).lineTo(555, 130).strokeColor('#e2e8f0').lineWidth(1).stroke();
+
+      // Title
+      doc.fontSize(14).fillColor('#0A1628').font('Helvetica-Bold')
+         .text('TAX INVOICE', 40, 160);
+
+      // Metadata
+      doc.fontSize(10).font('Helvetica').fillColor('#000000')
+         .text(`Invoice No:`, 350, 160)
+         .text(`Date:`, 350, 175)
+         .text(`Transaction No:`, 350, 190)
+         .font('Helvetica-Bold')
+         .text(`INV-${paymentDetails.id.split('-')[0].toUpperCase()}`, 440, 160)
+         .text(new Date().toLocaleDateString(), 440, 175)
+         .text(paymentDetails.razorpay_payment_id || 'N/A', 440, 190);
+
+      // Client info
+      doc.fontSize(10).fillColor('#334155').font('Helvetica-Bold').text('BILLED TO:', 40, 210);
+      doc.font('Helvetica').fillColor('#000000');
+      if (caseData) {
+        doc.text(caseData.full_name, 40, 225);
+        doc.text(caseData.email, 40, 240);
+      } else {
+        doc.text('Valued Client', 40, 225);
+      }
+
+      // Details Table
+      doc.moveTo(40, 280).lineTo(555, 280).strokeColor('#e2e8f0').stroke();
+      doc.font('Helvetica-Bold').fillColor('#0A1628').text('Description of Services', 50, 290);
+      doc.text('Qty', 320, 290, { align: 'center', width: 40 });
+      doc.text('Unit Rate', 370, 290, { align: 'right', width: 80 });
+      doc.text('Amount', 460, 290, { align: 'right', width: 85 });
+      doc.moveTo(40, 310).lineTo(555, 310).strokeColor('#e2e8f0').stroke();
+
+      const totalAmount = paymentDetails.amount;
+      const subtotal = totalAmount / 1.05;
+      const taxAmt = totalAmount - subtotal;
+
+      let itemY = 330;
+      doc.font('Helvetica').fillColor('#000000');
+      
+      if (quotationItems && Array.isArray(quotationItems) && quotationItems.length > 0) {
+        quotationItems.forEach(item => {
+          doc.text(item.description, 50, itemY, { width: 260 });
+          doc.text(item.qty.toString(), 320, itemY, { align: 'center', width: 40 });
+          doc.text(`${paymentDetails.currency} ${Number(item.rate).toFixed(2)}`, 370, itemY, { align: 'right', width: 80 });
+          doc.font('Helvetica-Bold').text(`${paymentDetails.currency} ${Number(item.amount).toFixed(2)}`, 460, itemY, { align: 'right', width: 85 });
+          doc.font('Helvetica').fillColor('#000000');
+          itemY += 20;
+        });
+        
+        doc.fontSize(9).fillColor('#64748b').text(`Razorpay ID: ${paymentDetails.razorpay_payment_id}`, 50, itemY, { width: 330 });
+        itemY += 20;
+      } else {
+        doc.fontSize(10).fillColor('#000000');
+        doc.text(paymentDetails.description || 'Payment for Professional Services', 50, itemY, { width: 260 });
+        doc.text('1', 320, itemY, { align: 'center', width: 40 });
+        doc.text(`${paymentDetails.currency} ${subtotal.toFixed(2)}`, 370, itemY, { align: 'right', width: 80 });
+        doc.font('Helvetica-Bold').text(`${paymentDetails.currency} ${subtotal.toFixed(2)}`, 460, itemY, { align: 'right', width: 85 });
+        doc.font('Helvetica').fillColor('#000000');
+        itemY += 20;
+        
+        doc.fontSize(9).fillColor('#64748b').text(`Razorpay ID: ${paymentDetails.razorpay_payment_id}`, 50, itemY, { width: 330 });
+        itemY += 20;
+      }
+
+      doc.moveTo(40, itemY + 10).lineTo(555, itemY + 10).strokeColor('#e2e8f0').stroke();
+
+      // Subtotals & Tax
+      let currentY = itemY + 30;
+      doc.fontSize(10).font('Helvetica').fillColor('#334155').text('Subtotal:', 300, currentY);
+      doc.text(`${paymentDetails.currency} ${subtotal.toFixed(2)}`, 400, currentY, { align: 'right', width: 145 });
+      
+      currentY += 20;
+      doc.text('VAT (5%):', 300, currentY);
+      doc.text(`${paymentDetails.currency} ${taxAmt.toFixed(2)}`, 400, currentY, { align: 'right', width: 145 });
+
+      currentY += 20;
+      doc.moveTo(300, currentY).lineTo(555, currentY).strokeColor('#0A1628').stroke();
+
+      currentY += 10;
+      doc.font('Helvetica-Bold').fillColor('#0A1628').text('Total (Incl. VAT):', 300, currentY);
+      doc.fontSize(12).text(`${paymentDetails.currency} ${totalAmount.toFixed(2)}`, 400, currentY - 1, { align: 'right', width: 145 });
+
+      currentY += 40;
+      doc.rect(400, currentY, 100, 30).fillAndStroke('#ecfdf5', '#10b981');
+      doc.fillColor('#059669').fontSize(14).font('Helvetica-Bold').text('PAID', 400, currentY + 8, { width: 100, align: 'center' });
+
+      // Footer
+      doc.fontSize(8).font('Helvetica-Oblique').fillColor('#94a3b8')
+         .text('Thank you for your business. This is a computer-generated tax invoice.', 40, 780, { align: 'center' });
 
       doc.end();
     } catch (err) {
@@ -191,25 +360,40 @@ router.post('/verify-payment', async (req, res) => {
     // 1. Mark payment as paid in crm_payments using Prisma Raw SQL
     await prisma.$executeRaw`UPDATE "crm_payments" SET "status" = 'paid', "paid_at" = NOW(), "razorpay_id" = ${razorpay_payment_id}, "payment_link" = NULL WHERE "id" = ${payment_record_id}::uuid`;
 
-    // 2. Fetch the real case_id if it was missing from the request
-    const paymentRecords = await prisma.$queryRaw`SELECT "case_id" FROM "crm_payments" WHERE "id" = ${payment_record_id}::uuid`;
-    const actualCaseId = paymentRecords.length > 0 ? paymentRecords[0].case_id : case_id;
+    // 2. Fetch the full payment record to get the description and case_id
+    const paymentRecords = await prisma.$queryRaw`SELECT * FROM "crm_payments" WHERE "id" = ${payment_record_id}::uuid`;
+    const paymentRec = paymentRecords.length > 0 ? paymentRecords[0] : null;
+    const actualCaseId = paymentRec ? paymentRec.case_id : case_id;
 
     // We fetch case data here for both PDF generation and email
     let caseData = null;
+    let quotationItems = null;
     if (actualCaseId) {
       const cases = await prisma.$queryRaw`SELECT "email", "full_name" FROM "crm_cases" WHERE "id" = ${actualCaseId}::uuid`;
       caseData = cases.length > 0 ? cases[0] : null;
+      
+      const qs = await prisma.$queryRaw`SELECT "items" FROM "crm_quotations" WHERE "case_id" = ${actualCaseId}::uuid ORDER BY "created_at" DESC LIMIT 1`;
+      if (qs.length > 0) quotationItems = qs[0].items;
     }
 
-    // 3. Generate Professional PDF Receipt
-    const pdfBuffer = await generateReceiptPDF({
+    // 3. Generate Professional PDF Receipt and Invoice
+    const receiptBuffer = await generateReceiptPDF({
       id: payment_record_id,
-      amount: parseFloat(amount), // Amount is correct directly from frontend
+      amount: parseFloat(amount),
       currency,
+      description: paymentRec ? paymentRec.description : 'Payment for Professional Services',
       razorpay_payment_id,
       razorpay_order_id
     }, caseData);
+    
+    const invoiceBuffer = await generateInvoicePDF({
+      id: payment_record_id,
+      amount: parseFloat(amount),
+      currency,
+      description: paymentRec ? paymentRec.description : 'Payment for Professional Services',
+      razorpay_payment_id,
+      razorpay_order_id
+    }, caseData, quotationItems);
 
     // 4. Record Activity and Email Receipt
     if (actualCaseId) {
@@ -238,12 +422,20 @@ router.post('/verify-payment', async (req, res) => {
               to: caseData.email,
               subject: 'Payment Receipt - DNex Consulting',
               body: emailBody,
-              attachments: [{
-                filename: `Receipt_${razorpay_payment_id}.pdf`,
-                content: pdfBuffer.toString('base64'),
-                encoding: 'base64',
-                contentType: 'application/pdf'
-              }]
+              attachments: [
+                {
+                  filename: `Receipt_${razorpay_payment_id}.pdf`,
+                  content: receiptBuffer.toString('base64'),
+                  encoding: 'base64',
+                  contentType: 'application/pdf'
+                },
+                {
+                  filename: `Invoice_${payment_record_id.split('-')[0].toUpperCase()}.pdf`,
+                  content: invoiceBuffer.toString('base64'),
+                  encoding: 'base64',
+                  contentType: 'application/pdf'
+                }
+              ]
             })
           });
           

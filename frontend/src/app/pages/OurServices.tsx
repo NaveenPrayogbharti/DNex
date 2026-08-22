@@ -31,7 +31,7 @@ const serviceCategories = [
       { icon: UserCog, title: 'Real Estate Business', desc: 'Engaged in activities related to the buying, selling, leasing, management, or development of real properties.', href: '/businessmen-services' },
       { icon: UserCog, title: 'Office Setup Services', desc: 'Professional services to assist in establishing a functional office space, including infrastructure and compliance.', href: '/businessmen-services' },
     ],
-    featured: { title: 'Start in a Free Zone', desc: '100% ownership and fast registration in UAE\'s free zones. Free zone company formation offers entrepreneurs and businesses simplified setup procedures, tax advantages, full repatriation of profits, and access to world-class infrastructure. It is an ideal option for startups, SMEs, and international businesses looking to establish a strong presence in the UAE with minimal restrictions and faster business licensing processes.', cta: 'Explore Free Zones', href: '/our-services#business-setup' },
+    featured: { title: 'Start in a Free Zone', desc: '100% ownership and fast registration in UAE\'s free zones. Free zone company formation offers entrepreneurs and businesses simplified setup procedures, tax advantages, full repatriation of profits, and access to world-class infrastructure. It is an ideal option for startups, SMEs, and international businesses looking to establish a strong presence in the UAE with minimal restrictions and faster business licensing processes.', cta: 'Explore Free Zones', href: '/free-zone' },
   },
   {
     id: 'banking',
@@ -544,28 +544,56 @@ function ServiceSection({ category }: { category: typeof serviceCategories[0] })
       </p>
 
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-6">
-        {category.services.map((service) => (
-          <Link
-            key={service.title}
-            to={service.href ?? '/'}
-            className="flex gap-4 p-5 rounded-xl border transition-all hover:border-[#C9963C]/40 hover:shadow-md group"
-            style={{ borderColor: '#e8edf2' }}
-          >
+        {category.services.map((service) => {
+          const validRoutes = ['/', '/free-zone', '/our-services', '/india-services', '/leadform', '/contact', '/about', '/privacy'];
+          const isClickable = service.href && validRoutes.includes(service.href.split('#')[0]);
+
+          if (isClickable) {
+            return (
+              <Link
+                key={service.title}
+                to={service.href!}
+                className="flex gap-4 p-5 rounded-xl border transition-all hover:border-[#C9963C]/40 hover:shadow-md group"
+                style={{ borderColor: '#e8edf2' }}
+              >
+                <div
+                  className="w-10 h-10 rounded-lg flex items-center justify-center shrink-0"
+                  style={{ backgroundColor: 'rgba(201,150,60,0.1)' }}
+                >
+                  <service.icon size={18} style={{ color: GOLD }} />
+                </div>
+                <div className="flex-1">
+                  <h4 className="font-semibold text-sm mb-1 group-hover:text-[#C9963C] transition-colors" style={{ color: NAVY }}>
+                    {service.title}
+                  </h4>
+                  <p className="text-xs text-gray-500 text-justify" style={{ lineHeight: 1.6 }}>{service.desc}</p>
+                </div>
+                <ArrowRight size={14} className="shrink-0 mt-1 opacity-0 group-hover:opacity-100 transition-opacity" style={{ color: GOLD }} />
+              </Link>
+            );
+          }
+
+          return (
             <div
-              className="w-10 h-10 rounded-lg flex items-center justify-center shrink-0"
-              style={{ backgroundColor: 'rgba(201,150,60,0.1)' }}
+              key={service.title}
+              className="flex gap-4 p-5 rounded-xl border"
+              style={{ borderColor: '#e8edf2' }}
             >
-              <service.icon size={18} style={{ color: GOLD }} />
+              <div
+                className="w-10 h-10 rounded-lg flex items-center justify-center shrink-0"
+                style={{ backgroundColor: 'rgba(201,150,60,0.1)' }}
+              >
+                <service.icon size={18} style={{ color: GOLD }} />
+              </div>
+              <div className="flex-1">
+                <h4 className="font-semibold text-sm mb-1" style={{ color: NAVY }}>
+                  {service.title}
+                </h4>
+                <p className="text-xs text-gray-500 text-justify" style={{ lineHeight: 1.6 }}>{service.desc}</p>
+              </div>
             </div>
-            <div className="flex-1">
-              <h4 className="font-semibold text-sm mb-1 group-hover:text-[#C9963C] transition-colors" style={{ color: NAVY }}>
-                {service.title}
-              </h4>
-              <p className="text-xs text-gray-500 text-justify" style={{ lineHeight: 1.6 }}>{service.desc}</p>
-            </div>
-            <ArrowRight size={14} className="shrink-0 mt-1 opacity-0 group-hover:opacity-100 transition-opacity" style={{ color: GOLD }} />
-          </Link>
-        ))}
+          );
+        })}
       </div>
 
       {/* Featured CTA strip */}
@@ -616,26 +644,53 @@ function IndiaServicesTabs() {
           <div key={cat.id}>
             <p className="text-xs text-gray-500 mb-4 text-justify" style={{ lineHeight: 1.65 }}>{cat.desc}</p>
             <div className="grid grid-cols-1 gap-y-1">
-              {cat.items.map((item) => (
-                <Link
-                  key={item.label}
-                  to={item.href}
-                  className="flex items-start gap-3 p-3 rounded-xl hover:bg-slate-50 transition-all group border border-transparent hover:border-slate-100"
-                >
+              {cat.items.map((item) => {
+                const validRoutes = ['/', '/free-zone', '/our-services', '/india-services', '/leadform', '/contact', '/about', '/privacy'];
+                const isClickable = item.href && validRoutes.includes(item.href.split('#')[0]);
+
+                if (isClickable) {
+                  return (
+                    <Link
+                      key={item.label}
+                      to={item.href!}
+                      className="flex items-start gap-3 p-3 rounded-xl hover:bg-slate-50 transition-all group border border-transparent hover:border-slate-100"
+                    >
+                      <div
+                        className="w-8 h-8 rounded-lg flex items-center justify-center shrink-0 mt-0.5"
+                        style={{ backgroundColor: 'rgba(201,150,60,0.12)' }}
+                      >
+                        <item.icon size={14} style={{ color: GOLD }} />
+                      </div>
+                      <div>
+                        <div className="text-sm font-bold group-hover:text-[#0D2137] transition-colors mb-0.5" style={{ color: '#1a2a3a' }}>
+                          {item.label}
+                        </div>
+                        <div className="text-xs text-gray-500 leading-relaxed text-justify">{item.desc}</div>
+                      </div>
+                    </Link>
+                  );
+                }
+
+                return (
                   <div
-                    className="w-8 h-8 rounded-lg flex items-center justify-center shrink-0 mt-0.5"
-                    style={{ backgroundColor: 'rgba(201,150,60,0.12)' }}
+                    key={item.label}
+                    className="flex items-start gap-3 p-3 rounded-xl border border-transparent"
                   >
-                    <item.icon size={14} style={{ color: GOLD }} />
-                  </div>
-                  <div>
-                    <div className="text-sm font-bold group-hover:text-[#0D2137] transition-colors mb-0.5" style={{ color: '#1a2a3a' }}>
-                      {item.label}
+                    <div
+                      className="w-8 h-8 rounded-lg flex items-center justify-center shrink-0 mt-0.5"
+                      style={{ backgroundColor: 'rgba(201,150,60,0.12)' }}
+                    >
+                      <item.icon size={14} style={{ color: GOLD }} />
                     </div>
-                    <div className="text-xs text-gray-500 leading-relaxed text-justify">{item.desc}</div>
+                    <div>
+                      <div className="text-sm font-bold mb-0.5" style={{ color: '#1a2a3a' }}>
+                        {item.label}
+                      </div>
+                      <div className="text-xs text-gray-500 leading-relaxed text-justify">{item.desc}</div>
+                    </div>
                   </div>
-                </Link>
-              ))}
+                );
+              })}
             </div>
           </div>
         ))}

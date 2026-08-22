@@ -4,7 +4,6 @@ export type CaseStatus =
   | 'New Lead'
   | 'Contacted'
   | 'Requirement Gathering'
-  | 'Interested'
   | 'Not Interested'
   | 'Service Assigned'
   | 'Quotation Sent'
@@ -23,7 +22,6 @@ export const CASE_STATUSES: CaseStatus[] = [
   'New Lead',
   'Contacted',
   'Requirement Gathering',
-  'Interested',
   'Not Interested',
   'Service Assigned',
   'Quotation Sent',
@@ -40,7 +38,6 @@ export const STATUS_COLORS: Record<string, { bg: string; text: string; border: s
   'New Lead':              { bg: '#e0f2fe', text: '#0369a1', border: '#38bdf8' },
   'Contacted':             { bg: '#f0fdf4', text: '#166534', border: '#86efac' },
   'Requirement Gathering': { bg: '#fef9c3', text: '#854d0e', border: '#fde047' },
-  'Interested':            { bg: '#dcfce7', text: '#15803d', border: '#4ade80' },
   'Not Interested':        { bg: '#fee2e2', text: '#991b1b', border: '#f87171' },
   'Service Assigned':      { bg: '#ede9fe', text: '#5b21b6', border: '#a78bfa' },
   'Quotation Sent':        { bg: '#fff7ed', text: '#c2410c', border: '#fb923c' },

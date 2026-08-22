@@ -16,12 +16,13 @@ import type { CRMPayment } from '../services/paymentService';
 import { fetchQuotations } from '../services/quotationService';
 import type { CRMQuotation } from '../services/quotationService';
 import {
-  ContactedStep, RequirementStep, ServiceStep, QuotationStep, PaymentStep, ProcessingStep, PreviewStep
+  ContactedStep, RequirementStep, QuotationStep, PaymentStep, ProcessingStep, PreviewStep
 } from '../components/WorkflowSteps';
 import { EmailComposeModal } from '../components/EmailComposeModal';
 import { sendCustomEmail } from '../services/emailNotificationService';
-import { ArrowLeft, Edit2, Save, X, Plus, Check, XCircle, Mail, UploadCloud, Eye, Download, Bell, CreditCard } from 'lucide-react';
+import { ArrowLeft, Edit2, Save, X, Plus, Check, XCircle, Mail, UploadCloud, Eye, Download, Bell, CreditCard, FileText } from 'lucide-react';
 import { LOGO_BASE64 } from '../utils/logoBase64';
+import { getStoredServices } from '../../../lib/servicesStore';
 
 const GOLD = '#C9963C';
 
@@ -30,7 +31,6 @@ const WORKFLOW_STAGES: Record<CaseStatus, boolean> = {
   'New Lead': true,
   'Contacted': true,
   'Requirement Gathering': true,
-  'Interested': true,
   'Not Interested': false,
   'Service Assigned': true,
   'Quotation Sent': true,
@@ -66,6 +66,7 @@ export function CaseDetailPage() {
   const [viewingStage, setViewingStage] = useState<CaseStatus | null>(null);
   const [showEmailModal, setShowEmailModal] = useState(false);
   const [sendingReminder, setSendingReminder] = useState<string | null>(null); // payment id being reminded
+  const [sendingDocRequest, setSendingDocRequest] = useState(false);
 
   const loadAll = useCallback(async () => {
     if (!id) return;
@@ -137,13 +138,45 @@ export function CaseDetailPage() {
 
   const handleDocStatus = async (docId: string, status: 'approved' | 'rejected') => {
     try {
-      await updateDocumentStatus(docId, status);
+      let reason: string | null = null;
+      if (status === 'rejected') {
+        reason = window.prompt("Enter reason for rejection (this will be emailed to the client):");
+        if (reason === null) return; // User cancelled
+      }
+
+      await updateDocumentStatus(docId, status, reason || undefined);
+      
       if (status === 'approved' && crmCase) {
         // Check if all pending docs are now approved
         const otherDocs = documents.filter(d => d.id !== docId);
         const allApproved = otherDocs.every(d => d.status === 'approved' || d.status === 'rejected');
         if (allApproved) await updateCaseStatus(crmCase.id, 'Preview');
       }
+
+      if (status === 'rejected' && crmCase) {
+        const doc = documents.find(d => d.id === docId);
+        const portalUrl = `${window.location.origin}/client/upload/${crmCase.id}`;
+        
+        await sendCustomEmail({
+          to: crmCase.email,
+          subject: `Action Required: Document Rejected - DNex Consulting`,
+          body: `
+            <div style="font-family:Arial,sans-serif;color:#333;line-height:1.6;max-width:600px;">
+              <p>Dear ${crmCase.full_name},</p>
+              <p>We are reviewing your application documents and unfortunately, the <strong>${doc?.name}</strong> you provided has been rejected.</p>
+              <div style="background:#fef2f2;border-left:4px solid #ef4444;padding:16px;margin:20px 0;">
+                <p style="margin:0;color:#991b1b;font-weight:600;">Reason for Rejection:</p>
+                <p style="margin:8px 0 0;color:#7f1d1d;">${reason || 'Not specified'}</p>
+              </div>
+              <p>Please use our secure Client Upload Portal to submit a new copy of this document.</p>
+              <a href="${portalUrl}" style="background:#C9963C;color:#fff;padding:12px 24px;text-decoration:none;border-radius:6px;display:inline-block;margin:20px 0;font-weight:bold;">Re-Upload Document</a>
+              <p>If you have any questions, please reply to this email.</p>
+              <p>Best regards,<br><strong>DNex Consulting Team</strong></p>
+            </div>
+          `
+        });
+      }
+
       await loadAll();
     } catch (e) { console.error(e); }
   };
@@ -210,7 +243,6 @@ export function CaseDetailPage() {
       key: import.meta.env.VITE_RAZORPAY_KEY_ID || 'rzp_test_TKMzRZ167Z70fw',
       amount: p.amount * 100,
       currency: p.currency,
-      name: 'DNex Consulting',
       description: p.description || 'Service Payment',
       order_id: p.razorpay_id, 
       handler: async function (response: any) {
@@ -247,9 +279,6 @@ export function CaseDetailPage() {
         name: crmCase.full_name,
         email: crmCase.email,
         contact: crmCase.phone
-      },
-      theme: {
-        color: '#C9963C'
       }
     };
     const rzp1 = new (window as any).Razorpay(options);
@@ -257,6 +286,73 @@ export function CaseDetailPage() {
       alert(response.error.description);
     });
     rzp1.open();
+  };
+
+  // ── Document Collection Request Email ─────────────────────────────────────
+  const handleSendDocumentRequest = async () => {
+    if (!crmCase) return;
+    setSendingDocRequest(true);
+    try {
+      const services = getStoredServices();
+      const assignedService = services.find(s => s.title === crmCase.service_type);
+      let requiredDocsHtml = '<ul><li>Passport Copy</li><li>Visa Copy</li></ul>'; // Fallback
+      if (assignedService && assignedService.required_docs) {
+        requiredDocsHtml = '<ul>' + assignedService.required_docs.map(doc => `<li>${doc}</li>`).join('') + '</ul>';
+      }
+
+      const uploadLink = `${window.location.origin}/client/upload/${crmCase.id}`;
+
+      const emailBody = `
+        <div style="font-family: Arial, sans-serif; color: #1e293b; line-height: 1.6;">
+          <h2 style="color: #0A1628;">Document Request for ${crmCase.service_type || 'your service'}</h2>
+          <p>Dear ${crmCase.full_name},</p>
+          <p>We are ready to proceed with your application. To move forward, we require the following documents from you:</p>
+          ${requiredDocsHtml}
+          <p>Please use our secure Client Upload Portal to submit these documents. You can upload PDFs or image files directly.</p>
+          <div style="margin: 30px 0;">
+            <a href="${uploadLink}" style="background-color: #C9963C; color: #ffffff; padding: 12px 24px; text-decoration: none; border-radius: 6px; font-weight: bold;">
+              Access Secure Upload Portal
+            </a>
+          </div>
+          <p>If you have any questions or face any issues uploading, please reply to this email.</p>
+          <p>Best regards,<br/><strong>DNex Consulting Team</strong></p>
+        </div>
+      `;
+
+      await sendCustomEmail({
+        to: crmCase.email,
+        subject: 'Required Documents for Your Application - DNex Consulting',
+        body: emailBody,
+        replyTo: 'consultant@dnex.ae'
+      });
+
+      alert('Document request email sent successfully to the client!');
+    } catch (error) {
+      console.error(error);
+      alert('Failed to send document request email.');
+    } finally {
+      setSendingDocRequest(false);
+    }
+  };
+
+  // ── Download Invoice (from Backend) ─────────────────────────────────────────
+  const downloadPaymentInvoice = async (p: CRMPayment) => {
+    try {
+      const API_URL = import.meta.env.VITE_BACKEND_API_URL || 'http://localhost:3006';
+      const res = await fetch(`${API_URL}/api/payments/${p.id}/invoice`);
+      if (!res.ok) throw new Error('Failed to download invoice');
+      
+      const blob = await res.blob();
+      const url = window.URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `Invoice_${p.id.split('-')[0].toUpperCase()}.pdf`;
+      a.click();
+      window.URL.revokeObjectURL(url);
+    } catch (error) {
+      console.error(error);
+      alert('Error downloading invoice');
+    }
   };
 
   // ── Generate and download a payment receipt as HTML ───────────────────────
@@ -361,21 +457,9 @@ export function CaseDetailPage() {
       case 'Requirement Gathering':
         return <RequirementStep crmCase={crmCase} onRefresh={loadAll}
           onBack={() => goBack('Contacted')} isViewOnly={isViewOnly} isCaseLocked={isCaseLocked} onReturnToCurrent={() => setViewingStage(null)} />;
-      case 'Interested':
-        return <ServiceStep crmCase={crmCase} onRefresh={loadAll}
-          onBack={() => goBack('Requirement Gathering')} isViewOnly={isViewOnly} isCaseLocked={isCaseLocked} onReturnToCurrent={() => setViewingStage(null)} />;
-      case 'Not Interested':
-        return (
-          <div style={{ padding:20, background:'rgba(239,68,68,0.08)', border:'1px solid rgba(239,68,68,0.2)', borderRadius:12 }}>
-            <div style={{ fontWeight:700, color:'#f87171', marginBottom:8 }}>❌ Client Not Interested</div>
-            <div style={{ fontSize:13, color:'var(--crm-text)' }}>
-              <strong>Reason: </strong>{crmCase.not_interested_reason || 'No reason provided.'}
-            </div>
-          </div>
-        );
       case 'Service Assigned':
         return <QuotationStep crmCase={crmCase} onRefresh={loadAll}
-          onBack={() => goBack('Interested')} isViewOnly={isViewOnly} isCaseLocked={isCaseLocked} onReturnToCurrent={() => setViewingStage(null)} />;
+          onBack={() => goBack('Requirement Gathering')} isViewOnly={isViewOnly} isCaseLocked={isCaseLocked} onReturnToCurrent={() => setViewingStage(null)} />;
       case 'Quotation Sent':
         return <PaymentStep crmCase={crmCase} onRefresh={loadAll}
           onBack={() => goBack('Service Assigned')} isViewOnly={isViewOnly} isCaseLocked={isCaseLocked} effectiveStage={effectiveStage} />;
@@ -397,12 +481,23 @@ export function CaseDetailPage() {
                 📄 Go to Documents Tab
               </button>
               {!isViewOnly && (
-                <button 
-                  className="crm-btn crm-btn--primary" 
-                  onClick={() => { updateCaseStatus(crmCase.id, 'Preview').then(() => { setViewingStage(null); loadAll(); }); }}
-                >
-                  Proceed to Preview ➔
-                </button>
+                <>
+                  <button 
+                    className="crm-btn crm-btn--ghost" 
+                    style={{ borderColor: '#6366f1', color: '#6366f1' }}
+                    onClick={handleSendDocumentRequest}
+                    disabled={sendingDocRequest}
+                  >
+                    <Mail size={14} style={{ marginRight: 6 }} /> 
+                    {sendingDocRequest ? 'Sending Email...' : 'Email Client for Documents'}
+                  </button>
+                  <button 
+                    className="crm-btn crm-btn--primary" 
+                    onClick={() => { updateCaseStatus(crmCase.id, 'Preview').then(() => { setViewingStage(null); loadAll(); }); }}
+                  >
+                    Proceed to Preview ➔
+                  </button>
+                </>
               )}
             </div>
           </div>
@@ -414,24 +509,8 @@ export function CaseDetailPage() {
         return <ProcessingStep crmCase={crmCase} onRefresh={loadAll}
           onBack={() => goBack('Preview')} isViewOnly={isViewOnly} isCaseLocked={isCaseLocked} onReturnToCurrent={() => setViewingStage(null)} />;
       case 'Completed':
-        return (
-          <div style={{ padding: 24, background: 'rgba(52,211,153,0.08)', border: '1px solid rgba(52,211,153,0.25)', borderRadius: 12 }}>
-            <div style={{ fontSize: 16, fontWeight: 700, color: '#10b981', marginBottom: 12 }}>🎉 Case Completed Successfully</div>
-            <div style={{ fontSize: 14, color: 'var(--crm-text)', marginBottom: 20 }}>
-              All processing steps have been finished. You can now formally close the case to move it out of the active pipeline.
-            </div>
-            <div style={{ display: 'flex', gap: 12 }}>
-              <button className="crm-btn crm-btn--ghost" onClick={() => goBack('Processing')}>
-                <ArrowLeft size={16} /> Back to Processing
-              </button>
-              {!isViewOnly && (
-                <button className="crm-btn crm-btn--primary" onClick={() => { updateCaseStatus(crmCase.id, 'Closed').then(() => { setViewingStage(null); loadAll(); }); }}>
-                  🔒 Close Case
-                </button>
-              )}
-            </div>
-          </div>
-        );
+        return <ProcessingStep crmCase={crmCase} onRefresh={loadAll} isCompletedStage={true}
+          onBack={() => goBack('Processing')} isViewOnly={isViewOnly} isCaseLocked={isCaseLocked} onReturnToCurrent={() => setViewingStage(null)} />;
       case 'Closed':
         return (
           <div style={{ padding: 24, background: 'rgba(100,116,139,0.08)', border: '1px solid rgba(100,116,139,0.25)', borderRadius: 12 }}>
@@ -753,13 +832,22 @@ export function CaseDetailPage() {
 
                         {/* Download receipt (paid only) */}
                         {isPaid && (
-                          <button
-                            className="crm-btn crm-btn--ghost"
-                            style={{ padding:'5px 10px', fontSize:11, borderColor:'#34d399', color:'#34d399' }}
-                            onClick={() => downloadPaymentReceipt(p)}
-                          >
-                            <Download size={11} style={{ marginRight:4 }} />Download Receipt
-                          </button>
+                          <div style={{ display: 'flex', gap: 8 }}>
+                            <button
+                              className="crm-btn crm-btn--ghost"
+                              style={{ padding:'5px 10px', fontSize:11, borderColor:'#34d399', color:'#34d399' }}
+                              onClick={() => downloadPaymentReceipt(p)}
+                            >
+                              <Download size={11} style={{ marginRight:4 }} />Download Receipt
+                            </button>
+                            <button
+                              className="crm-btn crm-btn--ghost"
+                              style={{ padding:'5px 10px', fontSize:11, borderColor:'#6366f1', color:'#6366f1' }}
+                              onClick={() => downloadPaymentInvoice(p)}
+                            >
+                              <FileText size={11} style={{ marginRight:4 }} />Download Invoice
+                            </button>
+                          </div>
                         )}
                       </div>
                     </div>
