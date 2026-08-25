@@ -292,8 +292,8 @@ export function RequirementStep({ crmCase, onRefresh, onBack, isViewOnly, isCase
       ].filter(Boolean).join('<br/>');
       const res = await sendCustomEmail({
         to: crmCase.email,
-        subject: `Your Service Requirement Details — ${crmCase.case_id} | DNex Consulting`,
-        body: `<p>Dear <strong>${crmCase.full_name}</strong>,</p><p>Thank you for discussing your requirements with us. Here is a summary of what we have gathered:</p><div style="background:#f8fafc;padding:16px;border-radius:8px;margin:12px 0;">${reqBody}</div><p>Our team will review these and get back to you shortly with a tailored proposal.</p><p style="margin-top:16px;">Best regards,<br/><strong>DNex Consulting Team</strong></p>`,
+        subject: `Your Service Requirement Details — ${crmCase.case_id} | DNEX Consulting`,
+        body: `<p>Dear <strong>${crmCase.full_name}</strong>,</p><p>Thank you for discussing your requirements with us. Here is a summary of what we have gathered:</p><div style="background:#f8fafc;padding:16px;border-radius:8px;margin:12px 0;">${reqBody}</div><p>Our team will review these and get back to you shortly with a tailored proposal.</p><p style="margin-top:16px;">Best regards,<br/><strong>DNEX Consulting Team</strong></p>`,
       });
       setReqSentStatus(res.success ? 'success' : 'error');
     } catch { setReqSentStatus('error'); }
@@ -595,7 +595,7 @@ export function QuotationStep({ crmCase, onRefresh, onBack, isViewOnly, isCaseLo
       }
       let phone = crmCase.phone.replace(/[^0-9]/g, '');
       if (phone.startsWith('0')) phone = '971' + phone.slice(1);
-      const msg = `Dear ${crmCase.full_name},\n\nYour quotation from DNex Consulting:\nService: ${crmCase.service_type}\nSubtotal: ${currency} ${subtotal.toFixed(2)}\nDiscount (${discountPct}%): -${currency} ${discountAmt.toFixed(2)}\nTax (${taxRate}%): ${currency} ${tax.toFixed(2)}\n*Total: ${currency} ${total.toFixed(2)}*\nValidity: ${validity} days\n\nReply to confirm. Thank you!`;
+      const msg = `Dear ${crmCase.full_name},\n\nYour quotation from DNEX Consulting:\nService: ${crmCase.service_type}\nSubtotal: ${currency} ${subtotal.toFixed(2)}\nDiscount (${discountPct}%): -${currency} ${discountAmt.toFixed(2)}\nTax (${taxRate}%): ${currency} ${tax.toFixed(2)}\n*Total: ${currency} ${total.toFixed(2)}*\nValidity: ${validity} days\n\nReply to confirm. Thank you!`;
       window.open(`https://wa.me/${phone}?text=${encodeURIComponent(msg)}`, '_blank');
     } finally { setSendingWA(false); }
   };
@@ -610,7 +610,7 @@ export function QuotationStep({ crmCase, onRefresh, onBack, isViewOnly, isCaseLo
       const BACKEND_URL = import.meta.env.VITE_API_URL || 'http://localhost:3006';
       await sendCustomEmail({
         to: crmCase.email,
-        subject: `Quotation — ${crmCase.service_type} | DNex Consulting`,
+        subject: `Quotation — ${crmCase.service_type} | DNEX Consulting`,
         body: `<p>Dear <strong>${crmCase.full_name}</strong>,</p><p>Please find your quotation attached below.</p><table style="border-collapse:collapse;width:100%;font-family:sans-serif"><tr><td style="padding:6px 0;color:#64748b">Service</td><td><strong>${crmCase.service_type}</strong></td></tr><tr><td style="padding:6px 0;color:#64748b">Subtotal</td><td>${currency} ${subtotal.toFixed(2)}</td></tr>${discountPct > 0 ? `<tr><td style="padding:6px 0;color:#34d399">Discount (${discountPct}%)</td><td>-${currency} ${discountAmt.toFixed(2)}</td></tr>` : ''}<tr><td style="padding:6px 0;color:#64748b">Tax (${taxRate}%)</td><td>${currency} ${tax.toFixed(2)}</td></tr><tr style="font-weight:700;font-size:16px"><td style="padding:8px 0;border-top:2px solid #e2e8f0">Total</td><td>${currency} ${total.toFixed(2)}</td></tr></table><p>Validity: ${validity} days</p>${notes ? `<p>Notes: ${notes}</p>` : ''}<div style="margin-top:30px;margin-bottom:30px;"><p style="margin-bottom:15px;font-weight:600;">Please click one of the options below to respond:</p><a href="${BACKEND_URL}/api/quotation/accept?case_id=${crmCase.id}" style="background-color:#10b981;color:white;padding:12px 24px;text-decoration:none;border-radius:6px;font-weight:bold;margin-right:15px;display:inline-block;">✓ Accept Quotation</a><a href="${BACKEND_URL}/api/quotation/reject?case_id=${crmCase.id}" style="background-color:#ef4444;color:white;padding:12px 24px;text-decoration:none;border-radius:6px;font-weight:bold;display:inline-block;">✗ Reject Quotation</a></div>`,
         attachments: [{
           filename: `Quotation_DNX_${crmCase.case_id}.pdf`,
@@ -765,10 +765,10 @@ export function QuotationStep({ crmCase, onRefresh, onBack, isViewOnly, isCaseLo
           {/* Header */}
           <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 20, borderBottom: '1px solid #e2e8f0', paddingBottom: 20 }}>
             <div>
-              <img src={logo} alt="DNex Logo" style={{ height: 40 }} />
+              <img src={logo} alt="DNEX Logo" style={{ height: 40 }} />
             </div>
             <div style={{ textAlign: 'right', fontSize: 11, color: '#475569' }}>
-              <div style={{ fontWeight: 600, color: '#0A1628', fontSize: 12 }}>DNex Consulting</div>
+              <div style={{ fontWeight: 600, color: '#0A1628', fontSize: 12 }}>DNEX Consulting</div>
               <div>Business Centre, Sharjah Publishing City Free Zone</div>
               <div>Sharjah, United Arab Emirates</div>
               <div>TRN: 100123456789012</div>
@@ -808,7 +808,7 @@ export function QuotationStep({ crmCase, onRefresh, onBack, isViewOnly, isCaseLo
 
           <div style={{ marginBottom: 20, color: '#000', lineHeight: 1.5 }}>
             Dear {crmCase.full_name.split(' ')[0]},<br/><br/>
-            Thank you for choosing DNex Consulting. We are pleased to submit the following proposal for professional services in connection with your business requirements. Our scope of services and associated professional fees are detailed below:
+            Thank you for choosing DNEX Consulting. We are pleased to submit the following proposal for professional services in connection with your business requirements. Our scope of services and associated professional fees are detailed below:
           </div>
 
           <table style={{ width: '100%', borderCollapse: 'collapse', marginBottom: 20 }}>
@@ -855,7 +855,7 @@ export function QuotationStep({ crmCase, onRefresh, onBack, isViewOnly, isCaseLo
           <div style={{ marginBottom: 30 }}>
             <div style={{ fontWeight: 700, color: '#0A1628', fontSize: 13, marginBottom: 8 }}>Terms and Conditions</div>
             <ol style={{ paddingLeft: 16, margin: 0, fontSize: 11, color: '#475569', lineHeight: 1.6 }}>
-                <li>This proposal is valid for the period mentioned above. DNex Consulting reserves the right to revise the fees if not accepted within this timeframe.</li>
+                <li>This proposal is valid for the period mentioned above. DNEX Consulting reserves the right to revise the fees if not accepted within this timeframe.</li>
                 <li>Payment is due in full prior to the commencement of any services.</li>
                 <li>Professional fees mentioned are exclusive of any government fees, external third-party charges, or out-of-pocket expenses unless explicitly stated otherwise.</li>
                 <li>By signing this document, you acknowledge and accept our terms of engagement.</li>
@@ -864,7 +864,7 @@ export function QuotationStep({ crmCase, onRefresh, onBack, isViewOnly, isCaseLo
 
           <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: 40 }}>
             <div style={{ width: '40%' }}>
-                <div style={{ fontWeight: 700, color: '#0A1628', fontSize: 12, marginBottom: 30 }}>For and on behalf of DNex Consulting</div>
+                <div style={{ fontWeight: 700, color: '#0A1628', fontSize: 12, marginBottom: 30 }}>For and on behalf of DNEX Consulting</div>
                 <div style={{ borderTop: '1px solid #000', paddingTop: 8, fontSize: 11 }}>Authorized Signatory</div>
             </div>
             <div style={{ width: '40%' }}>
@@ -1054,7 +1054,7 @@ export function PaymentStep({ crmCase, onRefresh, onBack, isViewOnly, effectiveS
 
       const emailRes = await sendCustomEmail({
         to: crmCase.email,
-        subject: `Payment Link for ${desc} - DNex Consulting`,
+        subject: `Payment Link for ${desc} - DNEX Consulting`,
         body: emailBody,
         attachments
       });
@@ -1502,8 +1502,8 @@ export function ProcessingStep({ crmCase, onRefresh, onBack, isViewOnly, onRetur
   );
   const [emailBody, setEmailBody] = useState(
     isCompletedStage
-      ? `Dear ${crmCase.full_name},\n\nCongratulations! We are thrilled to inform you that your process for ${crmCase.service_type || 'business setup'} is now fully completed.\n\nPlease find your final documents attached to this email. We are officially closing your case on our end.\n\nThank you for choosing DNex Consulting. We wish you immense success in your business endeavors!\n\nBest regards,\nDNex Consulting Team`
-      : `Dear ${crmCase.full_name},\n\nWe are pleased to inform you that your case (${crmCase.case_id}) for ${crmCase.service_type || 'business setup'} is currently in processing. We are making great progress and will share further milestones soon.\n\nBest regards,\nDNex Consulting Team`
+      ? `Dear ${crmCase.full_name},\n\nCongratulations! We are thrilled to inform you that your process for ${crmCase.service_type || 'business setup'} is now fully completed.\n\nPlease find your final documents attached to this email. We are officially closing your case on our end.\n\nThank you for choosing DNEX Consulting. We wish you immense success in your business endeavors!\n\nBest regards,\nDNEX Consulting Team`
+      : `Dear ${crmCase.full_name},\n\nWe are pleased to inform you that your case (${crmCase.case_id}) for ${crmCase.service_type || 'business setup'} is currently in processing. We are making great progress and will share further milestones soon.\n\nBest regards,\nDNEX Consulting Team`
   );
   const [sendingEmail, setSendingEmail] = useState(false);
   const [emailStatus, setEmailStatus] = useState<'idle' | 'success' | 'error'>('idle');
@@ -1511,8 +1511,8 @@ export function ProcessingStep({ crmCase, onRefresh, onBack, isViewOnly, onRetur
   // WhatsApp state
   const [waText, setWaText] = useState(
     isCompletedStage
-      ? `Congratulations ${crmCase.full_name}! 🎉 Your ${crmCase.service_type || 'business setup'} process is fully completed. Your final documents have been issued. We are now closing your case. Thank you for choosing DNex Consulting!`
-      : `Hello ${crmCase.full_name}, we have an update regarding your ${crmCase.service_type || 'business setup'} application with DNex Consulting. We have processed the files and submitted them to the department.`
+      ? `Congratulations ${crmCase.full_name}! 🎉 Your ${crmCase.service_type || 'business setup'} process is fully completed. Your final documents have been issued. We are now closing your case. Thank you for choosing DNEX Consulting!`
+      : `Hello ${crmCase.full_name}, we have an update regarding your ${crmCase.service_type || 'business setup'} application with DNEX Consulting. We have processed the files and submitted them to the department.`
   );
   const [waTemplates, setWaTemplates] = useState<any[]>([]);
   const [showWaTemplates, setShowWaTemplates] = useState(false);

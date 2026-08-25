@@ -141,7 +141,7 @@ const generateReceiptPDF = async (paymentDetails, caseData) => {
 
       // Header Text
       doc.fontSize(9).fillColor('#334155').font('Helvetica')
-         .text('DNex Consulting', 200, 45, { align: 'right' })
+         .text('DNEX Consulting', 200, 45, { align: 'right' })
          .text('Business Centre, Sharjah Publishing City Free Zone', 200, 58, { align: 'right' })
          .text('Sharjah, United Arab Emirates', 200, 71, { align: 'right' })
          .text('TRN: 100123456789012', 200, 84, { align: 'right' })
@@ -223,7 +223,7 @@ const generateInvoicePDF = async (paymentDetails, caseData, quotationItems, quot
 
       // Header Text
       doc.fontSize(9).fillColor('#334155').font('Helvetica')
-         .text('DNex Consulting FZC', 200, 45, { align: 'right' })
+         .text('DNEX Consulting FZC', 200, 45, { align: 'right' })
          .text('Business Centre, Sharjah Publishing City Free Zone', 200, 58, { align: 'right' })
          .text('Sharjah, United Arab Emirates', 200, 71, { align: 'right' })
          .text('TRN: 100123456789012', 200, 84, { align: 'right' })
@@ -458,7 +458,7 @@ router.post('/verify-payment', async (req, res) => {
             <p>We have successfully received your payment. Please find your official payment receipt${isFullyPaid ? ' and tax invoice' : ''} attached to this email as a PDF.</p>
             <br/>
             <p style="color: #666; font-size: 14px;">If you have any questions, feel free to reply to this email.</p>
-            <p>Best regards,<br/><strong>DNex Consulting</strong></p>
+            <p>Best regards,<br/><strong>DNEX Consulting</strong></p>
           </div>
         `;
         
@@ -487,7 +487,7 @@ router.post('/verify-payment', async (req, res) => {
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
               to: caseData.email,
-              subject: 'Payment Receipt - DNex Consulting',
+              subject: 'Payment Receipt - DNEX Consulting',
               body: emailBody,
               attachments
             })

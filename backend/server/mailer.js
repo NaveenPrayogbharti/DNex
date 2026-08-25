@@ -1,7 +1,7 @@
 /**
  * backend/server/mailer.js
  * ──────────────────────────────────────────────────────────────────────────────
- * DNex Backend API — Express server handling:
+ * DNEX Backend API — Express server handling:
  *   • POST /api/leads          — Public lead form submissions (via Prisma → Supabase)
  *   • GET  /api/leads          — Admin: list all leads
  *   • POST /api/notify/email   — CRM email sender (via Nodemailer)
@@ -181,7 +181,7 @@ app.post('/api/leads', async (req, res) => {
         const pdfPath = path.resolve(__dirname, '../../frontend/src/assets/Company Profile A4.pdf');
         if (fs.existsSync(pdfPath)) {
           mailOptions.attachments.push({
-            filename: 'DNex Company Profile A4.pdf',
+            filename: 'DNEX Company Profile A4.pdf',
             path: pdfPath
           });
         }
@@ -445,19 +445,19 @@ app.post('/api/notify/email', async (req, res) => {
           console.error('Error merging PDFs:', mergeError);
           // Fallback: attach them separately if merge fails
           emailAttachments.push({
-            filename: 'DNex Company Profile A4.pdf',
+            filename: 'DNEX Company Profile A4.pdf',
             path: pdfPath
           });
         }
       } else {
         emailAttachments.push({
-          filename: 'DNex Company Profile A4.pdf',
+          filename: 'DNEX Company Profile A4.pdf',
           path: pdfPath
         });
       }
     } else if (isWelcome && fs.existsSync(pdfPath)) {
       emailAttachments.push({
-        filename: 'DNex Company Profile A4.pdf',
+        filename: 'DNEX Company Profile A4.pdf',
         path: pdfPath
       });
     }
@@ -497,7 +497,7 @@ const renderHtml = (title, message, color) => `
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>${title} — DNex Consulting</title>
+  <title>${title} — DNEX Consulting</title>
   <style>
     body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: #f8fafc; display: flex; justify-content: center; align-items: center; height: 100vh; margin: 0; }
     .card { background: white; padding: 40px; border-radius: 12px; box-shadow: 0 10px 25px rgba(0,0,0,0.05); text-align: center; max-width: 450px; width: 90%; border-top: 4px solid ${color}; }
@@ -581,7 +581,7 @@ app.get('*', (req, res) => {
 
 const PORT = process.env.MAILER_PORT ?? 3006;
 app.listen(PORT, () => {
-  console.log(`\n🚀 DNex Backend API running on http://localhost:${PORT}`);
+  console.log(`\n🚀 DNEX Backend API running on http://localhost:${PORT}`);
   console.log(`   POST /api/leads        — Lead form submissions (Prisma)`);
   console.log(`   GET  /api/leads        — List all leads (Prisma)`);
   console.log(`   POST /api/notify/email — Send CRM emails`);

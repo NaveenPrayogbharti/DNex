@@ -134,7 +134,7 @@ const teamMembers = [
     role: 'Client Relationship Manager',
     category: 'Client Support',
     expertise: 'Client Communication · Service Coordination · Client Satisfaction',
-    bio: 'Ensures seamless communication and high levels of client satisfaction across all engagements. She understands client requirements and coordinates with internal teams for timely delivery of services — serving as the primary bridge between clients and the DNex team.',
+    bio: 'Ensures seamless communication and high levels of client satisfaction across all engagements. She understands client requirements and coordinates with internal teams for timely delivery of services — serving as the primary bridge between clients and the DNEX team.',
     initials: 'KA',
     image: kanishkaImg,
   },
@@ -204,7 +204,7 @@ export function TeamCarousel() {
       <div className="flex items-end justify-between mb-8">
         <div>
           <p className="text-sm font-bold tracking-widest mb-2" style={{ color: GOLD }}>
-            The People Behind DNex
+            The People Behind DNEX
           </p>
           <h2
             className="text-3xl md:text-4xl font-extrabold"

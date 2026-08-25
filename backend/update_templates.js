@@ -25,17 +25,17 @@ async function main() {
     updatedBody = updatedBody.replace(/971555542841/g, '971551251185');
     
     // Replace text headers with the logo image (using cid:dnex-logo)
-    const oldHeaderHTML = `<h1 style="margin:0;color:#C9963C;font-size:26px;letter-spacing:1px">DNex</h1>
+    const oldHeaderHTML = `<h1 style="margin:0;color:#C9963C;font-size:26px;letter-spacing:1px">DNEX</h1>
             <p style="margin:4px 0 0;color:#94a3b8;font-size:13px">Business Setup Consultants</p>`;
-    const newHeaderHTML = `<img src="cid:dnex-logo" alt="DNex Logo" style="height:48px; object-fit:contain; margin-bottom:8px;" />`;
+    const newHeaderHTML = `<img src="cid:dnex-logo" alt="DNEX Logo" style="height:48px; object-fit:contain; margin-bottom:8px;" />`;
     
     // Check if the old base64 is in there and replace it with cid
     updatedBody = updatedBody.replace(`<img src="${logoBase64}"`, '<img src="cid:dnex-logo"');
     
     updatedBody = updatedBody.replace(oldHeaderHTML, newHeaderHTML);
     
-    // Also replace any other "DNex Business Setup Consultants" if any
-    updatedBody = updatedBody.replace(/<h2 style="margin:0;color:#C9963C;font-size:18px">DNex<\/h2>/g, newHeaderHTML);
+    // Also replace any other "DNEX Business Setup Consultants" if any
+    updatedBody = updatedBody.replace(/<h2 style="margin:0;color:#C9963C;font-size:18px">DNEX<\/h2>/g, newHeaderHTML);
     
     // Remove India number
     const indiaBlock = `<tr><td style="padding:3px 0;font-size:13px;color:#64748b">📞 India</td>

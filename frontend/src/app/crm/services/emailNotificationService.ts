@@ -96,7 +96,7 @@ function baseTemplate(title: string, body: string): string {
 <body>
   <div class="wrapper">
     <div class="header">
-      <img src="cid:dnex-logo" alt="DNex Logo" style="height: 48px; object-fit: contain; margin-bottom: 8px;" />
+      <img src="cid:dnex-logo" alt="DNEX Logo" style="height: 48px; object-fit: contain; margin-bottom: 8px;" />
       <p>Official Communication</p>
     </div>
     <div class="body">
@@ -104,7 +104,7 @@ function baseTemplate(title: string, body: string): string {
       ${body}
     </div>
     <div class="footer">
-      DNex Business Setup Consulting &bull; Dubai, UAE<br/>
+      DNEX Business Setup Consulting &bull; Dubai, UAE<br/>
       This is an automated notification. Please do not reply directly to this email.
     </div>
   </div>
@@ -122,7 +122,7 @@ export async function notifyCaseOpened(payload: CRMNotificationPayload) {
   const subject = `Your Inquiry Has Been Received — ${payload.caseName}`;
   const body = `
     <p>Dear <strong>${payload.caseName}</strong>,</p>
-    <p>Thank you for reaching out to <strong>DNex Business Setup</strong>. We have received your inquiry and one of our consultants will be in touch with you shortly.</p>
+    <p>Thank you for reaching out to <strong>DNEX Business Setup</strong>. We have received your inquiry and one of our consultants will be in touch with you shortly.</p>
     <div class="info-box">
       <div class="row"><span class="label">Case Reference</span><span class="value">${payload.caseId}</span></div>
       <div class="row"><span class="label">Service</span><span class="value">${payload.details?.service ?? 'Consultation'}</span></div>
@@ -225,7 +225,7 @@ export async function notifyStatusChange(payload: CRMNotificationPayload) {
   const subject = `Case Update — ${payload.caseName}`;
   const body = `
     <p>Dear <strong>${payload.caseName}</strong>,</p>
-    <p>There is an update on your case with DNex Business Setup.</p>
+    <p>There is an update on your case with DNEX Business Setup.</p>
     <div class="info-box">
       <div class="row"><span class="label">Case Reference</span><span class="value">${payload.caseId}</span></div>
       <div class="row"><span class="label">New Status</span><span class="value">${payload.details?.status ?? '—'}</span></div>

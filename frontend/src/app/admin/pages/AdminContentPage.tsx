@@ -61,7 +61,7 @@ const CONTENT_SCHEMA: ContentSection[] = [
     label: '🏢 About Us Section',
     fields: [
       { key: 'about_tagline', label: 'Company Tagline', type: 'text', value: 'Trusted Business Setup Experts in UAE', placeholder: '' },
-      { key: 'about_description', label: 'Company Description', type: 'textarea', value: 'DNex Business Setup is a leading business consultancy in the UAE, specializing in company formation, visa processing, and PRO services.', placeholder: '' },
+      { key: 'about_description', label: 'Company Description', type: 'textarea', value: 'DNEX Business Setup is a leading business consultancy in the UAE, specializing in company formation, visa processing, and PRO services.', placeholder: '' },
       { key: 'about_years_experience', label: 'Years of Experience', type: 'number', value: '10', placeholder: '' },
       { key: 'about_clients_served', label: 'Clients Served', type: 'number', value: '2000', placeholder: '' },
       { key: 'about_countries', label: 'Countries Served', type: 'number', value: '45', placeholder: '' },
@@ -72,7 +72,7 @@ const CONTENT_SCHEMA: ContentSection[] = [
     section_key: 'seo',
     label: '🔍 SEO & Meta Tags',
     fields: [
-      { key: 'seo_title', label: 'Page Title (Homepage)', type: 'text', value: 'DNex Business Setup | UAE Company Formation Experts', placeholder: '' },
+      { key: 'seo_title', label: 'Page Title (Homepage)', type: 'text', value: 'DNEX Business Setup | UAE Company Formation Experts', placeholder: '' },
       { key: 'seo_description', label: 'Meta Description', type: 'textarea', value: 'Expert business setup, visa processing, and PRO services in UAE. Company formation in Dubai free zones and mainland. Contact us today.', placeholder: 'Max 160 characters' },
       { key: 'seo_keywords', label: 'Meta Keywords', type: 'textarea', value: 'UAE business setup, Dubai company formation, free zone company, mainland company, visa processing UAE', placeholder: 'Comma-separated keywords' },
     ],
@@ -95,7 +95,7 @@ const CONTENT_SCHEMA: ContentSection[] = [
     fields: [
       { key: 'testimonial_1_name', label: 'Testimonial 1 — Name', type: 'text', value: 'Ahmed Al Rashid', placeholder: '' },
       { key: 'testimonial_1_role', label: 'Testimonial 1 — Role/Company', type: 'text', value: 'CEO, Gulf Ventures LLC', placeholder: '' },
-      { key: 'testimonial_1_text', label: 'Testimonial 1 — Quote', type: 'textarea', value: 'DNex made our company formation incredibly smooth and fast. Highly recommended!', placeholder: '' },
+      { key: 'testimonial_1_text', label: 'Testimonial 1 — Quote', type: 'textarea', value: 'DNEX made our company formation incredibly smooth and fast. Highly recommended!', placeholder: '' },
       { key: 'testimonial_2_name', label: 'Testimonial 2 — Name', type: 'text', value: 'Priya Sharma', placeholder: '' },
       { key: 'testimonial_2_role', label: 'Testimonial 2 — Role/Company', type: 'text', value: 'Founder, TechStart FZE', placeholder: '' },
       { key: 'testimonial_2_text', label: 'Testimonial 2 — Quote', type: 'textarea', value: 'Professional, efficient, and transparent throughout the process. Great team!', placeholder: '' },

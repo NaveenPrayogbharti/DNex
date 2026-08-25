@@ -159,7 +159,7 @@ export function CaseDetailPage() {
         
         await sendCustomEmail({
           to: crmCase.email,
-          subject: `Action Required: Document Rejected - DNex Consulting`,
+          subject: `Action Required: Document Rejected - DNEX Consulting`,
           body: `
             <div style="font-family:Arial,sans-serif;color:#333;line-height:1.6;max-width:600px;">
               <p>Dear ${crmCase.full_name},</p>
@@ -171,7 +171,7 @@ export function CaseDetailPage() {
               <p>Please use our secure Client Upload Portal to submit a new copy of this document.</p>
               <a href="${portalUrl}" style="background:#C9963C;color:#fff;padding:12px 24px;text-decoration:none;border-radius:6px;display:inline-block;margin:20px 0;font-weight:bold;">Re-Upload Document</a>
               <p>If you have any questions, please reply to this email.</p>
-              <p>Best regards,<br><strong>DNex Consulting Team</strong></p>
+              <p>Best regards,<br><strong>DNEX Consulting Team</strong></p>
             </div>
           `
         });
@@ -315,13 +315,13 @@ export function CaseDetailPage() {
             </a>
           </div>
           <p>If you have any questions or face any issues uploading, please reply to this email.</p>
-          <p>Best regards,<br/><strong>DNex Consulting Team</strong></p>
+          <p>Best regards,<br/><strong>DNEX Consulting Team</strong></p>
         </div>
       `;
 
       await sendCustomEmail({
         to: crmCase.email,
-        subject: 'Required Documents for Your Application - DNex Consulting',
+        subject: 'Required Documents for Your Application - DNEX Consulting',
         body: emailBody,
         replyTo: 'consultant@dnex.ae'
       });
@@ -372,7 +372,7 @@ export function CaseDetailPage() {
 .stamp{text-align:center;margin:20px 0;color:#15803d;font-size:14px;font-weight:700;letter-spacing:1px;border:2px solid #15803d;border-radius:8px;padding:8px 0}
 .footer{background:#f8fafc;border-top:1px solid #e2e8f0;padding:16px 32px;text-align:center;font-size:11px;color:#94a3b8}
 </style></head><body><div class="wrap">
-<div class="hdr"><img src="${LOGO_BASE64}" alt="DNex Logo" style="height: 48px; object-fit: contain; margin-bottom: 8px;" /><p>Official Payment Receipt</p></div>
+<div class="hdr"><img src="${LOGO_BASE64}" alt="DNEX Logo" style="height: 48px; object-fit: contain; margin-bottom: 8px;" /><p>Official Payment Receipt</p></div>
 <div class="body">
 <div class="stamp">✓ PAYMENT CONFIRMED</div>
 <div class="row"><span class="label">Receipt No.</span><span class="value">${receiptNumber}</span></div>
@@ -383,7 +383,7 @@ export function CaseDetailPage() {
 <div class="row"><span class="label">Payment Date</span><span class="value">${paidDate}</span></div>
 <div class="total"><span class="label">Amount Paid</span><span class="value">AED ${Number(p.amount).toLocaleString()}</span></div>
 </div>
-<div class="footer">DNex Business Setup Consulting · Dubai, UAE<br/>📞 +971 551251185 · consultant@dnex.ae · www.dnex.ae</div>
+<div class="footer">DNEX Business Setup Consulting · Dubai, UAE<br/>📞 +971 551251185 · consultant@dnex.ae · www.dnex.ae</div>
 </div></body></html>`;
     const blob = new Blob([html], { type: 'text/html' });
     const url = URL.createObjectURL(blob);
@@ -399,8 +399,8 @@ export function CaseDetailPage() {
     try {
       await sendCustomEmail({
         to: crmCase.email,
-        subject: `Payment Reminder — Your Case ${crmCase.case_id} · DNex Consulting`,
-        body: `<p>Dear <strong>${crmCase.full_name}</strong>,</p><p>This is a friendly reminder that a payment of <strong>AED ${Number(p.amount).toLocaleString()}</strong> is currently pending for your case <strong>${crmCase.case_id}</strong>${p.description ? ` (${p.description})` : ''}.</p><p>Please complete the payment at the earliest to avoid any delays in processing your application.${p.payment_link ? `</p><p>👉 <a href="${p.payment_link}">Click here to make payment</a>` : ''}</p><p>If you have already made the payment, please disregard this message or contact us to confirm.</p><p>Best regards,<br/><strong>DNex Consulting Team</strong><br/>+971 551251185</p>`,
+        subject: `Payment Reminder — Your Case ${crmCase.case_id} · DNEX Consulting`,
+        body: `<p>Dear <strong>${crmCase.full_name}</strong>,</p><p>This is a friendly reminder that a payment of <strong>AED ${Number(p.amount).toLocaleString()}</strong> is currently pending for your case <strong>${crmCase.case_id}</strong>${p.description ? ` (${p.description})` : ''}.</p><p>Please complete the payment at the earliest to avoid any delays in processing your application.${p.payment_link ? `</p><p>👉 <a href="${p.payment_link}">Click here to make payment</a>` : ''}</p><p>If you have already made the payment, please disregard this message or contact us to confirm.</p><p>Best regards,<br/><strong>DNEX Consulting Team</strong><br/>+971 551251185</p>`,
         replyTo: 'consultant@dnex.ae',
       });
       alert('✅ Payment reminder sent to ' + crmCase.email);

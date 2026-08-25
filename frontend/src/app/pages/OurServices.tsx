@@ -1054,7 +1054,7 @@ export function OurServices() {
             Let's Build Your Business Together
           </h2>
           <p className="text-slate-400 max-w-2xl mx-auto mb-10 text-justify" style={{ lineHeight: 1.7 }}>
-            Join 100+ entrepreneurs who trusted DNex to launch and grow their UAE business.
+            Join 100+ entrepreneurs who trusted DNEX to launch and grow their UAE business.
             Get expert guidance, transparent pricing, and end-to-end support.
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">

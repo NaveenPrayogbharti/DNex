@@ -142,7 +142,7 @@ export function ClientPayment() {
       <div className="min-h-[80vh] flex flex-col items-center justify-center p-6 pt-32 bg-slate-50">
         <div className="bg-white p-8 rounded-3xl max-w-md w-full text-center shadow-xl border border-slate-100">
           <div className="flex justify-center mb-6">
-            <img src={websiteLogo} alt="DNex Logo" className="h-20 w-auto object-contain" />
+            <img src={websiteLogo} alt="DNEX Logo" className="h-20 w-auto object-contain" />
           </div>
           <div className="mx-auto w-20 h-20 bg-green-50 rounded-full flex items-center justify-center mb-6">
             <CheckCircle className="w-10 h-10 text-green-500" />
@@ -176,7 +176,7 @@ export function ClientPayment() {
           <div className="absolute top-0 right-0 p-4 opacity-10">
             <ShieldCheck size={64} />
           </div>
-          <div className="flex justify-center mb-4"><img src={crmLogo} alt="DNex Logo" className="h-10 w-auto object-contain" /></div>
+          <div className="flex justify-center mb-4"><img src={crmLogo} alt="DNEX Logo" className="h-10 w-auto object-contain" /></div>
           <h2 className="text-lg text-slate-300 mb-1">Secure Checkout</h2>
           <div className="text-4xl font-bold text-white tracking-tight mb-2">
             {payment.currency} {payment.amount.toLocaleString(undefined, { minimumFractionDigits: 2 })}

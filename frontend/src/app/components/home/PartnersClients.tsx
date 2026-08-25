@@ -94,7 +94,7 @@ export function PartnersClients() {
             </h2>
             <p className="text-gray-500 max-w-xl mx-auto mt-3" style={{ lineHeight: 1.7 }}>
               From first-time entrepreneurs to multinational expansions — here's a snapshot of the companies
-              that trusted DNex to get them started in the UAE.
+              that trusted DNEX to get them started in the UAE.
             </p>
           </div>
 

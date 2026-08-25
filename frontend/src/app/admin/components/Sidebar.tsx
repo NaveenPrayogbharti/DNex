@@ -68,9 +68,9 @@ export function Sidebar({ collapsed, onToggle }: SidebarProps) {
       <div className="admin-sidebar__header">
         <div className="admin-sidebar__logo">
           {collapsed ? (
-            <img src={logo} alt="DNex" style={{ height: '34px', width: '34px', objectFit: 'contain', borderRadius: 6 }} />
+            <img src={logo} alt="DNEX" style={{ height: '34px', width: '34px', objectFit: 'contain', borderRadius: 6 }} />
           ) : (
-            <img src={logo} alt="DNex Admin" style={{ height: '40px', width: 'auto', objectFit: 'contain', maxWidth: '160px' }} />
+            <img src={logo} alt="DNEX Admin" style={{ height: '40px', width: 'auto', objectFit: 'contain', maxWidth: '160px' }} />
           )}
         </div>
         <button

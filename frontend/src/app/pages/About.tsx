@@ -137,7 +137,7 @@ export function About() {
                             >
                                 <span className="w-2 h-2 rounded-full animate-pulse" style={{ backgroundColor: GOLD }}></span>
                                 <span className="text-sm font-medium" style={{ color: GOLD }}>
-                                    About DNex Consulting
+                                    About DNEX Consulting
                                 </span>
                             </div>
 
@@ -155,7 +155,7 @@ export function About() {
                             </h1>
 
                             <p className="text-lg text-slate-300 mb-8 max-w-[540px] text-justify" style={{ lineHeight: 1.65 }}>
-                                At DNex, we are committed to empowering businesses with seamless, compliant, and growth-oriented solutions across the UAE and beyond. With a strong foundation in regulatory expertise and business advisory, we specialize in helping entrepreneurs, startups, and established enterprises navigate the complexities of company formation, financial compliance, and cross-border operations.
+                                At DNEX, we are committed to empowering businesses with seamless, compliant, and growth-oriented solutions across the UAE and beyond. With a strong foundation in regulatory expertise and business advisory, we specialize in helping entrepreneurs, startups, and established enterprises navigate the complexities of company formation, financial compliance, and cross-border operations.
                             </p>
 
                             {/* Trust bullets */}
@@ -272,7 +272,7 @@ export function About() {
                                 <div className="w-16 h-1 rounded-full mb-8" style={{ backgroundColor: GOLD }} />
                                 <div className="space-y-6">
                                     <p className="text-slate-300 leading-relaxed text-base text-justify">
-                                        Founded with the vision to simplify the complex landscape of corporate structuring in the UAE, DNex Consulting has grown into one of the most reliable advisory firms in the region. We understand that navigating government regulations can be daunting.
+                                        Founded with the vision to simplify the complex landscape of corporate structuring in the UAE, DNEX Consulting has grown into one of the most reliable advisory firms in the region. We understand that navigating government regulations can be daunting.
                                     </p>
                                     <p className="text-slate-300 leading-relaxed text-base text-justify">
                                         Our mission is to handle the heavy lifting—from mainland and free zone company formations to accounting, corporate tax, and golden visas—so that you can focus entirely on scaling your business.
@@ -356,7 +356,7 @@ export function About() {
                 </div>
             </div>
 
-            {/* 4. Why DNex Section */}
+            {/* 4. Why DNEX Section */}
             <div className="py-20" style={{ backgroundColor: '#F8FAFC' }}>
                 <div className="max-w-7xl mx-auto px-4 sm:px-6">
                     <div className="text-center mb-16">
@@ -375,7 +375,7 @@ export function About() {
                                 letterSpacing: '-0.5px',
                             }}
                         >
-                            Why DNex?
+                            Why DNEX?
                         </h2>
                         <p className="text-gray-500 max-w-xl mx-auto text-justify" style={{ lineHeight: 1.7 }}>
                             We combine deep regulatory expertise with a genuinely client first approach to make your UAE business journey smooth and successful.

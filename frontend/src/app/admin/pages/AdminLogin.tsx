@@ -70,7 +70,7 @@ export function AdminLogin() {
       <div className="admin-login__container">
         {/* Logo */}
         <div className="admin-login__logo" style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', marginBottom: '2rem' }}>
-          <img src={logo} alt="DNex Admin" style={{ height: '72px', width: 'auto', objectFit: 'contain', marginBottom: '1rem' }} />
+          <img src={logo} alt="DNEX Admin" style={{ height: '72px', width: 'auto', objectFit: 'contain', marginBottom: '1rem' }} />
         </div>
 
         {/* Card */}
@@ -153,7 +153,7 @@ export function AdminLogin() {
         </div>
 
         <p className="admin-login__copyright">
-          © {new Date().getFullYear()} DNex Business Consultants. All rights reserved.
+          © {new Date().getFullYear()} DNEX Business Consultants. All rights reserved.
         </p>
       </div>
     </div>

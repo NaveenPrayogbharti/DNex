@@ -8,11 +8,11 @@ const NAVY = '#0A1628';
 
 export function AdminSettingsPage() {
   const [activeTab, setActiveTab] = useState<'general' | 'content' | 'seo'>('general');
-  const [companyName, setCompanyName] = useState('DNex');
+  const [companyName, setCompanyName] = useState('DNEX');
   const [contactEmail, setContactEmail] = useState('info@dnex.com');
   const [contactPhone, setContactPhone] = useState('+971 551251185');
   
-  const [seoTitle, setSeoTitle] = useState('DNex | Business Setup in Dubai');
+  const [seoTitle, setSeoTitle] = useState('DNEX | Business Setup in Dubai');
   const [seoDescription, setSeoDescription] = useState('Expert business setup consultants in Dubai, UAE.');
 
   const [saving, setSaving] = useState(false);

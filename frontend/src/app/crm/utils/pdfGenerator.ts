@@ -38,7 +38,7 @@ export function generateQuotationPDFBase64(data: PDFData): string {
   doc.setFontSize(9);
   doc.setTextColor(gray);
   doc.setFont('helvetica', 'normal');
-  doc.text('DNex Consulting', pageWidth - 40, 45, { align: 'right' });
+  doc.text('DNEX Consulting', pageWidth - 40, 45, { align: 'right' });
   doc.text('Business Centre, Sharjah Publishing City Free Zone', pageWidth - 40, 58, { align: 'right' });
   doc.text('Sharjah, United Arab Emirates', pageWidth - 40, 71, { align: 'right' });
   doc.text('TRN: 100123456789012', pageWidth - 40, 84, { align: 'right' });
@@ -98,7 +98,7 @@ export function generateQuotationPDFBase64(data: PDFData): string {
   doc.setFont('helvetica', 'normal');
   doc.text(`Dear ${crmCase.full_name.split(' ')[0]},`, 40, startY);
   
-  const introText = 'Thank you for choosing DNex Consulting. We are pleased to submit the following proposal for professional services in connection with your business requirements. Our scope of services and associated professional fees are detailed below:';
+  const introText = 'Thank you for choosing DNEX Consulting. We are pleased to submit the following proposal for professional services in connection with your business requirements. Our scope of services and associated professional fees are detailed below:';
   const splitIntro = doc.splitTextToSize(introText, pageWidth - 80);
   doc.text(splitIntro, 40, startY + 20);
 
@@ -193,7 +193,7 @@ export function generateQuotationPDFBase64(data: PDFData): string {
   doc.setFont('helvetica', 'normal');
   doc.setFontSize(9);
   const terms = [
-    '1. This proposal is valid for the period mentioned above. DNex Consulting reserves the right to revise the fees if not accepted within this timeframe.',
+    '1. This proposal is valid for the period mentioned above. DNEX Consulting reserves the right to revise the fees if not accepted within this timeframe.',
     '2. Payment is due in full prior to the commencement of any services.',
     '3. Professional fees mentioned are exclusive of any government fees, external third-party charges, or out-of-pocket expenses unless explicitly stated otherwise.',
     '4. By signing this document, you acknowledge and accept our terms of engagement.'
@@ -212,9 +212,9 @@ export function generateQuotationPDFBase64(data: PDFData): string {
   doc.setFontSize(10);
   doc.setTextColor(black);
   
-  // DNex signature
+  // DNEX signature
   doc.setFont('helvetica', 'bold');
-  doc.text('For and on behalf of DNex Consulting', 40, tY);
+  doc.text('For and on behalf of DNEX Consulting', 40, tY);
   doc.setDrawColor(black);
   doc.setLineWidth(0.5);
   doc.line(40, tY + 40, 220, tY + 40);
@@ -236,7 +236,7 @@ export function generateQuotationPDFBase64(data: PDFData): string {
   doc.setFontSize(8);
   doc.setTextColor(lightGray);
   doc.text('This is a computer-generated document. No signature is required for validity unless specified for client acceptance.', pageWidth / 2, pageHeight - 30, { align: 'center' });
-  doc.text('DNex Consulting | Business Centre, Sharjah Publishing City Free Zone, Sharjah, UAE', pageWidth / 2, pageHeight - 20, { align: 'center' });
+  doc.text('DNEX Consulting | Business Centre, Sharjah Publishing City Free Zone, Sharjah, UAE', pageWidth / 2, pageHeight - 20, { align: 'center' });
   
   // Convert to Base64 (Data URI format)
   const dataUri = doc.output('datauristring');

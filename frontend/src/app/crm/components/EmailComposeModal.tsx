@@ -1,7 +1,7 @@
 /**
  * EmailComposeModal.tsx
  * ─────────────────────────────────────────────────────────────────────────────
- * Reusable email compose popup for the DNex CRM.
+ * Reusable email compose popup for the DNEX CRM.
  * Appears when agent clicks "Send Email to Client" at any case stage.
  * Uses the backend /api/notify/email endpoint via sendCustomEmail().
  */
@@ -315,7 +315,7 @@ export function EmailComposeModal({ crmCase, onClose, stageLabel }: Props) {
               value={body}
               onChange={e => setBody(e.target.value)}
               rows={10}
-              placeholder={`Dear ${crmCase.full_name},\n\nType your message here...\n\nBest regards,\nDNex Consulting Team`}
+              placeholder={`Dear ${crmCase.full_name},\n\nType your message here...\n\nBest regards,\nDNEX Consulting Team`}
               style={{
                 background: 'rgba(255,255,255,0.05)', color: '#e2e8f0',
                 borderColor: 'rgba(255,255,255,0.12)', fontFamily: 'monospace',
@@ -403,7 +403,7 @@ export function EmailComposeModal({ crmCase, onClose, stageLabel }: Props) {
             fontSize: 12, color: '#94a3b8',
           }}>
             <span style={{ fontWeight: 700, color: '#64748b' }}>FROM: </span>
-            <span>DNex Business Setup &lt;consultant@dnex.ae&gt;</span>
+            <span>DNEX Business Setup &lt;consultant@dnex.ae&gt;</span>
             <span style={{ margin: '0 10px', color: '#334155' }}>|</span>
             <span style={{ fontWeight: 700, color: '#64748b' }}>TO: </span>
             <span style={{ color: GOLD }}>{to || '—'}</span>
@@ -478,12 +478,12 @@ function wrapHtml(subject: string, rawBody: string): string {
 <body>
   <div class="wrapper">
     <div class="header">
-      <img src="cid:dnex-logo" alt="DNex Logo" style="height: 48px; object-fit: contain; margin-bottom: 8px;" />
+      <img src="cid:dnex-logo" alt="DNEX Logo" style="height: 48px; object-fit: contain; margin-bottom: 8px;" />
       <p>Official Communication — ${subject}</p>
     </div>
     <div class="body">${htmlBody}</div>
     <div class="footer">
-      DNex Business Setup Consulting &bull; Dubai, UAE<br/>
+      DNEX Business Setup Consulting &bull; Dubai, UAE<br/>
       📞 +971 551251185 &bull; consultant@dnex.ae
     </div>
   </div>

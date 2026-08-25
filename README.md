@@ -1,9 +1,9 @@
-# DNex Site — Project Structure
+# DNEX Site — Project Structure
 
 This project is split into two independent packages:
 
 ```
-DNex_site/
+DNEX_site/
 ├── frontend/          ← Vite + React + TypeScript (client-side app)
 │   ├── src/
 │   ├── index.html

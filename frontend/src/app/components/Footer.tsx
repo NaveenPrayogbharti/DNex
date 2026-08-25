@@ -118,7 +118,7 @@ export function Footer() {
             <Link to="/" className="flex items-center gap-3 mb-5">
               <img
                 src={logo}
-                alt="DNex Consulting Logo"
+                alt="DNEX Consulting Logo"
                 className="h-[54px] w-auto object-contain"
               />
             </Link>
@@ -229,7 +229,7 @@ export function Footer() {
       <div style={{ backgroundColor: '#0a1b2e' }}>
         <div className="max-w-7xl mx-auto px-4 sm:px-6 py-4">
           <p className="text-center text-xs text-slate-500">
-            © {new Date().getFullYear()} DNex Consulting FZC. All rights reserved.
+            © {new Date().getFullYear()} DNEX Consulting FZC. All rights reserved.
             <br />
             * Prices and Time promised are exclusive of government/authority fees  and depends on type of license and vary by free zone and license type.
           </p>
