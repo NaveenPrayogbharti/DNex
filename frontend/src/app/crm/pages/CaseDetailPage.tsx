@@ -462,10 +462,10 @@ export function CaseDetailPage() {
           onBack={() => goBack('Requirement Gathering')} isViewOnly={isViewOnly} isCaseLocked={isCaseLocked} onReturnToCurrent={() => setViewingStage(null)} />;
       case 'Quotation Sent':
         return <PaymentStep crmCase={crmCase} onRefresh={loadAll}
-          onBack={() => goBack('Service Assigned')} isViewOnly={isViewOnly} isCaseLocked={isCaseLocked} effectiveStage={effectiveStage} />;
+          onBack={() => goBack('Service Assigned')} isViewOnly={isViewOnly} isCaseLocked={isCaseLocked} effectiveStage={effectiveStage} onReturnToCurrent={() => setViewingStage(null)} />;
       case 'Payment Pending':
         return <PaymentStep crmCase={crmCase} onRefresh={loadAll}
-          onBack={() => goBack('Quotation Sent')} isViewOnly={isViewOnly} isCaseLocked={isCaseLocked} effectiveStage={effectiveStage} />;
+          onBack={() => goBack('Quotation Sent')} isViewOnly={isViewOnly} isCaseLocked={isCaseLocked} effectiveStage={effectiveStage} onReturnToCurrent={() => setViewingStage(null)} />;
       case 'Document Collection':
       case 'Verification':
         return (
@@ -840,13 +840,15 @@ export function CaseDetailPage() {
                             >
                               <Download size={11} style={{ marginRight:4 }} />Download Receipt
                             </button>
-                            <button
-                              className="crm-btn crm-btn--ghost"
-                              style={{ padding:'5px 10px', fontSize:11, borderColor:'#6366f1', color:'#6366f1' }}
-                              onClick={() => downloadPaymentInvoice(p)}
-                            >
-                              <FileText size={11} style={{ marginRight:4 }} />Download Invoice
-                            </button>
+                            {(quotations.length > 0 && payments.filter(pay => pay.status === 'paid').reduce((sum, pay) => sum + Number(pay.amount), 0) >= quotations[0].total) && (
+                              <button
+                                className="crm-btn crm-btn--ghost"
+                                style={{ padding:'5px 10px', fontSize:11, borderColor:'#6366f1', color:'#6366f1' }}
+                                onClick={() => downloadPaymentInvoice(p)}
+                              >
+                                <FileText size={11} style={{ marginRight:4 }} />Download Invoice
+                              </button>
+                            )}
                           </div>
                         )}
                       </div>

@@ -1,6 +1,6 @@
 # DNex Project — Living Feature Document
 > **Auto-generated** — Do not edit manually. Regenerated on every `npm run dev` save and `npm run build`.
-> Last updated: **Sunday, 23 August 2026 at 1:02 am**
+> Last updated: **Tuesday, 25 August 2026 at 4:41 pm**
 
 ---
 
@@ -8,7 +8,7 @@
 
 | Metric | Count |
 |--------|-------|
-| TypeScript/TSX files | 129 |
+| TypeScript/TSX files | 130 |
 | CSS stylesheets | 6 |
 | SQL schema files | 0 |
 | Registered routes | 0 |
@@ -19,11 +19,11 @@
 
 ## 🌐 Public Website
 
-### Pages (11)
+### Pages (12)
 
 | Page | File | Lines |
 |------|------|-------|
-| **About** | `src/app/pages/About.tsx` | 458 |
+| **About** | `src/app/pages/About.tsx` | 457 |
 | **ClientPayment** | `src/app/pages/ClientPayment.tsx` | 226 |
 | **ClientUploadPortal** | `src/app/pages/ClientUploadPortal.tsx` | 239 |
 | **Contact** | `src/app/pages/Contact.tsx` | 110 |
@@ -34,6 +34,7 @@
 | **OurServices** | `src/app/pages/OurServices.tsx` | 1082 |
 | **PrivacyPolicy** | `src/app/pages/PrivacyPolicy.tsx` | 239 |
 | **Root** | `src/app/pages/Root.tsx` | 48 |
+| **TermsAndConditions** | `src/app/pages/TermsAndConditions.tsx` | 241 |
 
 ### Home Section Components (9)
 
@@ -139,7 +140,7 @@ New → Contacted → In Progress → Closed
 | Page | File | Lines |
 |------|------|-------|
 | **AnalyticsPage** | `src/app/crm/pages/AnalyticsPage.tsx` | 138 |
-| **CaseDetailPage** | `src/app/crm/pages/CaseDetailPage.tsx` | 960 |
+| **CaseDetailPage** | `src/app/crm/pages/CaseDetailPage.tsx` | 962 |
 | **CasesPage** | `src/app/crm/pages/CasesPage.tsx` | 211 |
 | **CRMDashboard** | `src/app/crm/pages/CRMDashboard.tsx` | 256 |
 | **CRMLayout** | `src/app/crm/pages/CRMLayout.tsx` | 44 |
@@ -346,7 +347,7 @@ src/
 │   │   ├── Navbar.tsx
 │   │   ├── Footer.tsx
 │   │   └── TeamCarousel.tsx
-│   ├── pages/              # 11 public pages
+│   ├── pages/              # 12 public pages
 │   ├── admin/              # Admin Portal
 │   │   ├── pages/          # 9 admin pages
 │   │   ├── components/     # 6 admin components

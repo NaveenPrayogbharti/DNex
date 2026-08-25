@@ -43,6 +43,7 @@ const IndiaServices = wrap(lazy(() => import('./pages/IndiaServices').then(m => 
 const ClientPayment = wrap(lazy(() => import('./pages/ClientPayment').then(m => ({ default: m.ClientPayment }))));
 const ClientUploadPortal = wrap(lazy(() => import('./pages/ClientUploadPortal').then(m => ({ default: m.ClientUploadPortal }))));
 const PrivacyPolicy = wrap(lazy(() => import('./pages/PrivacyPolicy').then(m => ({ default: m.PrivacyPolicy }))));
+const TermsAndConditions = wrap(lazy(() => import('./pages/TermsAndConditions').then(m => ({ default: m.TermsAndConditions }))));
 
 const publicRoutes = [
   {
@@ -59,6 +60,7 @@ const publicRoutes = [
       { path: 'pay/:id',        Component: ClientPayment },
       { path: 'client/upload/:caseId', Component: ClientUploadPortal },
       { path: 'privacy',        Component: PrivacyPolicy },
+      { path: 'terms',          Component: TermsAndConditions },
       { path: '*',              Component: NotFound },
     ],
   },

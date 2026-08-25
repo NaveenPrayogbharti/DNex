@@ -8,7 +8,7 @@ const GOLD = '#C9963C';
 
 // Mock Data Objects
 const stats = [
-    { value: '15 Years', label: ' Experienced Management' },
+    { value: '15+ Years', label: ' Experienced Management' },
     { value: '100%', label: 'Timely Completion' },
     { value: 'UAE', label: 'Mainland and Free Zones Covered' },
     { value: '100%', label: 'Client Satisfaction' },
@@ -293,8 +293,7 @@ export function About() {
                                     key={i}
                                     className="p-6 rounded-2xl border border-slate-100 bg-white hover:shadow-lg transition-all duration-300 text-center group"
                                 >
-                                    <div className="text-3xl mb-3">{s.icon}</div>
-                                    <div className="text-2xl font-bold mb-1" style={{ color: NAVY }}>
+                                    <div className="text-4xl font-bold mb-2" style={{ color: NAVY }}>
                                         {s.value}
                                         {s.star && (
                                             <span title="*T&C Apply" style={{ color: GOLD, fontSize: '0.7rem', verticalAlign: 'super', cursor: 'default', marginLeft: '2px' }}>★</span>

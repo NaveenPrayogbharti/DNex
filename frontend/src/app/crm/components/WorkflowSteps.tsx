@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef } from 'react';
 import { supabase } from '../../../lib/supabase';
-import { Phone, CheckCircle, XCircle, ChevronRight, ChevronDown, Send, FileText, CreditCard, Package, ArrowLeft, Plus, Paperclip, Image, File, UploadCloud } from 'lucide-react';
+import { Phone, CheckCircle, XCircle, ChevronRight, ChevronDown, Send, FileText, CreditCard, Package, ArrowLeft, Plus, Paperclip, Image, File, UploadCloud, RefreshCw } from 'lucide-react';
 import logo from '@/assets/images/website_logo.png';
 import { updateCaseStatus, updateCase, updateCaseWorkflowField } from '../services/caseService';
 import type { CRMCase, CaseStatus } from '../services/caseService';
@@ -17,7 +17,7 @@ import { generateQuotationPDFBase64 } from '../utils/pdfGenerator';
 import jsPDF from 'jspdf';
 import { fetchDocuments } from '../services/documentService';
 import type { CRMDocument } from '../services/documentService';
-import { fetchPayments } from '../services/paymentService';
+import { fetchPayments, updatePaymentStatus } from '../services/paymentService';
 import type { CRMPayment } from '../services/paymentService';
 const GOLD = '#C9963C';
 
@@ -504,7 +504,7 @@ export function RequirementStep({ crmCase, onRefresh, onBack, isViewOnly, isCase
             <button className="crm-btn crm-btn--primary" style={{ background: '#2563eb' }}
               disabled={sendingReq}
               onClick={sendRequirements}>
-              <Send size={14} /> {sendingReq ? 'Sending...' : 'Send Requirements to Client'}
+              <Send size={14} /> {sendingReq ? 'Sending...' : 'Capture Client Details'}
             </button>
             {reqSentStatus === 'success' && <span style={{ fontSize: 12, color: '#34d399', fontWeight: 600 }}>✓ Sent successfully!</span>}
             {reqSentStatus === 'error' && <span style={{ fontSize: 12, color: '#f87171', fontWeight: 600 }}>✗ Failed to send.</span>}
@@ -960,8 +960,9 @@ export function QuotationStep({ crmCase, onRefresh, onBack, isViewOnly, isCaseLo
 }
 
 // ── Step: Payment ────────────────────────────────────────────────────────────
-export function PaymentStep({ crmCase, onRefresh, onBack, isViewOnly, effectiveStage }: Props) {
+export function PaymentStep({ crmCase, onRefresh, onBack, isViewOnly, effectiveStage, onReturnToCurrent }: Props) {
   const [amount, setAmount] = useState('');
+  const [totalAmount, setTotalAmount] = useState(0);
   const [currency, setCurrency] = useState(crmCase.requirement_data?.currency || 'AED');
   const [desc, setDesc] = useState(crmCase.service_type || '');
   const [saving, setSaving] = useState(false);
@@ -969,17 +970,29 @@ export function PaymentStep({ crmCase, onRefresh, onBack, isViewOnly, effectiveS
   const [showNotInterested, setShowNotInterested] = useState(false);
   const [rejectReason, setRejectReason] = useState('');
   const [pays, setPays] = useState<CRMPayment[]>([]);
+  const [showNewPaymentForm, setShowNewPaymentForm] = useState(false);
 
   useEffect(() => {
     fetchQuotations(crmCase.id)
       .then(qs => {
         if (qs.length > 0) {
-          setAmount(qs[0].total.toString());
+          setTotalAmount(Number(qs[0].total));
         }
       })
       .catch(console.error);
     fetchPayments(crmCase.id).then(setPays).catch(console.error);
   }, [crmCase.id, crmCase.updated_at]);
+
+  const paidAmount = pays.filter(p => p.status === 'paid').reduce((sum, p) => sum + Number(p.amount), 0);
+  const remainingAmount = Math.max(0, totalAmount - paidAmount);
+
+  useEffect(() => {
+    if (remainingAmount > 0) {
+      setAmount(remainingAmount.toString());
+    } else {
+      setAmount('');
+    }
+  }, [remainingAmount]);
 
   const currencies = [
     { code: 'AED', label: 'AED (UAE Dirham)' },
@@ -993,7 +1006,6 @@ export function PaymentStep({ crmCase, onRefresh, onBack, isViewOnly, effectiveS
     setSaving(true);
     try {
       if (interested) {
-        // Move from Quotation Sent to Payment Pending
         await updateCaseStatus(crmCase.id, 'Payment Pending');
       } else {
         await updateCaseWorkflowField(crmCase.id, 'not_interested_reason', rejectReason);
@@ -1009,10 +1021,8 @@ export function PaymentStep({ crmCase, onRefresh, onBack, isViewOnly, effectiveS
     if (!amount) return;
     setSaving(true);
     try {
-      // Create payment in DB
       const payRecord = await createPayment(crmCase.id, parseFloat(amount), desc, currency);
       
-      // Fetch latest quotation to attach
       const qs = await fetchQuotations(crmCase.id);
       let attachments: any[] = [];
       let emailBody = `<p>Dear ${crmCase.full_name},</p><p>You can complete your payment of <b>${currency} ${amount}</b> for <b>${desc}</b> securely online.</p><p>Payment Link: <a href="${window.location.origin}/pay/${payRecord.id}?amount=${amount}&currency=${currency}&desc=${encodeURIComponent(desc)}&rzp=${payRecord.razorpay_id}">Pay Now</a></p>`;
@@ -1020,7 +1030,6 @@ export function PaymentStep({ crmCase, onRefresh, onBack, isViewOnly, effectiveS
       if (qs.length > 0) {
         const q = qs[0];
         
-        // Generate PDF
         const pdfBase64 = generateQuotationPDFBase64({
           crmCase,
           items: q.items as any,
@@ -1043,7 +1052,6 @@ export function PaymentStep({ crmCase, onRefresh, onBack, isViewOnly, effectiveS
         emailBody = `<p>Dear ${crmCase.full_name},</p><p>Please find attached your official quotation. You can complete your payment of <b>${currency} ${amount}</b> for <b>${desc}</b> securely online.</p><p>Payment Link: <a href="${window.location.origin}/pay/${payRecord.id}?amount=${amount}&currency=${currency}&desc=${encodeURIComponent(desc)}&rzp=${payRecord.razorpay_id}">Pay Now</a></p>`;
       }
 
-      // Send email
       const emailRes = await sendCustomEmail({
         to: crmCase.email,
         subject: `Payment Link for ${desc} - DNex Consulting`,
@@ -1057,7 +1065,13 @@ export function PaymentStep({ crmCase, onRefresh, onBack, isViewOnly, effectiveS
         alert('Payment link sent successfully!');
       }
 
-      await updateCaseStatus(crmCase.id, 'Payment Pending');
+      const updatedPays = await fetchPayments(crmCase.id);
+      setPays(updatedPays);
+      
+      if (crmCase.status !== 'Payment Completed') {
+        await updateCaseStatus(crmCase.id, 'Payment Pending');
+      }
+      setShowNewPaymentForm(false);
       onRefresh();
     } catch (err: any) {
       console.error(err);
@@ -1066,14 +1080,43 @@ export function PaymentStep({ crmCase, onRefresh, onBack, isViewOnly, effectiveS
   };
 
   const markPaid = async () => {
+    if (!amount) return;
     setMarkingPaid(true);
     try {
-      await updateCaseStatus(crmCase.id, 'Payment Completed');
+      const pendingPayment = pays.find(p => p.status === 'pending' && Math.abs(Number(p.amount) - parseFloat(amount)) < 1);
+      
+      if (pendingPayment) {
+        await updatePaymentStatus(pendingPayment.id, 'paid');
+      } else {
+        const { error } = await supabase.from('crm_payments').insert({
+          case_id: crmCase.id,
+          amount: parseFloat(amount),
+          currency,
+          description: desc,
+          status: 'paid',
+          paid_at: new Date().toISOString()
+        });
+        if (error) throw error;
+      }
+      
+      const updatedPays = await fetchPayments(crmCase.id);
+      setPays(updatedPays);
+      
+      const newPaidSum = updatedPays.filter(p => p.status === 'paid').reduce((sum, p) => sum + Number(p.amount), 0);
+      if (newPaidSum >= totalAmount) {
+        await updateCaseStatus(crmCase.id, 'Payment Completed');
+      } else {
+        await updateCaseStatus(crmCase.id, 'Payment Pending');
+      }
+      setShowNewPaymentForm(false);
+      setAmount((Math.max(0, totalAmount - newPaidSum)).toString());
       onRefresh();
+    } catch (err) {
+      console.error(err);
+      alert('Error marking as paid');
     } finally { setMarkingPaid(false); }
   };
 
-  // If status is Quotation Sent, prompt for response first
   const currentView = effectiveStage || crmCase.status;
   
   const handleNewQuotation = async () => {
@@ -1087,6 +1130,9 @@ export function PaymentStep({ crmCase, onRefresh, onBack, isViewOnly, effectiveS
   };
 
   if (currentView === 'Quotation Sent') {
+    const isAccepted = ['Payment Pending', 'Document Collection', 'Verification', 'Preview', 'Processing', 'Completed', 'Closed'].includes(crmCase.status);
+    const isRejected = crmCase.status === 'Not Interested';
+
     return (
       <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
         {onBack && (
@@ -1095,47 +1141,55 @@ export function PaymentStep({ crmCase, onRefresh, onBack, isViewOnly, effectiveS
           </button>
         )}
         <div style={{ color: GOLD, fontWeight: 700, fontSize: 15 }}>📋 Client Response to Quotation</div>
-        <div style={{ fontSize: 13, color: 'var(--crm-text)' }}>
-          Please capture the client's response to the sent quotation before initiating the payment phase.
-        </div>
-
-        <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 12, padding: 30, background: 'rgba(255,255,255,0.03)', border: '1px dashed var(--crm-border)', borderRadius: 12 }}>
-          <div className="crm-spinner" style={{ width: 30, height: 30, borderColor: `${GOLD} transparent transparent transparent` }} />
-          <div style={{ fontSize: 14, color: GOLD, fontWeight: 600 }}>Waiting for Client's Approval...</div>
-          <div style={{ fontSize: 12, color: '#94a3b8', textAlign: 'center' }}>
-            We've sent the quotation via email with Accept/Reject links.<br/>
-            When the client clicks a link, this case will automatically update.
-          </div>
-          <button className="crm-btn crm-btn--ghost" onClick={onRefresh} style={{ marginTop: 10 }}>
-            🔄 Refresh Status
-          </button>
-        </div>
         
-        <div style={{ display: 'flex', gap: 10, marginTop: 16 }}>
-          <button className="crm-btn crm-btn--primary" disabled={saving} onClick={handleNewQuotation} style={{ background: '#0ea5e9' }}>
-            <FileText size={14} /> Re-issue New Quotation
-          </button>
-        </div>
-
-        {showNotInterested && (
-          <div style={{ display: 'flex', flexDirection: 'column', gap: 8, marginTop: 8, padding: 12, background: 'rgba(239,68,68,0.04)', border: '1px solid rgba(239,68,68,0.15)', borderRadius: 10 }}>
-            <label style={{ fontSize: 12, color: '#f87171', fontWeight: 600 }}>Reason for rejection *</label>
-            <textarea
-              className="crm-textarea"
-              rows={3}
-              value={rejectReason}
-              onChange={e => setRejectReason(e.target.value)}
-              placeholder="e.g. Budget constraints, chose another provider..."
-            />
-            <button
-              className="crm-btn crm-btn--danger"
-              disabled={saving || !rejectReason}
-              onClick={() => handleInterestSelect(false)}
-              style={{ alignSelf: 'flex-start' }}
-            >
-              Confirm Rejection &amp; Close Case
-            </button>
+        {isAccepted ? (
+          <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 12, padding: 30, background: 'rgba(52,211,153,0.05)', border: '1px solid rgba(52,211,153,0.3)', borderRadius: 12 }}>
+            <div style={{ fontSize: 24 }}>✅</div>
+            <div style={{ fontSize: 14, color: '#065f46', fontWeight: 600 }}>Quotation Accepted</div>
+            <div style={{ fontSize: 12, color: '#065f46', textAlign: 'center' }}>
+              The client has successfully approved the quotation.
+            </div>
+            {isViewOnly && onReturnToCurrent && (
+               <button className="crm-btn crm-btn--primary" onClick={() => onReturnToCurrent()} style={{ marginTop: 12 }}>
+                 Return to Current Stage
+               </button>
+            )}
           </div>
+        ) : isRejected ? (
+          <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 12, padding: 30, background: 'rgba(239,68,68,0.05)', border: '1px solid rgba(239,68,68,0.3)', borderRadius: 12 }}>
+            <div style={{ fontSize: 24 }}>❌</div>
+            <div style={{ fontSize: 14, color: '#991b1b', fontWeight: 600 }}>Quotation Rejected</div>
+            <div style={{ fontSize: 12, color: '#991b1b', textAlign: 'center' }}>
+              The client has rejected this quotation.
+            </div>
+            {!isViewOnly && (
+              <button className="crm-btn crm-btn--primary" onClick={handleNewQuotation} style={{ marginTop: 12 }}>
+                Re-issue New Quotation
+              </button>
+            )}
+          </div>
+        ) : (
+          <>
+            <div style={{ fontSize: 13, color: 'var(--crm-text)' }}>
+              Please capture the client's response to the sent quotation before initiating the payment phase.
+            </div>
+            <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 12, padding: 30, background: 'rgba(255,255,255,0.03)', border: '1px dashed var(--crm-border)', borderRadius: 12 }}>
+              <div className="crm-spinner" style={{ width: 30, height: 30, borderColor: `${GOLD} transparent transparent transparent` }} />
+              <div style={{ fontSize: 14, color: GOLD, fontWeight: 600 }}>Waiting for Client's Approval...</div>
+              <div style={{ fontSize: 12, color: '#94a3b8', textAlign: 'center' }}>
+                We've sent the quotation via email with Accept/Reject links.<br/>
+                When the client clicks a link, this case will automatically update.
+              </div>
+              <button className="crm-btn crm-btn--secondary" onClick={onRefresh} style={{ marginTop: 12 }}>
+                <RefreshCw size={14} /> Refresh Status
+              </button>
+            </div>
+            {!isViewOnly && (
+              <button className="crm-btn crm-btn--ghost" onClick={handleNewQuotation} style={{ alignSelf: 'flex-start' }}>
+                <FileText size={14} /> Re-issue New Quotation
+              </button>
+            )}
+          </>
         )}
       </div>
     );
@@ -1160,55 +1214,114 @@ export function PaymentStep({ crmCase, onRefresh, onBack, isViewOnly, effectiveS
         </div>
       </div>
 
-      {isViewOnly && pays.some(p => p.status === 'paid') ? (() => {
-        const paidPayment = pays.find(p => p.status === 'paid')!;
-        return (
-          <div style={{ padding: 20, background: 'rgba(52,211,153,0.08)', border: '1px solid rgba(52,211,153,0.25)', borderRadius: 12 }}>
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-              <div style={{ fontWeight: 700, color: '#34d399', fontSize: 16 }}>✅ Payment Completed</div>
-              <div style={{ background: '#34d399', color: '#fff', padding: '4px 10px', borderRadius: 20, fontSize: 12, fontWeight: 700 }}>PAID</div>
-            </div>
-            <div style={{ marginTop: 16, display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12 }}>
-              <div>
-                <div style={{ fontSize: 12, color: '#94a3b8' }}>Amount Paid</div>
-                <div style={{ fontSize: 16, fontWeight: 700, color: '#1e293b' }}>{paidPayment.amount} {currency}</div>
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 12, padding: 16, background: '#f8fafc', border: '1px solid #e2e8f0', borderRadius: 12 }}>
+        <div>
+           <div style={{ fontSize: 12, color: '#64748b' }}>Total Quotation</div>
+           <div style={{ fontSize: 18, fontWeight: 700, color: '#0f172a' }}>{currency} {totalAmount.toFixed(2)}</div>
+        </div>
+        <div>
+           <div style={{ fontSize: 12, color: '#64748b' }}>Paid Amount</div>
+           <div style={{ fontSize: 18, fontWeight: 700, color: '#10b981' }}>{currency} {paidAmount.toFixed(2)}</div>
+        </div>
+        <div>
+           <div style={{ fontSize: 12, color: '#64748b' }}>Remaining Balance</div>
+           <div style={{ fontSize: 18, fontWeight: 700, color: remainingAmount > 0 ? '#f59e0b' : '#10b981' }}>{currency} {remainingAmount.toFixed(2)}</div>
+        </div>
+      </div>
+
+      {pays.length > 0 && (
+        <div>
+          <div style={{ fontSize: 13, fontWeight: 700, color: '#475569', marginBottom: 8 }}>Payment Links &amp; History</div>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+            {pays.map(p => (
+              <div key={p.id} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '12px 16px', background: p.status === 'paid' ? 'rgba(52,211,153,0.05)' : '#fff', border: `1px solid ${p.status === 'paid' ? 'rgba(52,211,153,0.2)' : '#e2e8f0'}`, borderRadius: 8 }}>
+                <div>
+                  <div style={{ fontWeight: 600, fontSize: 14, color: '#1e293b' }}>{Number(p.amount).toFixed(2)} {p.currency}</div>
+                  <div style={{ fontSize: 12, color: '#64748b' }}>{p.description || 'Payment'} • {new Date(p.created_at).toLocaleDateString()}</div>
+                </div>
+                <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+                  <span style={{ fontSize: 11, fontWeight: 600, padding: '4px 10px', borderRadius: 20, color: p.status === 'paid' ? '#10b981' : p.status === 'pending' ? '#f59e0b' : '#ef4444', background: p.status === 'paid' ? 'rgba(16,185,129,0.1)' : p.status === 'pending' ? 'rgba(245,158,11,0.1)' : 'rgba(239,68,68,0.1)' }}>
+                    {p.status.toUpperCase()}
+                  </span>
+                  {!isViewOnly && p.status === 'pending' && (
+                     <button className="crm-btn crm-btn--ghost" style={{ fontSize: 11, padding: '4px 8px' }} onClick={async () => {
+                       if (confirm(`Mark this ${p.amount} payment as paid?`)) {
+                         setMarkingPaid(true);
+                         try {
+                           await updatePaymentStatus(p.id, 'paid');
+                           const updatedPays = await fetchPayments(crmCase.id);
+                           setPays(updatedPays);
+                           const newPaidSum = updatedPays.filter(up => up.status === 'paid').reduce((sum, up) => sum + Number(up.amount), 0);
+                           if (newPaidSum >= totalAmount) await updateCaseStatus(crmCase.id, 'Payment Completed');
+                           setAmount((Math.max(0, totalAmount - newPaidSum)).toString());
+                           onRefresh();
+                         } finally { setMarkingPaid(false); }
+                       }
+                     }}>✓ Mark Paid</button>
+                  )}
+                </div>
               </div>
-              <div>
-                <div style={{ fontSize: 12, color: '#94a3b8' }}>Description</div>
-                <div style={{ fontSize: 14, color: '#1e293b' }}>{paidPayment.description}</div>
-              </div>
-              <div>
-                <div style={{ fontSize: 12, color: '#94a3b8' }}>Date</div>
-                <div style={{ fontSize: 14, color: '#1e293b' }}>{new Date(paidPayment.created_at).toLocaleString()}</div>
-              </div>
-            </div>
+            ))}
           </div>
-        );
-      })() : (
+        </div>
+      )}
+
+      {remainingAmount <= 0 ? (
+        <div style={{ padding: 16, background: 'rgba(52,211,153,0.1)', border: '1px solid rgba(52,211,153,0.3)', borderRadius: 10, textAlign: 'center', color: '#065f46', fontWeight: 600 }}>
+          🎉 All payments completed for this quotation.
+        </div>
+      ) : (
         <>
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12 }}>
-            <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
-              <label style={{ fontSize: 12, color: '#94a3b8', fontWeight: 600 }}>Amount ({currency})</label>
-              <input className="crm-input" type="number" value={amount} placeholder="0.00" onChange={e => setAmount(e.target.value)} disabled={isViewOnly} />
+          {(!pays.some(p => p.status === 'pending') || showNewPaymentForm) ? (
+            <div style={{ marginTop: 12, borderTop: '1px solid #e2e8f0', paddingTop: 16 }}>
+              <div style={{ fontSize: 13, fontWeight: 700, color: '#475569', marginBottom: 12 }}>Create New / Part Payment</div>
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12 }}>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
+                  <label style={{ fontSize: 12, color: '#94a3b8', fontWeight: 600 }}>Amount ({currency})</label>
+                  <input className="crm-input" type="number" value={amount} placeholder="0.00" onChange={e => setAmount(e.target.value)} disabled={isViewOnly} />
+                </div>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
+                  <label style={{ fontSize: 12, color: '#94a3b8', fontWeight: 600 }}>Description</label>
+                  <input className="crm-input" value={desc} onChange={e => setDesc(e.target.value)} placeholder="Part payment for..." disabled={isViewOnly} />
+                </div>
+              </div>
+              <div style={{ padding: 10, background: 'rgba(201,150,60,0.08)', border: '1px solid rgba(201,150,60,0.2)', borderRadius: 8, fontSize: 12, color: '#64748b', marginTop: 12 }}>
+                🔗 Payment link will be sent via <strong style={{ color: GOLD }}>Email &amp; WhatsApp</strong>. Once paid, status auto-updates.
+              </div>
+              {!isViewOnly && (
+                <div style={{ display: 'flex', gap: 10, marginTop: 12 }}>
+                  <button className="crm-btn crm-btn--primary" disabled={saving || !amount} onClick={sendLink}>
+                    {saving ? 'Sending...' : 'Send Payment Link'} <Send size={14} />
+                  </button>
+                  <button className="crm-btn crm-btn--success" disabled={markingPaid || !amount} onClick={markPaid}>
+                    {markingPaid ? '...' : '✓ Mark as Paid (Manual)'}
+                  </button>
+                  {pays.length > 0 && (
+                    <button className="crm-btn crm-btn--ghost" onClick={() => setShowNewPaymentForm(false)}>Cancel</button>
+                  )}
+                </div>
+              )}
             </div>
-            <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
-              <label style={{ fontSize: 12, color: '#94a3b8', fontWeight: 600 }}>Description</label>
-              <input className="crm-input" value={desc} onChange={e => setDesc(e.target.value)} placeholder="Service fee..." disabled={isViewOnly} />
-            </div>
-          </div>
-          <div style={{ padding: 10, background: 'rgba(201,150,60,0.08)', border: '1px solid rgba(201,150,60,0.2)', borderRadius: 8, fontSize: 12, color: '#64748b' }}>
-            🔗 Payment link will be sent via <strong style={{ color: GOLD }}>Email &amp; WhatsApp</strong>. Once paid, status auto-updates.
-          </div>
+          ) : (
+            !isViewOnly && remainingAmount > 0 && (
+               <button className="crm-btn crm-btn--ghost" style={{ alignSelf: 'flex-start', color: '#0ea5e9' }} onClick={() => setShowNewPaymentForm(true)}>
+                 + Create Additional Payment Link
+               </button>
+            )
+          )}
         </>
       )}
-      {!isViewOnly && (
-        <div style={{ display: 'flex', gap: 10 }}>
-          <button className="crm-btn crm-btn--primary" disabled={saving || !amount} onClick={sendLink}>
-            {saving ? 'Sending...' : 'Send Payment Link'} <Send size={14} />
-          </button>
-          <button className="crm-btn crm-btn--success" disabled={markingPaid} onClick={markPaid}>
-            {markingPaid ? '...' : '✓ Mark as Paid (Manual)'}
-          </button>
+
+      {/* Always allow proceeding to next stage if this is the active stage */}
+      {!isViewOnly && effectiveStage === 'Payment Pending' && (
+        <div style={{ marginTop: 20, paddingTop: 16, borderTop: '1px solid #e2e8f0', display: 'flex', justifyContent: 'flex-end' }}>
+          <button className="crm-btn crm-btn--primary" onClick={async () => {
+            if (remainingAmount > 0) {
+              if (!confirm('Payments are still pending. Are you sure you want to proceed without full payment?')) return;
+            }
+            await updateCaseStatus(crmCase.id, 'Payment Completed');
+            onRefresh();
+          }}>Proceed to Next Stage ➔</button>
         </div>
       )}
     </div>

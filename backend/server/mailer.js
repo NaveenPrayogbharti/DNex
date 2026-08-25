@@ -391,8 +391,9 @@ app.post('/api/notify/email', async (req, res) => {
 
   try {
     const fs = require('fs');
+    const { PDFDocument } = require('pdf-lib');
     const logoPath = path.resolve(__dirname, '../../frontend/src/assets/images/website_logo.png');
-    const emailAttachments = attachments && Array.isArray(attachments) 
+    let emailAttachments = attachments && Array.isArray(attachments) 
       ? attachments.map(a => ({
           filename: a.filename,
           content: a.encoding === 'base64' ? Buffer.from(a.content, 'base64') : a.content,
@@ -409,14 +410,56 @@ app.post('/api/notify/email', async (req, res) => {
       });
     }
     
-    if (subject && (subject.toLowerCase().includes('quotation') || subject.toLowerCase().includes('welcome'))) {
-      const pdfPath = path.resolve(__dirname, '../../frontend/src/assets/Company Profile A4.pdf');
-      if (fs.existsSync(pdfPath)) {
+    const isQuotation = subject && subject.toLowerCase().includes('quotation');
+    const isWelcome = subject && subject.toLowerCase().includes('welcome');
+    const pdfPath = path.resolve(__dirname, '../../frontend/src/assets/Company Profile A4.pdf');
+
+    if (isQuotation && fs.existsSync(pdfPath)) {
+      // Find the generated quotation attachment from the frontend
+      const quotationAttachmentIndex = emailAttachments.findIndex(a => a.filename.toLowerCase().includes('quotation'));
+      
+      if (quotationAttachmentIndex !== -1) {
+        const quotationBuffer = emailAttachments[quotationAttachmentIndex].content;
+        const profileBuffer = fs.readFileSync(pdfPath);
+        
+        try {
+          const mergedPdf = await PDFDocument.create();
+          
+          const profileDoc = await PDFDocument.load(profileBuffer);
+          const profilePages = await mergedPdf.copyPages(profileDoc, profileDoc.getPageIndices());
+          profilePages.forEach((page) => mergedPdf.addPage(page));
+          
+          const quoteDoc = await PDFDocument.load(quotationBuffer);
+          const quotePages = await mergedPdf.copyPages(quoteDoc, quoteDoc.getPageIndices());
+          quotePages.forEach((page) => mergedPdf.addPage(page));
+          
+          const mergedPdfBytes = await mergedPdf.save();
+          
+          // Replace the quotation attachment with the merged one
+          emailAttachments[quotationAttachmentIndex] = {
+            filename: 'DNEX_Quotation.pdf',
+            content: Buffer.from(mergedPdfBytes),
+            contentType: 'application/pdf'
+          };
+        } catch (mergeError) {
+          console.error('Error merging PDFs:', mergeError);
+          // Fallback: attach them separately if merge fails
+          emailAttachments.push({
+            filename: 'DNex Company Profile A4.pdf',
+            path: pdfPath
+          });
+        }
+      } else {
         emailAttachments.push({
           filename: 'DNex Company Profile A4.pdf',
           path: pdfPath
         });
       }
+    } else if (isWelcome && fs.existsSync(pdfPath)) {
+      emailAttachments.push({
+        filename: 'DNex Company Profile A4.pdf',
+        path: pdfPath
+      });
     }
     
     const info = await transporter.sendMail({

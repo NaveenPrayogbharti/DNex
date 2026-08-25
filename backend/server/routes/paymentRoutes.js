@@ -89,12 +89,16 @@ router.get('/:id/invoice', async (req, res) => {
 
     let caseData = null;
     let quotationItems = null;
+    let quotationData = null;
     if (payment.case_id) {
       const cases = await prisma.$queryRaw`SELECT "email", "full_name" FROM "crm_cases" WHERE "id" = ${payment.case_id}::uuid`;
       if (cases.length > 0) caseData = cases[0];
       
-      const qs = await prisma.$queryRaw`SELECT "items" FROM "crm_quotations" WHERE "case_id" = ${payment.case_id}::uuid ORDER BY "created_at" DESC LIMIT 1`;
-      if (qs.length > 0) quotationItems = qs[0].items;
+      const qs = await prisma.$queryRaw`SELECT "items", "subtotal", "tax_rate", "tax", "discount", "total" FROM "crm_quotations" WHERE "case_id" = ${payment.case_id}::uuid ORDER BY "created_at" DESC LIMIT 1`;
+      if (qs.length > 0) {
+        quotationData = qs[0];
+        quotationItems = qs[0].items;
+      }
     }
 
     const invoiceBuffer = await generateInvoicePDF({
@@ -104,7 +108,7 @@ router.get('/:id/invoice', async (req, res) => {
       description: payment.description,
       razorpay_payment_id: payment.razorpay_id,
       razorpay_order_id: payment.razorpay_id
-    }, caseData, quotationItems);
+    }, caseData, quotationItems, quotationData);
 
     res.setHeader('Content-Type', 'application/pdf');
     res.setHeader('Content-Disposition', `attachment; filename="Invoice_${payment.id.split('-')[0].toUpperCase()}.pdf"`);
@@ -201,7 +205,7 @@ const generateReceiptPDF = async (paymentDetails, caseData) => {
 /**
  * Generate Professional Tax Invoice PDF
  */
-const generateInvoicePDF = async (paymentDetails, caseData, quotationItems) => {
+const generateInvoicePDF = async (paymentDetails, caseData, quotationItems, quotationData) => {
   return new Promise((resolve, reject) => {
     try {
       const doc = new PDFDocument({ margin: 50, size: 'A4' });
@@ -259,9 +263,16 @@ const generateInvoicePDF = async (paymentDetails, caseData, quotationItems) => {
       doc.text('Amount', 460, 290, { align: 'right', width: 85 });
       doc.moveTo(40, 310).lineTo(555, 310).strokeColor('#e2e8f0').stroke();
 
-      const totalAmount = paymentDetails.amount;
-      const subtotal = totalAmount / 1.05;
-      const taxAmt = totalAmount - subtotal;
+      let totalAmount, subtotal, taxAmt;
+      if (quotationData && quotationData.total) {
+        totalAmount = parseFloat(quotationData.total);
+        subtotal = parseFloat(quotationData.subtotal);
+        taxAmt = parseFloat(quotationData.tax);
+      } else {
+        totalAmount = paymentDetails.amount;
+        subtotal = totalAmount / 1.05;
+        taxAmt = totalAmount - subtotal;
+      }
 
       let itemY = 330;
       doc.font('Helvetica').fillColor('#000000');
@@ -299,7 +310,29 @@ const generateInvoicePDF = async (paymentDetails, caseData, quotationItems) => {
       doc.text(`${paymentDetails.currency} ${subtotal.toFixed(2)}`, 400, currentY, { align: 'right', width: 145 });
       
       currentY += 20;
-      doc.text('VAT (5%):', 300, currentY);
+
+      let taxRateStr = '5%';
+      let discountAmt = 0;
+      let discountPct = 0;
+      
+      if (quotationData) {
+        if (quotationData.tax_rate !== undefined && quotationData.tax_rate !== null) {
+          taxRateStr = `${parseFloat(quotationData.tax_rate)}%`;
+        }
+        if (quotationData.discount && parseFloat(quotationData.discount) > 0) {
+          discountAmt = parseFloat(quotationData.discount);
+          discountPct = subtotal > 0 ? (discountAmt / subtotal) * 100 : 0;
+        }
+      }
+
+      if (discountAmt > 0) {
+        doc.text(`Discount (${discountPct.toFixed(0)}%):`, 300, currentY);
+        doc.fillColor('#34d399').text(`-${paymentDetails.currency} ${discountAmt.toFixed(2)}`, 400, currentY, { align: 'right', width: 145 });
+        doc.fillColor('#334155');
+        currentY += 20;
+      }
+
+      doc.text(`VAT (${taxRateStr}):`, 300, currentY);
       doc.text(`${paymentDetails.currency} ${taxAmt.toFixed(2)}`, 400, currentY, { align: 'right', width: 145 });
 
       currentY += 20;
@@ -368,13 +401,24 @@ router.post('/verify-payment', async (req, res) => {
     // We fetch case data here for both PDF generation and email
     let caseData = null;
     let quotationItems = null;
+    let quotationData = null;
+    let totalQuotationAmount = 0;
     if (actualCaseId) {
       const cases = await prisma.$queryRaw`SELECT "email", "full_name" FROM "crm_cases" WHERE "id" = ${actualCaseId}::uuid`;
       caseData = cases.length > 0 ? cases[0] : null;
       
-      const qs = await prisma.$queryRaw`SELECT "items" FROM "crm_quotations" WHERE "case_id" = ${actualCaseId}::uuid ORDER BY "created_at" DESC LIMIT 1`;
-      if (qs.length > 0) quotationItems = qs[0].items;
+      const qs = await prisma.$queryRaw`SELECT "items", "subtotal", "tax_rate", "tax", "discount", "total" FROM "crm_quotations" WHERE "case_id" = ${actualCaseId}::uuid ORDER BY "created_at" DESC LIMIT 1`;
+      if (qs.length > 0) {
+        quotationData = qs[0];
+        quotationItems = qs[0].items;
+        totalQuotationAmount = parseFloat(qs[0].total) || 0;
+      }
     }
+
+    // Check if fully paid by summing up all 'paid' payments
+    const allPays = await prisma.$queryRaw`SELECT SUM(amount) as total_paid FROM "crm_payments" WHERE "case_id" = ${actualCaseId}::uuid AND "status" = 'paid'`;
+    const totalPaid = allPays.length > 0 && allPays[0].total_paid ? parseFloat(allPays[0].total_paid) : 0;
+    const isFullyPaid = (totalPaid >= totalQuotationAmount && totalQuotationAmount > 0);
 
     // 3. Generate Professional PDF Receipt and Invoice
     const receiptBuffer = await generateReceiptPDF({
@@ -393,12 +437,17 @@ router.post('/verify-payment', async (req, res) => {
       description: paymentRec ? paymentRec.description : 'Payment for Professional Services',
       razorpay_payment_id,
       razorpay_order_id
-    }, caseData, quotationItems);
+    }, caseData, quotationItems, quotationData);
 
     // 4. Record Activity and Email Receipt
     if (actualCaseId) {
       const metadata = { amount: parseFloat(amount), currency, status: 'paid', razorpay_payment_id };
       await prisma.$executeRaw`INSERT INTO "crm_activities" ("case_id", "type", "description", "metadata") VALUES (${actualCaseId}::uuid, 'payment', 'Payment marked as paid', ${metadata}::jsonb)`;
+
+      if (isFullyPaid) {
+        await prisma.$executeRaw`UPDATE "crm_cases" SET "status" = 'Payment Completed' WHERE "id" = ${actualCaseId}::uuid AND "status" != 'Payment Completed'`;
+        await prisma.$executeRaw`INSERT INTO "crm_activities" ("case_id", "type", "description") VALUES (${actualCaseId}::uuid, 'status_change', 'Status updated to Payment Completed')`;
+      }
 
       if (caseData && caseData.email) {
         const emailBody = `
@@ -406,13 +455,31 @@ router.post('/verify-payment', async (req, res) => {
             <h2 style="color: #0A1628;">Payment Successful</h2>
             <p>Dear ${caseData.full_name},</p>
             <p>Thank you for your payment of <strong style="color: #0A1628; font-size: 16px;">${currency} ${parseFloat(amount).toFixed(2)}</strong>.</p>
-            <p>We have successfully received your payment. Please find your official payment receipt attached to this email as a PDF.</p>
+            <p>We have successfully received your payment. Please find your official payment receipt${isFullyPaid ? ' and tax invoice' : ''} attached to this email as a PDF.</p>
             <br/>
             <p style="color: #666; font-size: 14px;">If you have any questions, feel free to reply to this email.</p>
             <p>Best regards,<br/><strong>DNex Consulting</strong></p>
           </div>
         `;
         
+        let attachments = [
+          {
+            filename: `Receipt_${razorpay_payment_id}.pdf`,
+            content: receiptBuffer.toString('base64'),
+            encoding: 'base64',
+            contentType: 'application/pdf'
+          }
+        ];
+
+        if (isFullyPaid) {
+          attachments.push({
+            filename: `Invoice_${payment_record_id.split('-')[0].toUpperCase()}.pdf`,
+            content: invoiceBuffer.toString('base64'),
+            encoding: 'base64',
+            contentType: 'application/pdf'
+          });
+        }
+
         try {
           // Use the main mailer API to guarantee consistency with Quotation emails
           const emailRes = await fetch(`http://localhost:${process.env.PORT || 3006}/api/notify/email`, {
@@ -422,20 +489,7 @@ router.post('/verify-payment', async (req, res) => {
               to: caseData.email,
               subject: 'Payment Receipt - DNex Consulting',
               body: emailBody,
-              attachments: [
-                {
-                  filename: `Receipt_${razorpay_payment_id}.pdf`,
-                  content: receiptBuffer.toString('base64'),
-                  encoding: 'base64',
-                  contentType: 'application/pdf'
-                },
-                {
-                  filename: `Invoice_${payment_record_id.split('-')[0].toUpperCase()}.pdf`,
-                  content: invoiceBuffer.toString('base64'),
-                  encoding: 'base64',
-                  contentType: 'application/pdf'
-                }
-              ]
+              attachments
             })
           });
           

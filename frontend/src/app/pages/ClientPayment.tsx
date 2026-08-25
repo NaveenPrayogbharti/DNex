@@ -142,7 +142,7 @@ export function ClientPayment() {
       <div className="min-h-[80vh] flex flex-col items-center justify-center p-6 pt-32 bg-slate-50">
         <div className="bg-white p-8 rounded-3xl max-w-md w-full text-center shadow-xl border border-slate-100">
           <div className="flex justify-center mb-6">
-            <img src={websiteLogo} alt="DNex Logo" className="h-10 w-auto object-contain" />
+            <img src={websiteLogo} alt="DNex Logo" className="h-20 w-auto object-contain" />
           </div>
           <div className="mx-auto w-20 h-20 bg-green-50 rounded-full flex items-center justify-center mb-6">
             <CheckCircle className="w-10 h-10 text-green-500" />

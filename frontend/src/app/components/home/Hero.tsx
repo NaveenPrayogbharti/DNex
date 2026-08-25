@@ -9,7 +9,7 @@ const NAVY = '#0D2137';
 
 
 const stats = [
-  { number: '15 Years', label: 'Experienced Management' },
+  { number: '15+ Years', label: 'Experienced Management' },
   { number: '100%', label: 'Client Satisfaction' },
   { number: '7 Days', label: 'Avg. Setup Time' },
   { number: 'UAE', label: 'Mainland and Free Zones Covered' },
@@ -127,7 +127,7 @@ export function Hero() {
                   style={{ color: NAVY, letterSpacing: '-0.5px' }}
                 >
                   {stat.number}
-                  {stat.number === '15 Years' && (
+                  {stat.number === '15+ Years' && (
                     <span
                       title="*T&C Apply"
                       style={{ color: GOLD, fontSize: '0.7rem', verticalAlign: 'super', cursor: 'default', marginLeft: '2px' }}
