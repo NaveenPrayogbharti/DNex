@@ -607,7 +607,7 @@ export function QuotationStep({ crmCase, onRefresh, onBack, isViewOnly, isCaseLo
         await saveQuotation();
       }
       const pdfBase64 = generateQuotationPDFBase64({ crmCase, items, subtotal, tax, taxRate, discountAmt, discountPct, total, validity, currency });
-      const BACKEND_URL = import.meta.env.VITE_API_URL || 'http://localhost:3006';
+      const BACKEND_URL = import.meta.env.VITE_BACKEND_API_URL || 'http://localhost:3006';
       await sendCustomEmail({
         to: crmCase.email,
         subject: `Quotation — ${crmCase.service_type} | DNEX Consulting`,
