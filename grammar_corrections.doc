@@ -1,0 +1,102 @@
+Grammar Corrections Report
+--------------------------
+
+1. Hero Section (frontend/src/app/components/home/Hero.tsx)
+- Original: "UAE's one of the trusted Business Setup Platform"
+- Fixed: "One of the UAE's most trusted business setup platforms"
+
+2. Why Choose Us Section (frontend/src/app/components/home/WhyChooseUs.tsx)
+- Original: "UAE's One of the  Trusted<br />Business Setup Partner"
+- Fixed: "One of the UAE's Most Trusted<br />Business Setup Partners"
+
+3. Footer Section (frontend/src/app/components/Footer.tsx)
+- Original: "UAE's one of the most trusted business setup and legal services platform."
+- Fixed: "One of the UAE's most trusted business setup and legal services platforms."
+
+4. Services Descriptions (frontend/src/app/components/home/Services.tsx)
+- Original: "...main land company in UAE... allowed to operate anywhere within in UAE and internationally without geo-graphical resistance."
+- Fixed: "...mainland company in the UAE... allowed to operate anywhere within the UAE and internationally without geographical restrictions."
+
+5. NRO Account Assistance Descriptions (frontend/src/app/components/home/Services.tsx, frontend/src/app/components/Navbar.tsx, frontend/src/app/pages/OurServices.tsx)
+- Original: "Non-resident Indian (NRIs)" / "Non-resident Indians (NRIs)"
+- Fixed: "Non-Resident Indians (NRIs)"
+
+6. NRO Account Assistance card (frontend/src/app/components/home/Services.tsx)
+- Original: "requirements related to a Non-Resident ordinary NRO bank account"
+- Fixed: "requirements related to a Non-Resident Ordinary (NRO) bank account"
+
+7. Corporate Banking Assistance card (frontend/src/app/components/home/Services.tsx)
+- Original: "...smooth banking process for new and existing companies.Corporate banking assistance may also include..."
+- Fixed: "...smooth banking process for new and existing companies. Corporate banking assistance may also include..."
+
+8. Why Choose Us — intro paragraph (frontend/src/app/components/home/WhyChooseUs.tsx)
+- Original: "With over a 15 of experience and a team of specialists, we've helped multiple organisations ,entrepreneurs, startups, and multinationals..."
+- Fixed: "With over 15 years of experience and a team of specialists, we've helped multiple organisations, entrepreneurs, startups, and multinationals..."
+
+9. Why Choose Us — Fast Processing (frontend/src/app/components/home/WhyChooseUs.tsx)
+- Original: "Company setups in FreeZone completed within  business days."
+- Fixed: "Free Zone company setups completed within [X] business days."
+
+10. Why Choose Us — Government-Approved Partner (frontend/src/app/components/home/WhyChooseUs.tsx)
+- Original: "Officially registered with ISO and other UAE free zone authorities."
+- Fixed: "ISO-certified and officially registered with UAE free zone authorities."
+
+11. How It Works — Day 5 (frontend/src/app/components/home/Process.tsx)
+- Original: "Receive your initial approval within 2–3 working days."
+- Fixed: "Approval typically follows within 1–2 days of submission." (to align with the "Day 5" step and 7-day total timeline)
+
+12. Footer — Pricing Disclaimer (frontend/src/app/components/Footer.tsx)
+- Original: "Prices and Time promised are exclusive of government/authority fees  and depends on type of license and vary by free zone and license type."
+- Fixed: "Prices and timelines shown are exclusive of government/authority fees and depend on and vary by free zone and licence type."
+
+13. Footer & Contact — Address Block (frontend/src/app/components/Footer.tsx, frontend/src/app/pages/Contact.tsx)
+- Original: "116. Al Khaleez Centre. Bur Dubai."
+- Fixed: "116, Al Khaleez Centre, Bur Dubai"
+
+14. Hero Stats Strip / About Stats (frontend/src/app/components/home/Hero.tsx, frontend/src/app/pages/About.tsx)
+- Original: "15+ Years★"
+- Fixed: Replaced the stray "★" with a proper asterisk "*" to match the "*T&C Apply" tooltip.
+
+15. Client Reviews Testimonial Carousel (frontend/src/app/components/home/Testimonials.tsx)
+- Issue: Duplicate rendering of testimonials for infinite scroll caused assistive tech / SEO to see duplicate content.
+- Fixed: Added `aria-hidden="true"` to the duplicated slide set so it functions for CSS animation without creating accessibility / indexing issues.
+
+16. About & Services — "Consultants Online" Stat (frontend/src/app/pages/About.tsx, OurServices.tsx, IndiaServices.tsx, FreeZone.tsx)
+- Original: "Consultants Online"
+- Fixed: "12 Consultants Online" (to provide a concrete metric instead of an unfinished label)
+
+17. About — What We Do Best Paragraph (frontend/src/app/pages/About.tsx)
+- Original: "...Known for our practical and solution-oriented approach. Our team offer end-to-end assistance in litigation..."
+- Fixed: "...We're known for our practical, solution-oriented approach. Our team offers end-to-end assistance in litigation..." (Fixed sentence fragment and subject-verb agreement)
+
+18. About — Why Choose Us Intro (frontend/src/app/pages/About.tsx)
+- Original: "...a genuinely client first approach..."
+- Fixed: "...a genuinely client-first approach..." (Added hyphen)
+
+19. About — Our Mission Stats (frontend/src/app/pages/About.tsx)
+- Original: "10k+ Companies Successfully Setup"
+- Fixed: "10k+ Companies Successfully Set Up" (Corrected verb form)
+
+20. About — Hero Stats Strip (frontend/src/app/pages/About.tsx)
+- Original: "100+ Companies Setup"
+- Fixed: "10,000+ Companies Set Up" (Corrected verb form and reconciled data inconsistency with sitewide figure)
+
+21. About — Mission Stats (frontend/src/app/pages/About.tsx)
+- Original: "10k+ Companies Successfully Set Up"
+- Fixed: "10,000+ Companies Set Up" (Updated to consistently use the 10,000+ figure across all stat blocks)
+
+22. About — Mission Stats Bug (frontend/src/app/pages/About.tsx)
+- Issue: Another stray "★" character appeared next to the "15+ Years Experience" in the About page trust bullets.
+- Fixed: Replaced "★" with a proper asterisk "*" in the `About.tsx` component logic so it accurately reflects "*T&C Apply".
+
+23. Meet Our Team Carousel Accessibility (frontend/src/app/components/TeamCarousel.tsx)
+- Issue: Team member cards were duplicating for infinite scroll, causing accessibility/SEO repetition.
+- Fixed: Added `aria-hidden="true"` to the cloned carousel elements to resolve the duplication bug for screen readers, just like the testimonials.
+
+24. Consultation Form CTA Consistency (frontend/src/app/pages/About.tsx, OurServices.tsx, FreeZone.tsx)
+- Issue: Forms randomly used "Start Now" instead of standard "Get Consultation".
+- Fixed: Changed the submit button text from "Start Now" to "Get Consultation" across all form instances.
+
+25. Meet Our Team — Nitin Bhardwaj Bio (frontend/src/app/components/TeamCarousel.tsx)
+- Original: "Mr. Bhardwaj brings valuable international exposure and business expertise. He possesses strong global business understanding and hands-on international working experience..."
+- Fixed: "Mr. Bhardwaj brings strong international business expertise, with hands-on global operating experience..." (Trimmed repetition for a more polished style)

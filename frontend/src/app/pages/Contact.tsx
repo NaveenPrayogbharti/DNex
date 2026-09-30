@@ -71,7 +71,7 @@ export function Contact() {
                                         <strong>Sharjah:</strong> Business Centre, Sharjah Publishing City Free Zone, Sharjah, UAE
                                     </li>
                                     <li>
-                                        <strong>Bur Dubai:</strong> 116. Al Khaleez Centre. Bur Dubai.
+                                        <strong>Bur Dubai:</strong> 116, Al Khaleez Centre, Bur Dubai.
                                     </li>
                                     <li>
                                         <strong>Dubai South:</strong> B-89, Madinat Al Mataar Dubai South, Dubai UAE.

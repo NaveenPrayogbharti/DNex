@@ -1,5 +1,6 @@
 const express = require('express');
 require('dotenv').config({ path: require('path').resolve(__dirname, '../../.env') });
+require('dotenv').config({ path: require('path').resolve(__dirname, '../../../.env') });
 const Razorpay = require('razorpay');
 const crypto = require('crypto');
 const PDFDocument = require('pdfkit');

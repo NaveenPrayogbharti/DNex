@@ -140,6 +140,7 @@ export function Testimonials() {
           {duplicated.map((t, idx) => (
             <div
               key={`${t.name}-${idx}`}
+              aria-hidden={idx >= testimonials.length ? "true" : undefined}
               className="shrink-0 w-[85vw] sm:w-[380px] bg-white rounded-2xl p-7 relative hover:shadow-lg transition-all duration-300"
               style={{ border: '1px solid #e8edf2' }}
             >

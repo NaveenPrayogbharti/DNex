@@ -35,7 +35,7 @@ const teamMembers = [
     role: 'Associate Partner, Business Operations',
     category: 'Leadership',
     expertise: 'Global Business · Entrepreneurship · Business Development · Scalable Models',
-    bio: 'Mr. Bhardwaj brings valuable international exposure and business expertise. He possesses strong global business understanding and hands-on international working experience. His core expertise lies in mentoring new entrepreneurs, business development strategies, and creating scalable business models designed for long-term growth and success.',
+    bio: 'Mr. Bhardwaj brings strong international business expertise, with hands-on global operating experience. His core expertise lies in mentoring new entrepreneurs, business development strategies, and creating scalable business models designed for long-term growth and success.',
     initials: 'NB',
     image: nitinImg,
   },
@@ -261,6 +261,7 @@ export function TeamCarousel() {
             return (
               <div
                 key={i}
+                aria-hidden={i >= filtered.length ? "true" : undefined}
                 className="shrink-0 w-[85vw] sm:w-[340px] rounded-3xl overflow-hidden border border-slate-100 hover:shadow-2xl transition-all duration-300 group flex flex-col h-full"
                 style={{ background: '#fff' }}
               >

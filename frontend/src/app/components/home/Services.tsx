@@ -17,7 +17,7 @@ const services = [
     icon: Building2,
     title: 'Mainland Company Formation',
     description:
-      'A main land company in UAE is an onshore business entity registered with Department of Economic Development (D.E.D) of the respective emirate, allowed to operate anywhere within in UAE and internationally without geo-graphical resistance.',
+      'A mainland company in the UAE is an onshore business entity registered with Department of Economic Development (D.E.D) of the respective emirate, allowed to operate anywhere within the UAE and internationally without geographical restrictions.',
     highlight: false,
   },
   {
@@ -31,7 +31,7 @@ const services = [
     icon: Landmark,
     title: 'NRO Account Assistance',
     description:
-      'NRO account assistance refers to professional support services provided to Non-resident Indian (NRIs) for opening, managing and complying with requirements related to a Non-Resident ordinary NRO bank account. These services include guidance on documentation, account opening procedures, fund transfers, tax-related compliance, repatriation rules, and handling income earned in India such as rent, dividends, pensions, or investments. NRO account assistance helps NRIs manage their finances.',
+      'NRO account assistance refers to professional support services provided to Non-Resident Indians (NRIs) for opening, managing and complying with requirements related to a Non-Resident Ordinary (NRO) bank account. These services include guidance on documentation, account opening procedures, fund transfers, tax-related compliance, repatriation rules, and handling income earned in India such as rent, dividends, pensions, or investments. NRO account assistance helps NRIs manage their finances.',
     highlight: false,
   },
   {
@@ -45,7 +45,7 @@ const services = [
     icon: Building2,
     title: 'Corporate Banking Assistance',
     description:
-      'Banking setup services assist businesses in opening corporate bank accounts in the UAE with the required documentation and compliance support. This ensures a smooth banking process for new and existing companies.Corporate banking assistance may also include support for multi-currency accounts, trade finance, payroll services, merchant facilities, online banking setup, foreign exchange transactions, and cash management solutions. These services help businesses maintain seamless operations.',
+      'Banking setup services assist businesses in opening corporate bank accounts in the UAE with the required documentation and compliance support. This ensures a smooth banking process for new and existing companies. Corporate banking assistance may also include support for multi-currency accounts, trade finance, payroll services, merchant facilities, online banking setup, foreign exchange transactions, and cash management solutions. These services help businesses maintain seamless operations.',
     highlight: false,
   },
 ];

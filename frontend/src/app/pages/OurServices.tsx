@@ -42,7 +42,7 @@ const serviceCategories = [
     services: [
       { icon: Briefcase, title: 'Corporate Banking Assistance', desc: 'Assist businesses in opening corporate bank accounts in the UAE with the required documentation and compliance support.', href: '/investor-visa', sectionId: 'corporate-banking' },
       { icon: Users,     title: 'Mortgage Banking',            desc: 'Guidance and support for securing property financing in the UAE, helping obtain suitable mortgage solutions.',             href: '/partner-visa',    sectionId: 'mortgage' },
-      { icon: UserCheck, title: 'NRO Account Assistance',       desc: 'Professional support services provided to Non-resident Indians (NRIs) for opening and managing an NRO bank account.',   href: '/employment-visa', sectionId: 'nro' },
+      { icon: UserCheck, title: 'NRO Account Assistance',       desc: 'Professional support services provided to Non-Resident Indians (NRIs) for opening and managing an NRO bank account.',   href: '/employment-visa', sectionId: 'nro' },
       { icon: Laptop,    title: 'Overseas Direct Investment (ODI)', desc: 'Comprehensive assistance for ODI including RBI regulations guidance, documentation, and authorized dealer coordination.', href: '/freelance-visa', sectionId: 'odi' },
     ],
     featured: { title: 'Banking Support', desc: 'Banking Services for investors, professionals, and entrepreneurs. Seamless account opening, compliance support, and tailored banking solutions.', cta: 'Apply Now', href: '/leadform' },
@@ -234,7 +234,7 @@ function ConsultationSidebar() {
       <div className="p-6" style={{ backgroundColor: NAVY }}>
         <div className="flex items-center gap-2 mb-2">
           <div className="w-2 h-2 rounded-full bg-green-400 animate-pulse" />
-          <span className="text-xs font-medium text-green-400">Consultants Online</span>
+          <span className="text-xs font-medium text-green-400">12 Consultants Online</span>
         </div>
         <h3 className="text-white font-bold text-lg">Get Consultation</h3>
         <p className="text-slate-400 text-xs mt-1">Response within 1 business hour</p>
@@ -289,7 +289,7 @@ function ConsultationSidebar() {
               style={{ backgroundColor: GOLD }}
             >
               <Send size={15} />
-              Start Now
+              Get Consultation
             </button>
           </form>
         )}

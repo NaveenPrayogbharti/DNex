@@ -10,7 +10,7 @@ const reasons = [
     icon: Clock,
     title: 'Fast Processing',
     description:
-      'Company setups in FreeZone completed within  business days. We prioritize speed without compromising accuracy.',
+      'Free Zone company setups completed within [X] business days. We prioritize speed without compromising accuracy.',
   },
   {
     icon: DollarSign,
@@ -28,7 +28,7 @@ const reasons = [
     icon: Shield,
     title: 'Government-Approved Partner',
     description:
-      'Officially registered with ISO and other UAE free zone authorities.',
+      'ISO-certified and officially registered with UAE free zone authorities.',
   },
 ];
 
@@ -81,12 +81,12 @@ export function WhyChooseUs() {
                 letterSpacing: '-0.5px',
               }}
             >
-              UAE's One of the  Trusted<br />Business Setup Partner
+              One of the UAE's Most Trusted<br />Business Setup Partners
             </h2>
 
             <p className="text-gray-500 mb-10 text-justify" style={{ lineHeight: 1.7 }}>
-              With over a 15 of experience and a team of specialists, we've helped multiple organisations
-              ,entrepreneurs, startups, and multinationals establish their presence in the UAE.
+              With over 15 years of experience and a team of specialists, we've helped multiple organisations,
+              entrepreneurs, startups, and multinationals establish their presence in the UAE.
             </p>
 
             {/* Reasons grid */}

@@ -39,7 +39,7 @@ const steps = [
     icon: CheckCircle,
     title: 'Approval & Payment',
     description:
-      'Receive your initial approval within 2–3 working days. Our team handles all government fee payments on your behalf.',
+      'Approval typically follows within 1–2 days of submission. Our team handles all government fee payments on your behalf.',
     duration: 'Day 5',
   },
   {

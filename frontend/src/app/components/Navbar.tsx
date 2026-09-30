@@ -101,7 +101,7 @@ const megaMenuConfig: Record<string, MegaMenuConfig> = {
     items: [
       { icon: Briefcase, label: "Corporate Banking Assistance", desc: "Assist businesses in opening corporate bank accounts in the UAE with the required documentation and compliance support.", href: "/our-services#corporate-banking" },
       { icon: Users, label: "Mortgage Banking", desc: "Guidance and support for securing property financing in the UAE, helping obtain suitable mortgage solutions.", href: "/our-services#mortgage" },
-      { icon: UserCheck, label: "NRO Account Assistance", desc: "Professional support services provided to Non-resident Indian (NRIs) for opening and managing an NRO bank account.", href: "/our-services#nro" },
+      { icon: UserCheck, label: "NRO Account Assistance", desc: "Professional support services provided to Non-Resident Indians (NRIs) for opening and managing an NRO bank account.", href: "/our-services#nro" },
       { icon: Laptop, label: "Overseas Direct Investment (ODI)", desc: "Comprehensive assistance for ODI including RBI regulations guidance, documentation, and authorized dealer coordination.", href: "/our-services#odi" },
     ],
     featured: {

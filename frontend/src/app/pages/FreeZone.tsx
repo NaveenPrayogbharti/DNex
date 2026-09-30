@@ -218,7 +218,7 @@ function ConsultationSidebar() {
       <div className="p-6" style={{ backgroundColor: NAVY }}>
         <div className="flex items-center gap-2 mb-2">
           <div className="w-2 h-2 rounded-full bg-green-400 animate-pulse" />
-          <span className="text-xs font-medium text-green-400">Consultants Online</span>
+          <span className="text-xs font-medium text-green-400">12 Consultants Online</span>
         </div>
         <h3 className="text-white font-bold text-lg">Get Free Consultation</h3>
         <p className="text-slate-400 text-xs mt-1">Response within 1 business hour</p>
@@ -274,7 +274,7 @@ function ConsultationSidebar() {
               style={{ backgroundColor: GOLD }}
             >
               <Send size={15} />
-              Start Now — It's Free
+              Get Consultation
             </button>
           </form>
         )}

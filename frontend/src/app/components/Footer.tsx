@@ -124,7 +124,7 @@ export function Footer() {
             </Link>
 
             <p className="text-gray-500 text-sm leading-relaxed max-w-xs text-justify">
-              UAE's one of the most trusted business setup and legal services platform. We help entrepreneurs,
+              One of the UAE's most trusted business setup and legal services platforms. We help entrepreneurs,
               startups, and investors establish and grow their business in the UAE with confidence.
             </p>
           </div>
@@ -179,7 +179,7 @@ export function Footer() {
               </div>
               <div className="flex items-start gap-2 text-sm text-gray-600 max-w-full">
                 <MapPin size={15} style={{ color: GOLD, flexShrink: 0, marginTop: '2px' }} />
-                <span>116. Al Khaleez Centre. Bur Dubai.</span>
+                <span>116, Al Khaleez Centre, Bur Dubai</span>
               </div>
               <div className="flex items-start gap-2 text-sm text-gray-600 max-w-full">
                 <MapPin size={15} style={{ color: GOLD, flexShrink: 0, marginTop: '2px' }} />
@@ -231,7 +231,7 @@ export function Footer() {
           <p className="text-center text-xs text-slate-500">
             © {new Date().getFullYear()} DNEX Consulting FZC. All rights reserved.
             <br />
-            * Prices and Time promised are exclusive of government/authority fees  and depends on type of license and vary by free zone and license type.
+            * Prices and timelines shown are exclusive of government/authority fees and depend on and vary by free zone and licence type.
           </p>
         </div>
       </div>

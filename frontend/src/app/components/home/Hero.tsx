@@ -53,7 +53,7 @@ export function Hero() {
           >
             <span className="w-2 h-2 rounded-full animate-pulse" style={{ backgroundColor: GOLD }}></span>
             <span className="text-sm font-medium" style={{ color: GOLD }}>
-              UAE's one of the trusted Business Setup Platform
+              One of the UAE's most trusted business setup platforms
             </span>
           </div>
 
@@ -132,7 +132,7 @@ export function Hero() {
                       title="*T&C Apply"
                       style={{ color: GOLD, fontSize: '0.7rem', verticalAlign: 'super', cursor: 'default', marginLeft: '2px' }}
                     >
-                      ★
+                      *
                     </span>
                   )}
                 </div>

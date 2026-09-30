@@ -163,14 +163,14 @@ export function About() {
                                 {[
                                     { text: 'Government Licensed' },
                                     { text: '15+ Years Experience', star: true },
-                                    { text: '100+ Companies Setup' },
+                                    { text: '10k+ Companies Set Up' },
                                 ].map((b) => (
                                     <div key={b.text} className="flex items-center gap-2">
                                         <CheckCircle size={15} style={{ color: GOLD }} />
                                         <span className="text-sm text-slate-300">
                                             {b.text}
                                             {b.star && (
-                                                <span title="*T&C Apply" style={{ color: GOLD, fontSize: '0.65rem', verticalAlign: 'super', cursor: 'default', marginLeft: '2px' }}>★</span>
+                                                <span title="*T&C Apply" style={{ color: GOLD, fontSize: '0.65rem', verticalAlign: 'super', cursor: 'default', marginLeft: '2px' }}>*</span>
                                             )}
                                         </span>
                                     </div>
@@ -183,7 +183,7 @@ export function About() {
                             <div className="p-6" style={{ backgroundColor: NAVY }}>
                                 <div className="flex items-center gap-2 mb-2">
                                     <div className="w-2 h-2 rounded-full bg-green-400 animate-pulse" />
-                                    <span className="text-xs font-medium text-green-400">Consultants Online</span>
+                                    <span className="text-xs font-medium text-green-400">12 Consultants Online</span>
                                 </div>
                                 <h3 className="text-white font-bold text-lg">Get Free Consultation</h3>
                                 <p className="text-slate-400 text-xs mt-1">Response within 1 business hour</p>
@@ -239,7 +239,7 @@ export function About() {
                                             style={{ backgroundColor: GOLD }}
                                         >
                                             <Send size={15} />
-                                            {loading ? 'Submitting...' : 'Start Now'}
+                                            {loading ? 'Submitting...' : 'Get Consultation'}
                                         </button>
                                     </form>
                                 )}
@@ -285,7 +285,7 @@ export function About() {
                         <div className="grid grid-cols-2 gap-5">
                             {[
                                 { value: '15+', label: 'Years of Advisory Experience', icon: '📅', star: true },
-                                { value: '10k+', label: 'Companies Successfully Setup', icon: '🏢' },
+                                { value: '10k+', label: 'Companies Successfully Set Up', icon: '🏢' },
                                 { value: '52+', label: 'Free Zones Covered', icon: '🌍' },
                                 { value: '100%', label: 'Client Satisfaction Rate', icon: '⭐' },
                             ].map((s, i) => (
@@ -336,7 +336,7 @@ export function About() {
                             style={{ borderColor: GOLD, backgroundColor: '#FAFCFE' }}
                         >
                             <p className="text-gray-600 leading-relaxed text-lg text-justify">
-                                Our team brings comprehensive expertise across taxation, corporate structuring, regulatory compliance, legal advisory, and documentation, complemented by specialized capabilities in cross-border transactions, FEMA &amp; ODI structuring, AML compliance, and global business expansion. Known for our practical and solution-oriented approach. Our team offer end-to-end assistance in litigation and dispute resolution, including handling tax notices, regulatory proceedings, and corporate disputes. Our approach combines legal expertise with practical strategy, ensuring well-prepared documentation, effective representation, and proactive risk management to safeguard client interests at every stage with efficiency and precision.
+                                Our team brings comprehensive expertise across taxation, corporate structuring, regulatory compliance, legal advisory, and documentation, complemented by specialized capabilities in cross-border transactions, FEMA &amp; ODI structuring, AML compliance, and global business expansion. We're known for our practical, solution-oriented approach. Our team offers end-to-end assistance in litigation and dispute resolution, including handling tax notices, regulatory proceedings, and corporate disputes. Our approach combines legal expertise with practical strategy, ensuring well-prepared documentation, effective representation, and proactive risk management to safeguard client interests at every stage with efficiency and precision.
                             </p>
                         </div>
 
@@ -378,7 +378,7 @@ export function About() {
                             Why DNEX?
                         </h2>
                         <p className="text-gray-500 max-w-xl mx-auto text-justify" style={{ lineHeight: 1.7 }}>
-                            We combine deep regulatory expertise with a genuinely client first approach to make your UAE business journey smooth and successful.
+                            We combine deep regulatory expertise with a genuinely client-first approach to make your UAE business journey smooth and successful.
                         </p>
                     </div>
 
