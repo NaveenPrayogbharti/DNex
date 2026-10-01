@@ -50,6 +50,12 @@ export function Footer() {
     e.preventDefault();
     if (!email) return;
 
+    if (localStorage.getItem('newsletter_subscribed') === email) {
+      setStatus('success');
+      setTimeout(() => setStatus('idle'), 3000);
+      return;
+    }
+
     setStatus('loading');
     try {
       const res = await fetch('/api/subscribe', {
@@ -59,6 +65,7 @@ export function Footer() {
       });
 
       if (res.ok) {
+        localStorage.setItem('newsletter_subscribed', email);
         setStatus('success');
         setEmail('');
         setTimeout(() => setStatus('idle'), 3000);
@@ -164,7 +171,7 @@ export function Footer() {
           <div className="flex flex-col xl:flex-row items-center justify-between gap-8 bg-slate-50 border border-slate-200 rounded-2xl p-6 lg:p-8 shadow-sm">
             
             {/* Contact */}
-            <div className="flex flex-wrap items-center justify-center xl:justify-start gap-x-8 gap-y-4 flex-1">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-4 flex-1">
               <a href="tel:+971551251185" className="flex items-center gap-2 text-sm text-gray-600 hover:text-[#0D2137] transition-colors">
                 <Phone size={15} style={{ color: GOLD }} />
                 <span>+971 551251185</span>
@@ -176,10 +183,6 @@ export function Footer() {
               <div className="flex items-start gap-2 text-sm text-gray-600 max-w-full">
                 <MapPin size={15} style={{ color: GOLD, flexShrink: 0, marginTop: '2px' }} />
                 <span>Business Centre, Sharjah Publishing City Free Zone, Sharjah, UAE</span>
-              </div>
-              <div className="flex items-start gap-2 text-sm text-gray-600 max-w-full">
-                <MapPin size={15} style={{ color: GOLD, flexShrink: 0, marginTop: '2px' }} />
-                <span>116, Al Khaleez Centre, Bur Dubai</span>
               </div>
               <div className="flex items-start gap-2 text-sm text-gray-600 max-w-full">
                 <MapPin size={15} style={{ color: GOLD, flexShrink: 0, marginTop: '2px' }} />

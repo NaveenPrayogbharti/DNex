@@ -199,7 +199,7 @@ export function BaseLeadForm() {
 
         <p className="text-center text-xs text-gray-400">
           By submitting, you agree to our{' '}
-          <a href="#" className="underline">Privacy Policy</a>.
+          <a href="/privacy" className="underline">Privacy Policy</a>.
           We never share your data with third parties.
         </p>
       </form>

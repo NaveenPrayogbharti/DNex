@@ -93,16 +93,16 @@ export function Hero() {
               {getValue('hero_cta_primary', 'Start Your Business')}
               <ArrowRight size={18} />
             </Link>
-            <Link
-              to="/leadform"
+            <a
+              href="#services"
               className="inline-flex items-center justify-center gap-2 px-8 py-4 rounded-xl font-semibold text-base border-2 text-white hover:bg-white transition-all group"
               style={{ borderColor: 'rgba(255,255,255,0.4)' }}
             >
               <MessageCircle size={18} />
               <span className="group-hover:text-[#0D2137] transition-colors">
-                {getValue('hero_cta_secondary', 'Talk to Consultant')}
+                {getValue('hero_cta_secondary', 'Explore Services')}
               </span>
-            </Link>
+            </a>
           </div>
 
           {/* Rating - removed */}

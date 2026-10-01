@@ -1,6 +1,6 @@
 # DNex Project — Living Feature Document
 > **Auto-generated** — Do not edit manually. Regenerated on every `npm run dev` save and `npm run build`.
-> Last updated: **Saturday, 26 September 2026 at 1:46 pm**
+> Last updated: **Thursday 1 October, 2026 at 12:27 pm**
 
 ---
 
@@ -26,7 +26,7 @@
 | **About** | `src/app/pages/About.tsx` | 457 |
 | **ClientPayment** | `src/app/pages/ClientPayment.tsx` | 226 |
 | **ClientUploadPortal** | `src/app/pages/ClientUploadPortal.tsx` | 239 |
-| **Contact** | `src/app/pages/Contact.tsx` | 110 |
+| **Contact** | `src/app/pages/Contact.tsx` | 107 |
 | **FreeZone** | `src/app/pages/FreeZone.tsx` | 876 |
 | **Home** | `src/app/pages/Home.tsx` | 24 |
 | **IndiaServices** | `src/app/pages/IndiaServices.tsx` | 553 |
