@@ -221,9 +221,11 @@ export function Footer() {
             </div>
 
             <div className="flex items-center gap-5 text-xs text-slate-400">
+              <Link to="/careers" className="hover:text-white transition-colors">Careers</Link>
               <Link to="/privacy" className="hover:text-white transition-colors">Privacy Policy</Link>
               <Link to="/terms" className="hover:text-white transition-colors">Terms of Service</Link>
             </div>
+
           </div>
         </div>
       </div>

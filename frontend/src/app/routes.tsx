@@ -44,6 +44,7 @@ const ClientPayment = wrap(lazy(() => import('./pages/ClientPayment').then(m => 
 const ClientUploadPortal = wrap(lazy(() => import('./pages/ClientUploadPortal').then(m => ({ default: m.ClientUploadPortal }))));
 const PrivacyPolicy = wrap(lazy(() => import('./pages/PrivacyPolicy').then(m => ({ default: m.PrivacyPolicy }))));
 const TermsAndConditions = wrap(lazy(() => import('./pages/TermsAndConditions').then(m => ({ default: m.TermsAndConditions }))));
+const Careers       = wrap(lazy(() => import('./pages/Careers').then(m => ({ default: m.Careers }))));
 
 const publicRoutes = [
   {
@@ -57,6 +58,7 @@ const publicRoutes = [
       { path: 'leadform',       Component: LeadForm },
       { path: 'contact',        Component: Contact },
       { path: 'about',          Component: About },
+      { path: 'careers',        Component: Careers },
       { path: 'pay/:id',        Component: ClientPayment },
       { path: 'client/upload/:caseId', Component: ClientUploadPortal },
       { path: 'privacy',        Component: PrivacyPolicy },
@@ -66,6 +68,7 @@ const publicRoutes = [
   },
 ];
 
+
 // ─── Admin + CRM pages — only imported when PUBLIC_ONLY is false ──────────────
 // Vite will tree-shake these entire import() calls when PUBLIC_ONLY === true
 // because the condition is a compile-time constant (import.meta.env.*).
@@ -73,6 +76,7 @@ const AdminLogin        = !PUBLIC_ONLY ? wrap(lazy(() => import('./admin/pages/A
 const AdminLayout       = !PUBLIC_ONLY ? wrap(lazy(() => import('./admin/pages/AdminLayout').then(m => ({ default: m.AdminLayout })))) : null!;
 const AdminDashboard    = !PUBLIC_ONLY ? wrap(lazy(() => import('./admin/pages/AdminDashboard').then(m => ({ default: m.AdminDashboard })))) : null!;
 const AdminInquiries    = !PUBLIC_ONLY ? wrap(lazy(() => import('./admin/pages/AdminInquiries').then(m => ({ default: m.AdminInquiries })))) : null!;
+const AdminCareersPage  = !PUBLIC_ONLY ? wrap(lazy(() => import('./admin/pages/AdminCareersPage').then(m => ({ default: m.AdminCareersPage })))) : null!;
 const AdminServicesPage = !PUBLIC_ONLY ? wrap(lazy(() => import('./admin/pages/AdminServicesPage').then(m => ({ default: m.AdminServicesPage })))) : null!;
 const AdminUsersPage    = !PUBLIC_ONLY ? wrap(lazy(() => import('./admin/pages/AdminUsersPage').then(m => ({ default: m.AdminUsersPage })))) : null!;
 const AdminSettingsPage = !PUBLIC_ONLY ? wrap(lazy(() => import('./admin/pages/AdminSettingsPage').then(m => ({ default: m.AdminSettingsPage })))) : null!;
@@ -128,12 +132,14 @@ export const router = createBrowserRouter([
         { index: true,       Component: AdminRedirect },
         { path: 'dashboard', Component: AdminDashboard },
         { path: 'inquiries', Component: AdminInquiries },
+        { path: 'careers',   Component: AdminCareersPage },
         { path: 'services',  Component: AdminServicesPage },
         { path: 'content',   Component: AdminContentPage },
         { path: 'users',     Component: AdminUsersPage },
         { path: 'settings',  Component: AdminSettingsPage },
       ],
     },
+
     {
       path: '/crm',
       Component: CRMLayout,

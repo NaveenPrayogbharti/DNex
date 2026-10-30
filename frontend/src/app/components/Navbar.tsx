@@ -508,7 +508,15 @@ export function Navbar() {
                 >
                   About
                 </Link>
+
+                <Link
+                  to="/careers"
+                  className="px-3 py-2 text-sm font-bold text-[#102748] hover:text-[#C9963C] transition-colors"
+                >
+                  Careers
+                </Link>
               </nav>
+
 
               {/* CTA + Mobile Toggle */}
               <div className="flex items-center gap-3">
@@ -844,6 +852,15 @@ export function Navbar() {
               >
                 About
               </Link>
+
+              <Link
+                to="/careers"
+                className="flex items-center gap-3 px-4 py-3.5 text-sm font-semibold text-gray-800 rounded-xl hover:bg-slate-50 active:bg-slate-100 transition-colors"
+                onClick={() => setMobileOpen(false)}
+              >
+                Careers
+              </Link>
+
 
               <div className="pt-4 pb-2">
                 <Link

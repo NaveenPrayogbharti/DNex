@@ -1,6 +1,6 @@
 # DNex Project — Living Feature Document
 > **Auto-generated** — Do not edit manually. Regenerated on every `npm run dev` save and `npm run build`.
-> Last updated: **Thursday 1 October, 2026 at 12:27 pm**
+> Last updated: **Thursday 29 October, 2026 at 11:15 am**
 
 ---
 
@@ -8,7 +8,7 @@
 
 | Metric | Count |
 |--------|-------|
-| TypeScript/TSX files | 130 |
+| TypeScript/TSX files | 134 |
 | CSS stylesheets | 6 |
 | SQL schema files | 0 |
 | Registered routes | 0 |
@@ -19,11 +19,12 @@
 
 ## 🌐 Public Website
 
-### Pages (12)
+### Pages (13)
 
 | Page | File | Lines |
 |------|------|-------|
 | **About** | `src/app/pages/About.tsx` | 457 |
+| **Careers** | `src/app/pages/Careers.tsx` | 1053 |
 | **ClientPayment** | `src/app/pages/ClientPayment.tsx` | 226 |
 | **ClientUploadPortal** | `src/app/pages/ClientUploadPortal.tsx` | 239 |
 | **Contact** | `src/app/pages/Contact.tsx` | 107 |
@@ -70,10 +71,11 @@
 
 > Secured with Supabase Authentication. Session validated on every mount.
 
-### Pages (9)
+### Pages (10)
 
 | Page | File | Lines |
 |------|------|-------|
+| **AdminCareersPage** | `src/app/admin/pages/AdminCareersPage.tsx` | 1474 |
 | **AdminContentPage** | `src/app/admin/pages/AdminContentPage.tsx` | 399 |
 | **AdminDashboard** | `src/app/admin/pages/AdminDashboard.tsx` | 81 |
 | **AdminInquiries** | `src/app/admin/pages/AdminInquiries.tsx` | 207 |
@@ -107,11 +109,12 @@
 | **InquiryTable** | `src/app/admin/components/InquiryTable.tsx` | Sortable inquiry data table with actions |
 | **Sidebar** | `src/app/admin/components/Sidebar.tsx` | Collapsible nav sidebar with CRM portal link |
 
-### Admin Services / API Layer (3)
+### Admin Services / API Layer (4)
 
 | Service | Exports | Supabase Tables |
 |---------|---------|----------------|
 | **authService** | AdminUser, onAuthStateChange | — |
+| **careerService** | JobPosting, ApplicationStatus, JobApplication, ApplicationFilters… | admin_content |
 | **inquiryService** | InquiryStatus, Inquiry, InquiryFilters | leads |
 | **supabaseClient** |  | — |
 
@@ -170,7 +173,7 @@ New → Contacted → In Progress → Closed
 | **EmailComposeModal** | `src/app/crm/components/EmailComposeModal.tsx` | — |
 | **WorkflowSteps** | `src/app/crm/components/WorkflowSteps.tsx` | — |
 
-### CRM Services / Business Logic (10)
+### CRM Services / Business Logic (11)
 
 | Service | Key Exports | Tables Used |
 |---------|------------|------------|
@@ -184,6 +187,7 @@ New → Contacted → In Progress → Closed
 | **paymentService** | CRMPayment, CRMInvoice, InvoiceItem | crm_payments, crm_activities, crm_invoices |
 | **quotationService** | QuotationItem, CRMQuotation | crm_quotations, crm_activities |
 | **taskService** | CRMTask | crm_tasks |
+| **whatsappService** | WhatsAppPayload, WhatsAppStatusResponse | — |
 
 ### CRM — Case Lifecycle (14 Stages)
 ```
@@ -347,16 +351,16 @@ src/
 │   │   ├── Navbar.tsx
 │   │   ├── Footer.tsx
 │   │   └── TeamCarousel.tsx
-│   ├── pages/              # 12 public pages
+│   ├── pages/              # 13 public pages
 │   ├── admin/              # Admin Portal
-│   │   ├── pages/          # 9 admin pages
+│   │   ├── pages/          # 10 admin pages
 │   │   ├── components/     # 6 admin components
-│   │   ├── services/       # 3 service files
+│   │   ├── services/       # 4 service files
 │   │   └── context/        # AuthContext
 │   ├── crm/                # CRM Portal (NEW)
 │   │   ├── pages/          # 8 CRM pages
 │   │   ├── components/     # 5 CRM components
-│   │   ├── services/       # 10 service files
+│   │   ├── services/       # 11 service files
 │   │   ├── context/        # CRMNotificationContext
 │   │   └── supabase_crm_schema.sql
 │   ├── App.tsx

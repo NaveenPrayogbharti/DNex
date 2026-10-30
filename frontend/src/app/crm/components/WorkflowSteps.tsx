@@ -13,6 +13,7 @@ import { fetchServicesForCRM } from '../../../lib/servicesStore';
 import type { ServiceItem } from '../../../lib/servicesStore';
 import { OUTCOME_LABELS, OUTCOME_COLORS } from '../services/callService';
 import { sendCustomEmail } from '../services/emailNotificationService';
+import { sendWelcomeWhatsAppMessage } from '../services/whatsappService';
 import { generateQuotationPDFBase64 } from '../utils/pdfGenerator';
 import jsPDF from 'jspdf';
 import { fetchDocuments } from '../services/documentService';
@@ -1599,6 +1600,32 @@ export function ProcessingStep({ crmCase, onRefresh, onBack, isViewOnly, onRetur
     }
   };
 
+  const [sendingOfficialWA, setSendingOfficialWA] = useState(false);
+  const [waOfficialStatus, setWaOfficialStatus] = useState<string | null>(null);
+
+  const handleSendOfficialWelcomeWA = async () => {
+    if (!crmCase.phone) {
+      alert('Case phone number is missing');
+      return;
+    }
+    setSendingOfficialWA(true);
+    setWaOfficialStatus(null);
+    try {
+      const res = await sendWelcomeWhatsAppMessage(crmCase.phone);
+      if (res.success) {
+        setWaOfficialStatus('✅ Official welcome template sent via MSG91!');
+      } else if (res.skipped) {
+        setWaOfficialStatus(`ℹ️ Skipped: ${res.error}. Set MSG91_AUTH_KEY in backend .env to enable live sending.`);
+      } else {
+        setWaOfficialStatus(`❌ Error: ${res.error || 'Failed to send WhatsApp message'}`);
+      }
+    } catch (e: any) {
+      setWaOfficialStatus(`❌ Error: ${e.message}`);
+    } finally {
+      setSendingOfficialWA(false);
+    }
+  };
+
   const handleSendWhatsApp = () => {
     let cleanPhone = crmCase.phone.replace(/[^0-9]/g, '');
     // Ensure country code is present (default to UAE 971 if it looks like local)
@@ -1690,9 +1717,27 @@ export function ProcessingStep({ crmCase, onRefresh, onBack, isViewOnly, onRetur
               
               <textarea className="crm-textarea" rows={6} value={waText} onChange={e => setWaText(e.target.value)} />
             </div>
-            <button className="crm-btn crm-btn--success" onClick={handleSendWhatsApp} disabled={!waText}>
-              📲 Open WhatsApp Chat
-            </button>
+            <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
+              <button
+                className="crm-btn"
+                style={{ flex: 1, minWidth: 160, background: '#0D2137', color: '#C9963C', border: '1px solid #C9963C' }}
+                onClick={handleSendOfficialWelcomeWA}
+                disabled={sendingOfficialWA || !crmCase.phone}
+                title="Send official MSG91 welcome_dnex template to client WhatsApp"
+              >
+                {sendingOfficialWA ? 'Sending...' : '⚡ Send Welcome Template (MSG91)'}
+              </button>
+              <button className="crm-btn crm-btn--success" onClick={handleSendWhatsApp} disabled={!waText} style={{ flex: 1, minWidth: 150 }}>
+                📲 Open WhatsApp Chat
+              </button>
+            </div>
+            {waOfficialStatus && (
+              <div style={{ fontSize: 12, marginTop: 4, padding: '6px 10px', borderRadius: 6, background: 'rgba(255,255,255,0.05)', color: waOfficialStatus.startsWith('✅') ? '#10b981' : '#f59e0b' }}>
+                {waOfficialStatus}
+              </div>
+            )}
+
+
           </div>
         </div>
       )}

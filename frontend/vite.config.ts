@@ -102,10 +102,11 @@ export default defineConfig(({ mode }) => {
     server: {
       proxy: {
         '/api': {
-          target: env.VITE_BACKEND_API_URL || 'http://localhost:3006',
+          target: mode === 'development' ? (env.VITE_DEV_BACKEND_URL || 'http://localhost:3006') : (env.VITE_BACKEND_API_URL || 'http://localhost:3006'),
           changeOrigin: true,
         },
       },
     },
+
   };
 });

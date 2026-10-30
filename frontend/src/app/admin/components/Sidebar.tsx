@@ -11,6 +11,7 @@ import {
   BarChart3,
   ExternalLink,
   FileText,
+  UserCheck,
 } from 'lucide-react';
 import { signOutAdmin } from '../services/authService';
 import { useAuth } from '../context/AuthContext';
@@ -27,6 +28,7 @@ interface SidebarProps {
 const navItems = [
   { label: 'Dashboard',    icon: LayoutDashboard, path: '/admin/dashboard' },
   { label: 'Inquiries',   icon: Inbox,            path: '/admin/inquiries' },
+  { label: 'Careers',     icon: UserCheck,        path: '/admin/careers' },
   { label: 'Services',    icon: Briefcase,        path: '/admin/services' },
   { label: 'Content',     icon: FileText,         path: '/admin/content' },
   { label: 'Admin Users', icon: Users,            path: '/admin/users' },
@@ -40,8 +42,8 @@ export function Sidebar({ collapsed, onToggle }: SidebarProps) {
 
   const filteredNavItems = navItems.filter(item => {
     if (role === 'superadmin') return true;
-    if (role === 'content') return ['Dashboard', 'Services', 'Content'].includes(item.label);
-    if (role === 'support') return ['Dashboard', 'Inquiries'].includes(item.label);
+    if (role === 'content') return ['Dashboard', 'Services', 'Content', 'Careers'].includes(item.label);
+    if (role === 'support') return ['Dashboard', 'Inquiries', 'Careers'].includes(item.label);
     return false;
   });
 

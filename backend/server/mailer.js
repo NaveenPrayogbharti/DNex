@@ -24,6 +24,12 @@ const { PrismaClient } = require('@prisma/client');
 const { createClient } = require('@supabase/supabase-js');
 const WebSocket = require('ws');
 const paymentRoutes = require('./routes/paymentRoutes');
+const careerRoutes  = require('./routes/careerRoutes');
+const {
+  sendWhatsAppMessage,
+  sendWelcomeWhatsApp,
+  getWhatsAppStatus,
+} = require('./services/whatsappService');
 
 // ── Initialise ────────────────────────────────────────────────────────────────
 
@@ -195,6 +201,23 @@ app.post('/api/leads', async (req, res) => {
       });
     }
     // ─────────────────────────────────────────────────────────────────────────
+
+        // ── Fire WhatsApp Welcome Template (non-blocking) ───────────────────────
+    if (phone) {
+      sendWelcomeWhatsApp(phone)
+        .then(waRes => {
+          if (waRes.success) {
+            console.log(`📱 WhatsApp welcome message sent to ${phone}`);
+          } else if (waRes.skipped) {
+            console.log(`ℹ️ WhatsApp skipped for ${phone}: ${waRes.error}`);
+          } else {
+            console.warn(`⚠️ WhatsApp send failed for ${phone}:`, waRes.error);
+          }
+        })
+        .catch(waErr => {
+          console.error(`❌ WhatsApp error for ${phone}:`, waErr.message);
+        });
+    }
 
     return res.status(201).json({ success: true, lead });
   } catch (err) {
@@ -484,8 +507,54 @@ app.post('/api/notify/email', async (req, res) => {
 // HEALTH CHECK
 // ═════════════════════════════════════════════════════════════════════════════
 
+// ═════════════════════════════════════════════════════════════════════════════
+// WHATSAPP API (MSG91 Bulk Outbound)
+// ═════════════════════════════════════════════════════════════════════════════
+
+app.post('/api/notify/whatsapp', async (req, res) => {
+  const { to, phone, templateName, components, language, namespace, integratedNumber } = req.body;
+  const target = to || phone;
+
+  if (!target) {
+    return res.status(400).json({ error: 'Missing required field: to (or phone)' });
+  }
+
+  try {
+    const result = await sendWhatsAppMessage({
+      to: target,
+      templateName,
+      components,
+      language,
+      namespace,
+      integratedNumber,
+    });
+
+    if (!result.success && !result.skipped) {
+      return res.status(400).json(result);
+    }
+    return res.json(result);
+  } catch (err) {
+    console.error('❌ WhatsApp send failed:', err.message);
+    return res.status(500).json({ error: err.message });
+  }
+});
+
+app.get('/api/notify/whatsapp/status', (_req, res) => {
+  res.json(getWhatsAppStatus());
+});
+
+// ═════════════════════════════════════════════════════════════════════════════
+// HEALTH CHECK
+// ═════════════════════════════════════════════════════════════════════════════
+
 app.get('/api/health', (_req, res) => {
-  res.json({ status: 'ok', service: 'dnex-backend', db: 'prisma', ts: new Date().toISOString() });
+  res.json({
+    status: 'ok',
+    service: 'dnex-backend',
+    db: 'prisma',
+    whatsapp: getWhatsAppStatus(),
+    ts: new Date().toISOString()
+  });
 });
 
 // ═════════════════════════════════════════════════════════════════════════════
@@ -563,6 +632,13 @@ app.get('/api/quotation/reject', async (req, res) => {
 app.use('/api/payments', paymentRoutes);
 
 // ═════════════════════════════════════════════════════════════════════════════
+// CAREERS & JOB OPPORTUNITIES API
+// ═════════════════════════════════════════════════════════════════════════════
+
+app.use('/uploads', express.static(path.resolve(__dirname, '../public/uploads')));
+app.use('/api', careerRoutes({ prisma, supabaseAdmin, transporter, INTERNAL_NOTIFY_EMAIL }));
+
+// ═════════════════════════════════════════════════════════════════════════════
 // GRACEFUL SHUTDOWN
 // ═════════════════════════════════════════════════════════════════════════════
 
@@ -586,6 +662,8 @@ app.listen(PORT, () => {
   console.log(`   POST /api/leads        — Lead form submissions (Prisma)`);
   console.log(`   GET  /api/leads        — List all leads (Prisma)`);
   console.log(`   POST /api/notify/email — Send CRM emails`);
+  console.log(`   POST /api/notify/whatsapp — Send WhatsApp messages (MSG91)`);
+  console.log(`   GET  /api/notify/whatsapp/status — WhatsApp config status`);
   console.log(`   GET  /api/health       — Health check\n`);
 });
 
