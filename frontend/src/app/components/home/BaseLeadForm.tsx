@@ -13,6 +13,7 @@ const countries = [
 
 export function BaseLeadForm() {
   const [submitted, setSubmitted] = useState(false);
+  const [loading, setLoading] = useState(false);
   const [activeServices, setActiveServices] = useState<string[]>([]);
   const [formData, setFormData] = useState({
     fullName: "",
@@ -30,6 +31,7 @@ export function BaseLeadForm() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    setLoading(true);
 
     const apiBase = import.meta.env.VITE_BACKEND_API_URL !== undefined
       ? import.meta.env.VITE_BACKEND_API_URL
@@ -50,7 +52,7 @@ export function BaseLeadForm() {
         })
       });
       if (!res.ok) {
-        const err = await res.json();
+        const err = await res.json().catch(() => ({}));
         alert(err.error ?? 'Something went wrong. Please try again.');
         return;
       }
@@ -58,6 +60,9 @@ export function BaseLeadForm() {
       setFormData({ fullName: "", email: "", phone: "", country: "", service: "", message: "" });
     } catch (error) {
       console.error("Failed to submit lead", error);
+      alert('Unable to connect to the server. Please check your connection and try again.');
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -190,11 +195,12 @@ export function BaseLeadForm() {
 
         <button
           type="submit"
-          className="w-full flex items-center justify-center gap-2 py-3.5 rounded-xl font-semibold text-white text-sm transition-all hover:opacity-90 active:scale-95"
+          disabled={loading}
+          className="w-full flex items-center justify-center gap-2 py-3.5 rounded-xl font-semibold text-white text-sm transition-all hover:opacity-90 active:scale-95 disabled:opacity-60 disabled:cursor-not-allowed"
           style={{ backgroundColor: GOLD }}
         >
           <Send size={16} />
-          Get Consultation
+          {loading ? 'Submitting...' : 'Get Consultation'}
         </button>
 
         <p className="text-center text-xs text-gray-400">

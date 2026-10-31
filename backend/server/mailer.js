@@ -107,20 +107,128 @@ app.post('/api/leads', async (req, res) => {
   }
 
   try {
-    const lead = await prisma.leads.create({
-      data: {
-        full_name, email, phone, country, service_needed,
-        message: message ?? '',
-        status: 'New',
-      },
-    });
+    // Sanitize phone for the numeric column in `leads`
+    const cleanPhoneNumeric = phone ? String(phone).replace(/\D/g, '') || null : null;
 
-    console.log(`📋 New lead: ${full_name} <${email}> — ${service_needed}`);
+    let lead = null;
+
+    // 1. Prioritize supabaseAdmin (connects directly to Supabase cloud, bypasses RLS)
+    if (supabaseAdmin) {
+      try {
+        const { data, error } = await supabaseAdmin
+          .from('leads')
+          .insert([{
+            full_name,
+            email,
+            phone: cleanPhoneNumeric,
+            country,
+            service_needed,
+            message: message ?? '',
+            status: 'New',
+          }])
+          .select()
+          .single();
+
+        if (!error && data) {
+          lead = data;
+        } else if (error) {
+          console.warn('⚠️ supabaseAdmin lead insert failed, attempting prisma fallback:', error.message);
+        }
+      } catch (sbErr) {
+        console.warn('⚠️ supabaseAdmin exception on lead insert:', sbErr.message);
+      }
+    }
+
+    // Fallback to prisma if supabaseAdmin wasn't configured or failed
+    if (!lead) {
+      lead = await prisma.leads.create({
+        data: {
+          full_name,
+          email,
+          phone: cleanPhoneNumeric,
+          country,
+          service_needed,
+          message: message ?? '',
+          status: 'New',
+        },
+      });
+    }
+
+    console.log(`📋 New lead saved: ${full_name} <${email}> — ${service_needed}`);
+
+    // 2. Ensure corresponding case in crm_cases exists so CRM is ALWAYS updated
+    try {
+      if (supabaseAdmin && lead?.id) {
+        const { data: existingCases } = await supabaseAdmin
+          .from('crm_cases')
+          .select('id, case_id')
+          .eq('inquiry_id', lead.id);
+
+        if (!existingCases || existingCases.length === 0) {
+          const year = new Date().getFullYear();
+          const caseId = `DNX-${year}-${Math.floor(1000 + Math.random() * 9000)}`;
+          const { data: newCase } = await supabaseAdmin
+            .from('crm_cases')
+            .insert({
+              case_id: caseId,
+              full_name,
+              email,
+              phone: String(phone),
+              country,
+              service_type: service_needed,
+              status: 'New Lead',
+              priority: 'medium',
+              source: 'website',
+              notes: message || null,
+              inquiry_id: lead.id,
+            })
+            .select()
+            .single();
+
+          if (newCase) {
+            console.log(`📂 Case auto-created for CRM: ${newCase.case_id}`);
+            await supabaseAdmin.from('crm_activities').insert({
+              case_id: newCase.id,
+              type: 'status_change',
+              description: 'Case opened — New Lead from website inquiry',
+              performed_by_name: 'System',
+              metadata: { status: 'New Lead', source: 'website', inquiry_id: lead.id },
+            });
+          }
+        } else {
+          console.log(`📂 Case linked for CRM: ${existingCases[0].case_id}`);
+        }
+      }
+    } catch (crmCaseErr) {
+      console.warn('⚠️ Warning checking/creating crm_cases record:', crmCaseErr.message);
+    }
 
     // ── Fire emails (non-blocking — DB save already succeeded) ───────────────
     
-    // Helper to fetch template and inject variables
+    // Helper to fetch template and inject variables (tries Supabase first, then Prisma)
     const getTemplate = async (name, vars) => {
+      try {
+        if (supabaseAdmin) {
+          const { data, error } = await supabaseAdmin
+            .from('system_templates')
+            .select('subject, body')
+            .eq('name', name)
+            .limit(1);
+
+          if (!error && data && data.length > 0) {
+            let { subject, body } = data[0];
+            for (const [key, val] of Object.entries(vars)) {
+              const regex = new RegExp(`{{${key}}}`, 'g');
+              subject = subject.replace(regex, val || '');
+              body = body.replace(regex, val || '');
+            }
+            return { subject, html: body };
+          }
+        }
+      } catch (e) {
+        console.warn('Template fetch notice (supabase):', e.message);
+      }
+
       try {
         const result = await prisma.$queryRawUnsafe(`SELECT subject, body FROM system_templates WHERE name = $1 LIMIT 1`, name);
         if (result.length > 0) {
@@ -132,7 +240,7 @@ app.post('/api/leads', async (req, res) => {
           }
           return { subject, html: body };
         }
-      } catch(e) { console.error('Error fetching template', e); }
+      } catch(e) { console.error('Error fetching template from prisma:', e.message); }
       return null;
     };
 
@@ -233,6 +341,15 @@ app.post('/api/leads', async (req, res) => {
  */
 app.get('/api/leads', async (req, res) => {
   try {
+    if (supabaseAdmin) {
+      const { data: leads, error } = await supabaseAdmin
+        .from('leads')
+        .select('*')
+        .order('created_at', { ascending: false });
+      if (!error && leads) {
+        return res.json({ leads });
+      }
+    }
     const leads = await prisma.leads.findMany({
       orderBy: { created_at: 'desc' },
     });
