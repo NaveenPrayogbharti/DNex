@@ -434,15 +434,56 @@ app.post('/api/subscribe', async (req, res) => {
   }
 });
 
+// Helper to find case by UUID (id) or human-readable case_id (DNX-YYYY-XXXX)
+async function findCrmCase(identifier) {
+  if (!identifier) return null;
+  const cleanId = String(identifier).trim();
+  const isUuid = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(cleanId);
+
+  // 1. Try Supabase first (primary database for CRM cases)
+  if (supabaseAdmin) {
+    try {
+      if (isUuid) {
+        const { data, error } = await supabaseAdmin
+          .from('crm_cases')
+          .select('*')
+          .eq('id', cleanId)
+          .maybeSingle();
+        if (!error && data) return data;
+      }
+      const { data, error } = await supabaseAdmin
+        .from('crm_cases')
+        .select('*')
+        .eq('case_id', cleanId)
+        .maybeSingle();
+      if (!error && data) return data;
+    } catch (sbErr) {
+      console.warn('⚠️ Supabase findCrmCase warning:', sbErr.message);
+    }
+  }
+
+  // 2. Fallback to Prisma
+  try {
+    if (isUuid) {
+      const c = await prisma.crm_cases.findUnique({ where: { id: cleanId } });
+      if (c) return c;
+    }
+    const c = await prisma.crm_cases.findUnique({ where: { case_id: cleanId } });
+    if (c) return c;
+  } catch (pErr) {
+    console.warn('⚠️ Prisma findCrmCase warning:', pErr.message);
+  }
+
+  return null;
+}
+
 // ═════════════════════════════════════════════════════════════════════════════
 // PUBLIC PORTAL API (Bypasses RLS)
 // ═════════════════════════════════════════════════════════════════════════════
 
 app.get('/api/public/cases/:id', async (req, res) => {
   try {
-    const crmCase = await prisma.crm_cases.findUnique({
-      where: { id: req.params.id }
-    });
+    const crmCase = await findCrmCase(req.params.id);
     if (!crmCase) return res.status(404).json({ error: 'Case not found' });
     res.json(crmCase);
   } catch (err) {
@@ -452,11 +493,24 @@ app.get('/api/public/cases/:id', async (req, res) => {
 
 app.get('/api/public/documents/:caseId', async (req, res) => {
   try {
-    const docs = await prisma.crm_documents.findMany({
-      where: { case_id: req.params.caseId },
-      orderBy: { created_at: 'desc' }
-    });
-    res.json(docs);
+    let docs = null;
+    if (supabaseAdmin) {
+      try {
+        const { data, error } = await supabaseAdmin
+          .from('crm_documents')
+          .select('*')
+          .eq('case_id', req.params.caseId)
+          .order('created_at', { ascending: false });
+        if (!error && data) docs = data;
+      } catch (e) {}
+    }
+    if (!docs) {
+      docs = await prisma.crm_documents.findMany({
+        where: { case_id: req.params.caseId },
+        orderBy: { created_at: 'desc' }
+      });
+    }
+    res.json(docs || []);
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
@@ -705,19 +759,46 @@ app.get('/api/quotation/accept', async (req, res) => {
   const { case_id } = req.query;
   if (!case_id) return res.status(400).send('Missing case_id');
   try {
-    const c = await prisma.crm_cases.findUnique({ where: { id: case_id } });
-    if (!c) return res.status(404).send('Case not found');
+    const c = await findCrmCase(case_id);
+    if (!c) {
+      return res.status(404).send(renderHtml('Case Not Found', 'We could not locate this quotation case. Please contact your DNEX advisor directly.', '#ef4444'));
+    }
     
     // Only update if it's currently Quotation Sent, to avoid overwriting a case that's already processed
     if (c.status === 'Quotation Sent') {
-      await prisma.crm_cases.update({
-        where: { id: case_id },
-        data: { status: 'Payment Pending', updated_at: new Date() }
-      });
+      // 1. Update in Supabase
+      if (supabaseAdmin) {
+        try {
+          await supabaseAdmin
+            .from('crm_cases')
+            .update({ status: 'Payment Pending', updated_at: new Date().toISOString() })
+            .eq('id', c.id);
+
+          await supabaseAdmin.from('crm_activities').insert({
+            case_id: c.id,
+            type: 'status_change',
+            description: 'Quotation accepted by client via email link',
+            performed_by_name: 'Client (Email)',
+            metadata: { status: 'Payment Pending', action: 'quotation_accepted' }
+          });
+          console.log(`✅ Quotation accepted for case ${c.case_id || c.id} (status -> Payment Pending)`);
+        } catch (sbErr) {
+          console.error('Failed to update case in Supabase:', sbErr.message);
+        }
+      }
+
+      // 2. Prisma fallback
+      try {
+        await prisma.crm_cases.update({
+          where: { id: c.id },
+          data: { status: 'Payment Pending', updated_at: new Date() }
+        });
+      } catch (pErr) {}
     }
+
     res.send(renderHtml('Quotation Accepted', 'Thank you! You have successfully accepted the quotation. Our team will contact you shortly regarding the next steps for payment.', '#10b981'));
   } catch (err) {
-    console.error(err);
+    console.error('❌ Quotation accept error:', err);
     res.status(500).send('Internal Server Error');
   }
 });
@@ -726,18 +807,55 @@ app.get('/api/quotation/reject', async (req, res) => {
   const { case_id } = req.query;
   if (!case_id) return res.status(400).send('Missing case_id');
   try {
-    const c = await prisma.crm_cases.findUnique({ where: { id: case_id } });
-    if (!c) return res.status(404).send('Case not found');
+    const c = await findCrmCase(case_id);
+    if (!c) {
+      return res.status(404).send(renderHtml('Case Not Found', 'We could not locate this quotation case. Please contact your DNEX advisor directly.', '#ef4444'));
+    }
     
     if (c.status === 'Quotation Sent') {
-      await prisma.crm_cases.update({
-        where: { id: case_id },
-        data: { status: 'Not Interested', not_interested_reason: 'Client rejected the quotation via email link.', updated_at: new Date() }
-      });
+      const rejectReason = 'Client rejected the quotation via email link.';
+
+      // 1. Update in Supabase
+      if (supabaseAdmin) {
+        try {
+          await supabaseAdmin
+            .from('crm_cases')
+            .update({
+              status: 'Not Interested',
+              not_interested_reason: rejectReason,
+              updated_at: new Date().toISOString()
+            })
+            .eq('id', c.id);
+
+          await supabaseAdmin.from('crm_activities').insert({
+            case_id: c.id,
+            type: 'status_change',
+            description: 'Quotation rejected by client via email link',
+            performed_by_name: 'Client (Email)',
+            metadata: { status: 'Not Interested', reason: rejectReason }
+          });
+          console.log(`❌ Quotation rejected for case ${c.case_id || c.id} (status -> Not Interested)`);
+        } catch (sbErr) {
+          console.error('Failed to update case in Supabase:', sbErr.message);
+        }
+      }
+
+      // 2. Prisma fallback
+      try {
+        await prisma.crm_cases.update({
+          where: { id: c.id },
+          data: {
+            status: 'Not Interested',
+            not_interested_reason: rejectReason,
+            updated_at: new Date()
+          }
+        });
+      } catch (pErr) {}
     }
+
     res.send(renderHtml('Quotation Rejected', 'We have received your response. If you have any further questions or require a revised quotation, please reach out to us.', '#ef4444'));
   } catch (err) {
-    console.error(err);
+    console.error('❌ Quotation reject error:', err);
     res.status(500).send('Internal Server Error');
   }
 });
